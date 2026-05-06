@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSCI 340 OS Final Study Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink-100: #fce8f0;
+    --pink-200: #f9cfe0;
+    --pink-300: #f4a8c7;
+    --pink-400: #ed7fb0;
+    --pink-500: #e05990;
+    --pink-600: #c93d76;
+    --pink-700: #a52e5e;
+    --rose: #d4476a;
+    --blush: #fdf0f5;
+    --mauve: #7c3a5e;
+    --cream: #fffaf9;
+    --text: #2d1a24;
+    --text-soft: #6b4a5a;
+    --border: #f0d0df;
+    --correct: #2d7a4f;
+    --correct-bg: #e8f7ee;
+    --wrong: #b83232;
+    --wrong-bg: #fdeaea;
+    --warn-bg: #fff8e6;
+    --warn: #8a6000;
+    --shadow: 0 4px 24px rgba(160,60,100,0.10);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--blush); color: var(--text); min-height: 100vh; }
+  header { background: linear-gradient(135deg, #e05990 0%, #c93d76 50%, #a52e5e 100%); padding: 2.5rem 2rem 2rem; text-align: center; position: relative; overflow: hidden; }
+  header::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 30% 60%, rgba(255,255,255,0.12) 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(255,255,255,0.08) 0%, transparent 50%); }
+  header h1 { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 5vw, 3rem); color: #fff; position: relative; letter-spacing: -0.5px; text-shadow: 0 2px 12px rgba(0,0,0,0.15); }
+  header p { color: rgba(255,255,255,0.88); margin-top: 0.5rem; font-size: 1rem; font-weight: 300; position: relative; }
+  .header-badge { display: inline-block; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.35); border-radius: 100px; padding: 0.25rem 1rem; font-size: 0.8rem; color: #fff; margin-top: 0.75rem; position: relative; }
+  nav { display: flex; gap: 0; background: #fff; border-bottom: 2px solid var(--border); overflow-x: auto; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(160,60,100,0.08); justify-content: center; }
+  nav button { flex-shrink: 0; padding: 1rem 1.1rem; border: none; background: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 500; color: var(--text-soft); border-bottom: 3px solid transparent; transition: all 0.2s; white-space: nowrap; }
+  nav button:hover { color: var(--pink-600); background: var(--pink-100); }
+  nav button.active { color: var(--pink-600); border-bottom-color: var(--pink-500); background: var(--pink-100); font-weight: 600; }
+  main { max-width: 900px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+  .page { display: none; animation: fadeIn 0.3s ease; }
+  .page.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .section-title { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--mauve); margin-bottom: 0.3rem; }
+  .section-sub { color: var(--text-soft); font-size: 0.9rem; margin-bottom: 1.8rem; }
+  .qa-card { background: #fff; border-radius: 14px; border: 1.5px solid var(--border); margin-bottom: 1rem; overflow: hidden; box-shadow: var(--shadow); }
+  .qa-question { padding: 1.1rem 1.3rem; cursor: pointer; display: flex; align-items: flex-start; gap: 0.75rem; user-select: none; background: var(--cream); }
+  .qa-question:hover { background: var(--pink-100); }
+  .qa-question-text { flex: 1; font-weight: 500; font-size: 0.95rem; line-height: 1.5; }
+  .qa-question .arrow { font-size: 0.75rem; color: var(--pink-500); transition: transform 0.25s; margin-top: 0.2rem; flex-shrink: 0; }
+  .qa-card.open .arrow { transform: rotate(90deg); }
+  .qa-answer { display: none; padding: 1.1rem 1.3rem; background: #fff; border-top: 1.5px solid var(--border); font-size: 0.92rem; line-height: 1.7; }
+  .qa-card.open .qa-answer { display: block; }
+  .qa-answer strong { color: var(--pink-700); }
+  .qa-answer code { font-family: 'DM Mono', monospace; background: var(--pink-100); color: var(--mauve); padding: 0.1em 0.4em; border-radius: 4px; font-size: 0.88em; }
+  .qa-answer pre { font-family: 'DM Mono', monospace; background: #fdf0f5; border: 1px solid var(--border); border-radius: 8px; padding: 1rem; font-size: 0.82rem; overflow-x: auto; margin-top: 0.6rem; line-height: 1.6; }
+  .qa-answer ul { padding-left: 1.4rem; margin-top: 0.4rem; }
+  .qa-answer ul li { margin-bottom: 0.3rem; }
+  .alert { background: var(--pink-100); border: 1.5px solid var(--pink-300); border-radius: 12px; padding: 1rem 1.3rem; margin-bottom: 1.5rem; font-size: 0.9rem; color: var(--mauve); }
+  .alert strong { color: var(--rose); }
+  .overview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+  .overview-card { background: #fff; border: 1.5px solid var(--border); border-radius: 14px; padding: 1.3rem; cursor: pointer; transition: all 0.2s; box-shadow: var(--shadow); }
+  .overview-card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(160,60,100,0.15); border-color: var(--pink-300); }
+  .overview-card .oc-title { font-weight: 700; font-size: 0.95rem; color: var(--mauve); margin-bottom: 0.3rem; }
+  .overview-card .oc-count { font-size: 0.8rem; color: var(--text-soft); }
+  .btn { font-family: 'DM Sans', sans-serif; padding: 0.65rem 1.5rem; border-radius: 100px; border: none; cursor: pointer; font-size: 0.88rem; font-weight: 600; transition: all 0.2s; }
+  .btn-primary { background: var(--pink-500); color: #fff; }
+  .btn-primary:hover { background: var(--pink-600); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(160,60,100,0.3); }
+  .btn-outline { background: #fff; color: var(--pink-600); border: 1.5px solid var(--pink-400); }
+  .btn-outline:hover { background: var(--pink-100); }
+  .btn-ghost { background: transparent; color: var(--text-soft); border: 1.5px solid var(--border); }
+  .btn-ghost:hover { background: #fff; }
+  /* PRACTICE */
+  .practice-header { background: #fff; border: 1.5px solid var(--border); border-radius: 14px; padding: 1.3rem 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+  .practice-header .ph-title { font-weight: 700; font-size: 1rem; color: var(--mauve); }
+  .practice-header .ph-sub { font-size: 0.82rem; color: var(--text-soft); margin-top: 0.2rem; }
+  .pq-card { background: #fff; border: 1.5px solid var(--border); border-radius: 14px; margin-bottom: 1.2rem; overflow: hidden; box-shadow: var(--shadow); }
+  .pq-header { padding: 1rem 1.3rem 0.6rem; background: var(--cream); border-bottom: 1.5px solid var(--border); display: flex; align-items: flex-start; gap: 0.6rem; }
+  .pq-num { background: var(--pink-500); color: #fff; border-radius: 50%; width: 26px; height: 26px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.78rem; font-weight: 700; margin-top: 1px; }
+  .pq-pts { font-size: 0.75rem; color: var(--text-soft); margin-left: auto; flex-shrink: 0; }
+  .pq-question-text { font-weight: 500; font-size: 0.95rem; line-height: 1.5; flex: 1; }
+  .pq-body { padding: 1rem 1.3rem; }
+  .pq-textarea { width: 100%; min-height: 100px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; border: 1.5px solid var(--border); border-radius: 8px; padding: 0.75rem 1rem; resize: vertical; background: var(--blush); color: var(--text); line-height: 1.6; transition: border-color 0.2s; }
+  .pq-textarea:focus { outline: none; border-color: var(--pink-400); background: #fff; }
+  .pq-result { display: none; margin-top: 0.8rem; padding: 1rem; border-radius: 8px; font-size: 0.88rem; line-height: 1.6; }
+  .pq-result.correct { background: var(--correct-bg); border: 1.5px solid #9dd8b5; }
+  .pq-result.partial { background: var(--warn-bg); border: 1.5px solid #e6c200; }
+  .pq-result.wrong { background: var(--wrong-bg); border: 1.5px solid #f2aaaa; }
+  .pq-result .res-label { font-weight: 700; font-size: 0.82rem; text-transform: uppercase; margin-bottom: 0.4rem; }
+  .pq-result.correct .res-label { color: var(--correct); }
+  .pq-result.partial .res-label { color: var(--warn); }
+  .pq-result.wrong .res-label { color: var(--wrong); }
+  .pq-result .res-answer strong { color: var(--pink-700); }
+  .grade-bar { display: none; background: #fff; border: 1.5px solid var(--border); border-radius: 14px; padding: 1.5rem; margin-bottom: 1.5rem; text-align: center; }
+  .grade-score { font-family: 'Playfair Display', serif; font-size: 2.5rem; color: var(--pink-600); font-weight: 900; }
+  .grade-sub { font-size: 0.9rem; color: var(--text-soft); margin-top: 0.3rem; }
+  .grade-msg { margin-top: 0.8rem; font-size: 0.92rem; color: var(--text); }
+  /* FORK */
+  .fork-card { background: #fff; border: 1.5px solid var(--border); border-radius: 14px; margin-bottom: 1.5rem; overflow: hidden; box-shadow: var(--shadow); }
+  .fork-card-header { padding: 1rem 1.3rem; background: var(--cream); border-bottom: 1.5px solid var(--border); font-weight: 600; font-size: 0.95rem; color: var(--mauve); }
+  .fork-card-body { padding: 1.2rem 1.3rem; }
+  .fork-code { font-family: 'DM Mono', monospace; background: #fdf0f5; border: 1px solid var(--border); border-radius: 8px; padding: 1rem; font-size: 0.83rem; line-height: 1.7; margin-bottom: 1rem; overflow-x: auto; }
+  .fork-questions { display: flex; flex-direction: column; gap: 0.8rem; }
+  .fork-q-row { display: flex; flex-direction: column; gap: 0.3rem; }
+  .fork-q-label { font-size: 0.85rem; font-weight: 500; }
+  .fork-q-input { font-family: 'DM Sans', sans-serif; font-size: 0.88rem; border: 1.5px solid var(--border); border-radius: 8px; padding: 0.55rem 0.9rem; background: var(--blush); color: var(--text); width: 100%; max-width: 420px; transition: border-color 0.2s; }
+  .fork-q-input:focus { outline: none; border-color: var(--pink-400); background: #fff; }
+  .fork-q-feedback { font-size: 0.82rem; padding: 0.5rem 0.9rem; border-radius: 6px; display: none; max-width: 420px; }
+  .fork-q-feedback.correct { background: var(--correct-bg); color: var(--correct); }
+  .fork-q-feedback.wrong { background: var(--wrong-bg); color: var(--wrong); }
+  .fork-reveal { display: none; margin-top: 1rem; background: var(--pink-100); border: 1.5px solid var(--pink-300); border-radius: 8px; padding: 1rem; font-size: 0.88rem; line-height: 1.7; }
+  .fork-reveal strong { color: var(--pink-700); }
+  .fork-reveal pre { font-family: 'DM Mono', monospace; font-size: 0.82rem; margin-top: 0.5rem; background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 0.7rem; overflow-x: auto; }
+  /* FLASHCARDS */
+  .fc-controls { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .fc-controls select { font-family: 'DM Sans', sans-serif; padding: 0.55rem 1rem; border: 1.5px solid var(--border); border-radius: 8px; background: #fff; color: var(--text); font-size: 0.9rem; cursor: pointer; }
+  .fc-progress { font-size: 0.85rem; color: var(--text-soft); background: #fff; border: 1.5px solid var(--border); border-radius: 8px; padding: 0.4rem 1rem; }
+  .flashcard-wrap { perspective: 1200px; margin: 0 auto 1.5rem; max-width: 600px; height: 300px; cursor: pointer; }
+  .flashcard { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+  .flashcard.flipped { transform: rotateY(180deg); }
+  .fc-face { position: absolute; inset: 0; border-radius: 18px; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; box-shadow: 0 8px 40px rgba(160,60,100,0.15); }
+  .fc-front { background: linear-gradient(135deg, #e05990, #c93d76); color: #fff; }
+  .fc-front .fc-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; margin-bottom: 1rem; }
+  .fc-front .fc-q { font-family: 'Playfair Display', serif; font-size: 1.2rem; line-height: 1.5; text-align: center; }
+  .fc-back { background: #fff; border: 2px solid var(--border); transform: rotateY(180deg); color: var(--text); text-align: left; align-items: flex-start; overflow-y: auto; }
+  .fc-back .fc-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--pink-500); margin-bottom: 0.8rem; font-weight: 600; }
+  .fc-back .fc-a { font-size: 0.93rem; line-height: 1.7; }
+  .fc-back .fc-a strong { color: var(--pink-700); }
+  .fc-hint { font-size: 0.78rem; color: rgba(255,255,255,0.7); margin-top: 1rem; }
+  .fc-nav { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1rem; }
+  .fc-rating { display: flex; gap: 0.5rem; justify-content: center; margin-top: 0.5rem; }
+  .rating-btn { padding: 0.45rem 1.2rem; border-radius: 100px; border: none; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .rating-got { background: var(--correct-bg); color: var(--correct); border: 1.5px solid #9dd8b5; }
+  .rating-missed { background: var(--wrong-bg); color: var(--wrong); border: 1.5px solid #f2aaaa; }
+  .fc-score { display: flex; gap: 1.5rem; justify-content: center; font-size: 0.88rem; color: var(--text-soft); margin-top: 0.75rem; }
+  .score-got { color: var(--correct); font-weight: 600; }
+  .score-missed { color: var(--wrong); font-weight: 600; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--pink-100); }
+  ::-webkit-scrollbar-thumb { background: var(--pink-400); border-radius: 100px; }
+  @media (max-width: 600px) { nav button { padding: 0.8rem 0.8rem; font-size: 0.73rem; } .flashcard-wrap { height: 340px; } main { padding: 1.2rem 0.75rem 4rem; } .practice-header { flex-direction: column; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>CSCI 340 Final Study Guide</h1>
+  <p>Operating Systems -- Prof. Shostak -- Spring 2026</p>
+  <span class="header-badge">Final: May 21, 2026 at 5:20 PM -- Cumulative -- 50% of grade</span>
+</header>
+
+<nav id="mainNav">
+  <button class="active" onclick="showPage('overview',this)">Overview</button>
+  <button onclick="showPage('basics',this)">OS Basics</button>
+  <button onclick="showPage('processes',this)">Processes</button>
+  <button onclick="showPage('threads',this)">Threads + IPC</button>
+  <button onclick="showPage('memory',this)">Memory</button>
+  <button onclick="showPage('sync',this)">Synchronization</button>
+  <button onclick="showPage('practice',this)">Practice Exam</button>
+  <button onclick="showPage('fork',this)">Fork Practice</button>
+  <button onclick="showPage('visuals',this)">Visual Diagrams</button>
+  <button onclick="showPage('review',this)">Review Basics</button>
+  <button onclick="showPage('flashcards',this)">Flashcards</button>
+</nav>
+
+<main>
+
+<!-- OVERVIEW -->
+<div class="page active" id="page-overview">
+  <div class="section-title">CSCI 340 -- Final Exam Study Guide</div>
+  <div class="section-sub">All answers are taken directly from Prof. Shostak's class notes. His exact definitions are what matter on the exam.</div>
+  <div class="alert"><strong>Important:</strong> Shostak grades on his exact definitions. Vague answers get 0 points. Always use the key terms he used in class. The passing threshold for the final is 55/100.</div>
+  <div class="overview-grid">
+    <div class="overview-card" onclick="showPage('basics',null)"><div class="oc-title">OS Basics</div><div class="oc-count">Programs, CPU, RAM, kernels, dual mode, interrupts</div></div>
+    <div class="overview-card" onclick="showPage('processes',null)"><div class="oc-title">Processes</div><div class="oc-count">States, PCB, fork/exec/exit/wait, IPC</div></div>
+    <div class="overview-card" onclick="showPage('threads',null)"><div class="oc-title">Threads + Networking</div><div class="oc-count">Threads, sockets, ports, DNS</div></div>
+    <div class="overview-card" onclick="showPage('memory',null)"><div class="oc-title">Memory Management</div><div class="oc-count">Paging, frames, TLB, MMU, page fault</div></div>
+    <div class="overview-card" onclick="showPage('sync',null)"><div class="oc-title">Synchronization</div><div class="oc-count">Race conditions, mutex, deadlock, semaphores</div></div>
+    <div class="overview-card" onclick="showPage('practice',null)"><div class="oc-title">Practice Exam</div><div class="oc-count">10 questions pulled from both midterms</div></div>
+    <div class="overview-card" onclick="showPage('fork',null)"><div class="oc-title">Fork Practice</div><div class="oc-count">Process trees and output -- both midterms had this</div></div>
+    <div class="overview-card" onclick="showPage('visuals',null)"><div class="oc-title">Visual Diagrams</div><div class="oc-count">Process states, memory layout, paging, deadlock and more</div></div>
+    <div class="overview-card" onclick="showPage('review',null)"><div class="oc-title">Review Basics</div><div class="oc-count">Memory addresses, bits/bytes, CPU, hex, pointers -- from Bob's guide</div></div>
+    <div class="overview-card" onclick="showPage('flashcards',null)"><div class="oc-title">Flashcards</div><div class="oc-count">Quiz yourself on all topics</div></div>
+  </div>
+
+</div>
+
+<!-- OS BASICS -->
+<div class="page" id="page-basics">
+  <div class="section-title">OS Basics, Programs and CPU</div>
+  <div class="section-sub">Fundamentals tested on every exam.</div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is an Operating System?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>OS Definition</strong> = A program that manages hardware and provides other programs with an environment to run in.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is the OS Kernel?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>OS Kernel</strong> = A central component of the OS that performs the most important OS tasks.<br><br><strong>Monolithic Kernel</strong> = An OS architecture where the entire OS runs together in a single kernel space, allowing high performance due to efficient communication.<br><br><strong>Microkernel</strong> = Where the kernel performs a more minimal set of functions.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">List all OS functions with short descriptions.</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><ul><li><strong>Running programs</strong> -- finds executable, loads to RAM, runs it, stops it when done</li><li><strong>IPC</strong> -- tools that allow programs to exchange data</li><li><strong>Managing CPU</strong> -- controls which process uses the CPU and for how long (multitasking)</li><li><strong>Managing RAM</strong> -- decides where in RAM each program lives; uses virtual memory when RAM fills up</li><li><strong>Managing I/O</strong> -- collects hardware input and passes to app; uses interrupts and drivers</li><li><strong>Managing Storage</strong> -- all file operations go through OS; uses file systems and logical disks</li><li><strong>Managing Networking</strong> -- apps ask OS to send/receive data; OS uses networking protocols</li><li><strong>User Interface</strong> -- GUI (icons, clicking) or Command-Driven (typing)</li><li><strong>Security</strong> -- prevents misuse, tracks who is logged in and their privileges</li></ul></div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is multitasking? How is it arranged?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Multitasking</strong> = A technique to <strong>fake</strong> simultaneous executions of multiple processes on a single CPU core.<br><br>Classic CPU cores only execute one program at a time. The OS runs portions of one program, switches to another via a <strong>context switch</strong>, then another. If this happens fast enough, programs appear to run simultaneously. <strong>In reality, only one program runs at a given time on a single core.</strong></div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What are user mode and kernel mode? Why do we have dual modes?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>User Mode</strong> = Can only execute safe (user-level) instructions. If a user-mode program tries a kernel-level instruction, the CPU refuses and alerts the OS.<br><br><strong>Kernel Mode</strong> = Can execute ALL instructions including unsafe ones (I/O, memory management, hardware). OS components run here.<br><br>The CPU switches automatically to kernel mode when a <strong>system call</strong> happens, then switches back.<br><br><strong>Why dual modes?</strong> = For safety and stability -- separating user applications from critical hardware operations.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a system call? Why is it slow?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>System Call</strong> = A request for service from a user-level application to the OS.<br><br><strong>Why slow?</strong> = A syscall causes 2 context switches (to OS and back). Each requires saving and loading CPU registers to/from RAM. <strong>RAM is slow compared to the CPU.</strong></div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is virtual memory?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Virtual Memory</strong> = A technique to fake larger RAM using the hard disk. Portions of programs not currently needed are copied to the hard disk. When needed, they are copied back to RAM. Programs still only run from RAM -- disk is overflow storage. Expensive performance-wise.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What are interrupts? What are interrupt handlers? What is the sequence when one arrives?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Interrupt</strong> = A signal about some important event that requires immediate attention.<br><br>Sequence: interrupt generated (e.g. keypress) -- signal reaches CPU -- CPU pauses all current activity -- CPU runs the <strong>interrupt handler</strong> (ISR), a special function for this event -- handler finishes -- interrupt cleared -- CPU resumes. There exist maskable (can be ignored) and unmaskable (cannot) interrupts.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a driver?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Driver</strong> = A small program that handles communications between the OS and devices. Allows the OS to work with I/O devices including ones that did not exist when the OS was written.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a file? File system? Logical disk?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>File</strong> = A bunch of related data stored on a hard disk under one name.<br><br><strong>File System</strong> = A collection of data about all files on a computer including physical coordinates of files on the hard disk. Stores descriptions of files, not the files themselves.<br><br><strong>Logical Disk / Partition</strong> = A portion of a hard disk described in a separate file system. Example: drive C and drive D on one physical hard disk.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is an interpreter? Advantage? What is a compiler? Advantage?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Interpreter</strong> = Executes code line by line at runtime. No pre-compilation. <strong>Advantage = portability</strong> -- same code runs on any machine with the interpreter. Examples: Python, JavaScript.<br><br><strong>Compiler</strong> = Translates entire source code into machine code before it runs. <strong>Advantage = speed</strong> -- code is already machine code when executed. Examples: C, C++.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">How many bits are in 1 KB of data?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">1 byte = 8 bits. 1 KB = 1,024 bytes. So 1 KB = 1,024 x 8 = <strong>8,192 bits</strong>.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is POSIX? What is the OS API?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>POSIX</strong> = A standard for maintaining compatibility between operating systems. Functions like fork(), exec(), exit(), wait() come from POSIX and work on Linux (not Windows).<br><br><strong>OS API</strong> = A set of tools the OS provides for programmers. It does system calls under the hood so programmers do not need to make raw syscalls directly.</div></div>
+</div>
+
+<!-- PROCESSES -->
+<div class="page" id="page-processes">
+  <div class="section-title">Processes</div>
+  <div class="section-sub">PCB, process states, fork/exec/exit/wait, zombies, orphans, IPC</div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a process? How is it different from a program?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Process</strong> = A program in execution. <strong>Program</strong> = A static set of instructions stored on the hard disk. A program is passive (just code on disk). A process is active (loaded into RAM, being executed by the CPU). One program can have multiple processes.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is the PCB? Typical components?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>PCB (Process Control Block)</strong> = A record for a single process maintained by the OS. Typically less than 1 KB.<br><br>Components: PID, parent PID, process state, CPU scheduling info, memory management info, list of opened files, list of requested I/O devices, register file, program counter.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">List the five process states and describe each.</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><ul><li><strong>New</strong> = Created (PCB exists), not yet ready. Code/data still loading from disk.</li><li><strong>Ready</strong> = In ready queue, willing and able to use CPU, waiting for permission.</li><li><strong>Running</strong> = Currently using the CPU.</li><li><strong>Waiting</strong> = Requested I/O, waiting for it to complete. Not using CPU. Goes back to Ready when done.</li><li><strong>Terminated</strong> = Done. Resources released. PCB may remain briefly (zombie state).</li></ul></div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Ready queue vs I/O queue. How many of each?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Ready Queue</strong> = A collection of processes ready and willing to use the CPU. There is <strong>one ready queue</strong> in the system.<br><br><strong>I/O Queue</strong> = A collection of processes waiting to use an I/O device. There is <strong>one I/O queue for each I/O device</strong>.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What happens when a process requests I/O (blocking)? Where does it go after?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">Process stops using the CPU, joins that device's I/O queue, enters <strong>Waiting state</strong>. CPU switches to another process. Once I/O completes, process goes back to the <strong>Ready Queue</strong>.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a context switch? Why does it have overhead?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Context Switch</strong> = Steps the CPU takes to switch execution from one process to another: pause P1 -- save CPU registers and PC of P1 to RAM -- load CPU registers and PC of P2 from RAM -- resume P2.<br><br>Overhead because it requires 2 RAM operations and <strong>RAM is slow compared to the CPU</strong>. Syscalls are expensive because each causes 2 context switches.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Layout of a process in memory. Describe each section.</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><ul><li><strong>Text Section</strong> = Program code (instructions).</li><li><strong>Data Section</strong> = Global variables and static variables.</li><li><strong>Heap</strong> = Dynamic memory (new operator). Fragmented, full of holes.</li><li><strong>Stack</strong> = Local variables, function parameters, return addresses. Clean LIFO order, no holes. Each thread has its own stack.</li></ul></div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is fork()? Return values?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>fork()</strong> = Creates an almost exact copy of the process. Original = Parent. Copy = Child.<br><br>Returns <strong>0 to child</strong>. Returns <strong>positive PID value to parent</strong>. After fork, both processes continue from the next instruction concurrently. Order is not guaranteed.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is exec()? exit()? wait()?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>exec("name")</strong> = Erases all process content and starts a new program from an executable file. Typically used in child after fork().<br><br><strong>exit()</strong> = Stops the process, reports exit status (0 = success), releases resources. Code after exit() does not run. PCB stays -- process becomes zombie until parent calls wait().<br><br><strong>wait()</strong> = Called by parent to pause until child terminates. Receives child's exit status. Parent then continues.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Zombie process? Orphan process? Why are orphans bad?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Zombie</strong> = Called exit() but parent has not called wait() yet. No resources, but PCB remains.<br><br><strong>Orphan</strong> = Parent exited without calling wait(). Bad because nobody can collect exit status. System either adopts orphans or uses cascading termination (kill all descendants when parent exits).</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is IPC? Two general classes?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>IPC</strong> = Tools that allow processes to exchange data.<br><br><strong>Message Passing</strong> = Pass message to OS, OS delivers to other process. Slower (syscall), safer, works across different computers.<br><br><strong>Shared Memory</strong> = Processes share a memory region directly. Faster (OS help only once), harder to program correctly, same computer only.</div></div>
+</div>
+
+<!-- THREADS -->
+<div class="page" id="page-threads">
+  <div class="section-title">Threads and Networking</div>
+  <div class="section-sub">Threads vs processes, DNS, ports, sockets, std::thread</div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a thread? What do threads share vs not share?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Thread</strong> = An independent execution of program code from a separate program counter.<br><br><strong>Threads SHARE:</strong> text section, data section, heap.<br><br><strong>Threads do NOT share:</strong> stack (each thread has its own -- local variables and function params are private).</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Why create threads instead of processes?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">Memory efficient (code/heap/data not copied), fast to create, faster context switch, shared memory by default, overall less OS overhead compared to processes.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Why create processes instead of threads?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">Processes can run <strong>exec()</strong> to start a completely different program. Processes are <strong>fault-independent</strong> -- if one crashes, others keep running. If one thread crashes, the entire process and all its threads stop. Example: Chrome tabs are separate processes.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">TLS? Thread pool? How to create a thread with std::thread?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>TLS (Thread Local Storage)</strong> = Variables that are global but private per thread.<br><br><strong>Thread Pool</strong> = Threads created in advance and put to sleep. Reused when needed instead of creating new ones. Avoids overhead of repeated creation/destruction.<br><br><pre>#include &lt;thread&gt;
+std::thread t1{Foo, 5};
+std::thread t2{Foo, 56};
+t1.join(); // wait for t1
+t2.join(); // wait for t2</pre>
+<strong>join()</strong> = Makes the calling thread wait until the specified thread finishes.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is an IP address? Why is it not enough alone?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>IP Address (IPv4)</strong> = Each number is an unsigned byte (0 to 255), written as 4 numbers separated by dots. Identifies a computer on a network.<br><br><strong>Not enough alone</strong> because a computer runs many programs simultaneously. IP only identifies the computer, not <strong>which program</strong> should receive the message. That is what a port number is for.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Networking port? Well-known ports?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Networking Port</strong> = A unique numeric identifier given to every process that wants to use the network. IP address + port = full network address.<br><br><strong>Well-Known Ports</strong> = Ports reserved for a specific purpose. Example: port 80 is reserved for HTTP. Browsers know to connect on port 80 for web pages without being told.<br><br><strong>Shostak warning:</strong> Saying "first 1024 ports" = 0 points. Describe their purpose.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a network socket? What is DNS?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Network Socket</strong> = A combination of an IP address and a networking port.<br><br><strong>DNS</strong> = DNS servers function as the internet's phonebook, translating human-readable domain names into machine-readable IP addresses.</div></div>
+</div>
+
+<!-- MEMORY -->
+<div class="page" id="page-memory">
+  <div class="section-title">Memory Management</div>
+  <div class="section-sub">Physical vs logical addresses, MMU, paging, TLB, page faults</div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Physical address vs logical address. How many of each exist?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Physical address</strong> = The real address of the actual RAM device. Extremely inconvenient for programming (changes every run, processes would conflict).<br><br><strong>Logical (Virtual) address</strong> = The address a process uses in its instructions, as if it owns all memory starting from 0.<br><br><strong>Physical address spaces:</strong> 1 (one RAM device). <strong>Logical address spaces:</strong> one per process.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What kind of address does the CPU use? What arrives at RAM?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">CPU uses <strong>logical addresses</strong> in instructions. The MMU translates them. <strong>Physical addresses arrive at RAM</strong>.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is the MMU?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>MMU (Memory Management Unit)</strong> = A device that converts logical addresses to physical addresses. Sits on the address bus between CPU and RAM. The OS tells the MMU about each process before running it so it can translate addresses correctly.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is contiguous memory allocation? What fragmentation?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Contiguous Memory Allocation (CMA)</strong> = OS provides each process a continuous range of memory in one piece. MMU uses Base (start) and Limit (size) values to check if addresses are legal.<br><br>Suffers from <strong>external fragmentation</strong> = holes of free memory too small and scattered to fit new processes.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">External fragmentation vs internal fragmentation?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Fragmentation</strong> = Wasted memory from inefficient usage.<br><br><strong>External</strong> = Free memory NOT allocated to any process -- holes too small and scattered to be useful. (CMA problem.)<br><br><strong>Internal</strong> = Memory allocated TO a process but not used -- OS gave more than needed. (Paging problem.)</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is paging? Page? Frame? What fragmentation does it cause?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Paging</strong> = A memory management technique that avoids contiguous physical memory allocation. Divides both logical and physical memory into fixed same-sized chunks and maps them freely.<br><br><strong>Page</strong> = A portion of logical address space of fixed size. <strong>Frame</strong> = A portion of physical address space of fixed size. Pages and frames are the <strong>same size</strong>.<br><br>Suffers from <strong>internal fragmentation</strong> -- must give full pages even if only part is needed. Larger page size = more internal fragmentation.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a page table? How many per system?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Page Table</strong> = A data structure storing page-to-frame mappings for a process. Tells MMU which physical frame corresponds to each logical page. There is <strong>one page table per process</strong>.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Page offset? How are addresses structured in paging?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Page Number</strong> = floor(logical address / page size)<br><strong>Page Offset</strong> = logical address % page size<br><strong>Physical Address</strong> = (frame number x page size) + offset</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Three options for MMU to deal with the page table. Disadvantages of the two we don't use?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Option 1: Store whole table in MMU hardware.</strong> Disadvantage: page tables can be huge -- not enough memory built into the MMU.<br><br><strong>Option 2: Keep whole table in RAM.</strong> Disadvantage: every memory access needs an extra RAM lookup -- doubles access time. RAM is slow.<br><br><strong>Option 3 (what we use): TLB</strong> -- cache the most recently used page table entries in MMU. Uses locality principle.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is the TLB? TLB hit vs TLB miss?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>TLB (Translation Lookaside Buffer)</strong> = A memory device inside the MMU storing the most useful page table entries. Like a cache for the page table. Uses LRU policy.<br><br><strong>TLB Hit</strong> = Needed entry already in TLB. Fast -- no extra RAM lookup.<br><br><strong>TLB Miss</strong> = Entry not in TLB. MMU must go to RAM to find it, copies entry to TLB (extra RAM trip -- slow).<br><br><strong>Locality Principle</strong> = Programs tend to use specific memory chunks for a while before moving on. Makes TLB hits common.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">On-demand paging? Page fault?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>On-Demand Paging</strong> = A variation of paging that allows running processes that are only partially loaded in RAM. Only what is needed right now is loaded; rest stays on disk until needed.<br><br><strong>Page Fault</strong> = A situation when required code or data is on the hard disk but not in RAM. Program pauses while OS copies the missing page from disk to RAM. Expensive because disk access is very slow.</div></div>
+</div>
+
+<!-- SYNCHRONIZATION -->
+<div class="page" id="page-sync">
+  <div class="section-title">Synchronization</div>
+  <div class="section-sub">Race conditions, critical sections, mutex, deadlock -- all his exact definitions.</div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What are synchronization problems? What hazards?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Synchronization problems</strong> = Programming problems that arise when you create multithreaded code or a program that exchanges data with another program.<br><br>Two hazards: <strong>race condition</strong> and <strong>deadlock</strong>.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a race condition?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Race Condition</strong> = A scenario when a shared resource becomes corrupted because multiple threads/processes try to access this shared resource, and <strong>at least one of them tries to modify it</strong>. Race conditions are logic errors that may not be reproducible.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">How does a race condition happen at the CPU level?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">Even glob++ compiles to 3 CPU instructions:<pre>LOAD glob, r1    ; read glob into register
+r1 = r1 + 1      ; add 1
+STORE r1, glob   ; write back</pre>If thread t1 does LOAD (gets 5), gets paused, t2 runs fully (writes 6), then t1 resumes and STORE its old r1 (writes 6 instead of 7) -- one increment is lost.<br><br><strong>If everybody only reads:</strong> no race condition. <strong>If one modifies and others read:</strong> yes, can happen.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Critical Section Problem. Three properties of a good solution?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Critical Section Problem</strong> = A problem of programming threads/processes such that they do not use shared resources simultaneously.<br><br>Three properties:<ul><li><strong>Exclusivity</strong> = Only 1 thread/process can access a shared resource at a time.</li><li><strong>Progress</strong> = Shared resource does not stay idle if somebody needs it.</li><li><strong>Bounded Waiting</strong> = Nobody waits forever. Hard limit on how many others enter before a waiting process gets its turn.</li></ul></div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is an atomic function? (Both parts of the definition.)</span><span class="arrow">&#9658;</span></div><div class="qa-answer">Two properties:<ul><li>Only one atomic function can run at a time -- all other atomic functions are paused.</li><li>Uninterruptible -- once it starts, it finishes.</li></ul><strong>Hardware-implemented</strong> = No program code for it, no CPU instructions in memory. Implemented with hardware circuitry, called with a single special CPU instruction.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is test_and_set? Simple critical section solution. What is suboptimal?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">Hardware atomic function -- atomically checks and sets a lock:<pre>bool test_and_set(bool& lock) {
+  bool original = lock;
+  lock = true;      // always sets to locked
+  return original;  // returns what it WAS
+}</pre>Simple solution:<pre>while (test_and_set(globLock)) {};
+// CRITICAL SECTION
+globLock = false;</pre><strong>Suboptimal:</strong> Does NOT have bounded waiting -- not starvation-free. A thread could wait forever.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Busy waiting? Spinlock? When is it good?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Busy Waiting</strong> = A method of waiting that requires constant CPU usage (looping while checking).<br><br><strong>Spinlock</strong> = A synchronization tool that implements busy waiting under the hood.<br><br><strong>When still good:</strong> When expected wait times are short and it is cheaper to wait while using CPU than to perform a context switch to another process.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a mutex? What if it is busy?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Mutex</strong> = Mutual exclusion lock.<br><br>If the mutex is busy: the process <strong>pauses somehow and waits for the mutex to be free again before proceeding further</strong>. The OS puts it to sleep and wakes it up when the mutex becomes available (non-busy-waiting).<pre>std::mutex m;
+m.lock();    // acquire -- waits if busy
+// CRITICAL SECTION
+m.unlock();  // release for others</pre></div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Producer-Consumer (Bounded Buffer) problem and solution.</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Problem:</strong> Producer creates items into a fixed-size buffer. Consumer takes items. Producer pauses when full. Consumer pauses when empty.<br><br>Solution with 2 semaphores:<pre>Semaphore FULL = 0;  // # of items
+Semaphore EMPTY = N; // # of spaces
+
+// PRODUCER:
+wait(EMPTY); // wait for space
+// place item
+signal(FULL); // signal item available
+
+// CONSUMER:
+wait(FULL);  // wait for item
+// take item
+signal(EMPTY); // signal space freed</pre></div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Readers-Writers problem and solution.</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Problem:</strong> Shared data, readers can read simultaneously, writers must have exclusive access one at a time.<br><br>Solution:<pre>mutex access;     // controls exclusive write access
+int num_readers = 0;
+mutex read_guard; // protects num_readers
+
+// READERS:
+read_guard.lock();
+num_readers++;
+if (num_readers == 1) access.lock(); // first reader locks writers out
+read_guard.unlock();
+// READ
+read_guard.lock();
+num_readers--;
+if (num_readers == 0) access.unlock(); // last reader lets writers in
+read_guard.unlock();
+
+// WRITERS:
+access.lock();
+// WRITE
+access.unlock();</pre></div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Dining Philosophers problem. Philosophers = ? Chopsticks = ? Three solutions?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">N philosophers at a table. One chopstick between each pair. Need BOTH to eat. Alternate thinking and eating.<br><br><strong>Philosophers</strong> = Threads or processes competing for resources.<br><br><strong>Chopsticks</strong> = Mutex locks controlling shared resources.<br><br><strong>The danger:</strong> All grab left chopstick simultaneously -- nobody can grab right -- deadlock.<br><br><strong>3 approaches:</strong><ul><li>Allow only N-1 philosophers to sit at once</li><li>Only pick up both chopsticks if BOTH are available (atomically)</li><li>Asymmetric -- odd-numbered pick left then right; even-numbered pick right then left</li></ul></div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is deadlock?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Deadlock</strong> = A scenario when multiple threads/processes block each other and <strong>nobody</strong> progresses forward. Can happen with as few as 2 threads and 2 resources.</div></div>
+</div>
+
+<!-- PRACTICE EXAM -->
+<div class="page" id="page-practice">
+  <div class="section-title">Practice Exam</div>
+  <div class="section-sub">10 questions modeled directly on both midterms you scanned. Type your answer then check it.</div>
+  <div class="grade-bar" id="gradeBar"><div class="grade-score" id="gradeScore">--</div><div class="grade-sub">Practice Score</div><div class="grade-msg" id="gradeMsg"></div></div>
+  <div class="practice-header">
+    <div><div class="ph-title">Spring 2026 Practice -- Cumulative Final Prep</div><div class="ph-sub">17 questions drawn from all 3 midterm versions. Type your answer, then click Check All.</div></div>
+    <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="checkAllAnswers()">Check All Answers</button>
+      <button class="btn btn-ghost" onclick="resetPractice()">Reset</button>
+    </div>
+  </div>
+
+  <div class="pq-card"><div class="pq-header"><div class="pq-num">1</div><div class="pq-question-text">(10 pts) What is the main advantage of interpreted programming languages? Give an example.</div><div class="pq-pts">10 pts</div></div><div class="pq-body"><textarea class="pq-textarea" id="ans1" placeholder="Write your answer here..."></textarea><div class="pq-result" id="res1"><div class="res-label"></div><div class="res-answer"></div></div></div></div>
+
+  <div class="pq-card"><div class="pq-header"><div class="pq-num">2</div><div class="pq-question-text">Why does your computer run more programs simultaneously than can fit in its RAM?</div><div class="pq-pts">15 pts</div></div><div class="pq-body"><textarea class="pq-textarea" id="ans2" placeholder="Write your answer here..."></textarea><div class="pq-result" id="res2"><div class="res-label"></div><div class="res-answer"></div></div></div></div>
+
+  <div class="pq-card"><div class="pq-header"><div class="pq-num">3</div><div class="pq-question-text">Describe the mechanism that allows programs to react to unpredictable events like keyboard input or incoming network traffic. What is the sequence of steps?</div><div class="pq-pts">15 pts</div></div><div class="pq-body"><textarea class="pq-textarea" id="ans3" placeholder="Write your answer here..."></textarea><div class="pq-result" id="res3"><div class="res-label"></div><div class="res-answer"></div></div></div></div>
+
+  <div class="pq-card"><div class="pq-header"><div class="pq-num">4</div><div class="pq-question-text">(10 pts) What is stored in the stack section of a process? How is it different from the heap?</div><div class="pq-pts">10 pts</div></div><div class="pq-body"><textarea class="pq-textarea" id="ans4" placeholder="Write your answer here..."></textarea><div class="pq-result" id="res4"><div class="res-label"></div><div class="res-answer"></div></div></div></div>
+
+  <div class="pq-card"><div class="pq-header"><div class="pq-num">5</div><div class="pq-question-text">(10 pts) Why is an IP address alone not enough for networking, and why do we need a port number?</div><div class="pq-pts">10 pts</div></div><div class="pq-body"><textarea class="pq-textarea" id="ans5" placeholder="Write your answer here..."></textarea><div class="pq-result" id="res5"><div class="res-label"></div><div class="res-answer"></div></div></div></div>
+
+  <div class="pq-card"><div class="pq-header"><div class="pq-num">6</div><div class="pq-question-text">Give two reasons to create a new process instead of a new thread.</div><div class="pq-pts">15 pts</div></div><div class="pq-body"><textarea class="pq-textarea" id="ans6" placeholder="Write your answer here..."></textarea><div class="pq-result" id="res6"><div class="res-label"></div><div class="res-answer"></div></div></div></div>
+
+  <div class="pq-card"><div class="pq-header"><div class="pq-num">7</div><div class="pq-question-text">What is multitasking? How is it arranged? Is it truly simultaneous?</div><div class="pq-pts">15 pts</div></div><div class="pq-body"><textarea class="pq-textarea" id="ans7" placeholder="Write your answer here..."></textarea><div class="pq-result" id="res7"><div class="res-label"></div><div class="res-answer"></div></div></div></div>
+
+  <div class="pq-card"><div class="pq-header"><div class="pq-num">8</div><div class="pq-question-text">What is a race condition? Can it happen if only one thread modifies the data and others are just reading? What about if everybody is only reading?</div><div class="pq-pts">15 pts</div></div><div class="pq-body"><textarea class="pq-textarea" id="ans8" placeholder="Write your answer here..."></textarea><div class="pq-result" id="res8"><div class="res-label"></div><div class="res-answer"></div></div></div></div>
+
+  <div class="pq-card"><div class="pq-header"><div class="pq-num">9</div><div class="pq-question-text">What is paging? What kind of fragmentation does it suffer from and why?</div><div class="pq-pts">15 pts</div></div><div class="pq-body"><textarea class="pq-textarea" id="ans9" placeholder="Write your answer here..."></textarea><div class="pq-result" id="res9"><div class="res-label"></div><div class="res-answer"></div></div></div></div>
+
+  <div class="pq-card"><div class="pq-header"><div class="pq-num">10</div><div class="pq-question-text">What is deadlock? Describe the Dining Philosophers problem. What do philosophers represent? What do chopsticks represent? How can it result in deadlock?</div><div class="pq-pts">15 pts</div></div><div class="pq-body"><textarea class="pq-textarea" id="ans10" placeholder="Write your answer here..."></textarea><div class="pq-result" id="res10"><div class="res-label"></div><div class="res-answer"></div></div></div></div>
+
+  <div class="pq-card"><div class="pq-header"><div class="pq-num">11</div><div class="pq-question-text">(10 pts) What is stored in the heap section of a process? How is it different from the stack?</div><div class="pq-pts">10 pts</div></div><div class="pq-body"><textarea class="pq-textarea" id="ans11" placeholder="Write your answer here..."></textarea><div class="pq-result" id="res11"><div class="res-label"></div><div class="res-answer"></div></div></div></div>
+
+  <div class="pq-card"><div class="pq-header"><div class="pq-num">12</div><div class="pq-question-text">What is the problem with orphan processes? Why does the OS try to prevent them?</div><div class="pq-pts">15 pts</div></div><div class="pq-body"><textarea class="pq-textarea" id="ans12" placeholder="Write your answer here..."></textarea><div class="pq-result" id="res12"><div class="res-label"></div><div class="res-answer"></div></div></div></div>
+
+  <div class="pq-card"><div class="pq-header"><div class="pq-num">13</div><div class="pq-question-text">What is the idea of shared memory? What are its advantages and disadvantages compared to message passing?</div><div class="pq-pts">15 pts</div></div><div class="pq-body"><textarea class="pq-textarea" id="ans13" placeholder="Write your answer here..."></textarea><div class="pq-result" id="res13"><div class="res-label"></div><div class="res-answer"></div></div></div></div>
+
+  <div class="pq-card"><div class="pq-header"><div class="pq-num">14</div><div class="pq-question-text">Write a piece of code that creates a new thread and runs the function PrintExponent with parameter 12. You are not responsible for implementing the function itself.</div><div class="pq-pts">15 pts</div></div><div class="pq-body"><textarea class="pq-textarea" id="ans14" placeholder="Write your answer here..."></textarea><div class="pq-result" id="res14"><div class="res-label"></div><div class="res-answer"></div></div></div></div>
+
+  <div class="pq-card"><div class="pq-header"><div class="pq-num">15</div><div class="pq-question-text">What is a TLB? What is a TLB hit and a TLB miss? Why does the TLB exist?</div><div class="pq-pts">15 pts</div></div><div class="pq-body"><textarea class="pq-textarea" id="ans15" placeholder="Write your answer here..."></textarea><div class="pq-result" id="res15"><div class="res-label"></div><div class="res-answer"></div></div></div></div>
+
+  <div class="pq-card"><div class="pq-header"><div class="pq-num">16</div><div class="pq-question-text">What are the three properties a good solution to the Critical Section Problem must have? Explain each one.</div><div class="pq-pts">15 pts</div></div><div class="pq-body"><textarea class="pq-textarea" id="ans16" placeholder="Write your answer here..."></textarea><div class="pq-result" id="res16"><div class="res-label"></div><div class="res-answer"></div></div></div></div>
+
+  <div class="pq-card"><div class="pq-header"><div class="pq-num">17</div><div class="pq-question-text">What is a page fault? What happens step by step when one occurs? Is it expensive? Why?</div><div class="pq-pts">15 pts</div></div><div class="pq-body"><textarea class="pq-textarea" id="ans17" placeholder="Write your answer here..."></textarea><div class="pq-result" id="res17"><div class="res-label"></div><div class="res-answer"></div></div></div></div>
+
+  <div style="text-align:center;margin-top:1.5rem;"><button class="btn btn-primary" onclick="checkAllAnswers()" style="padding:0.8rem 2.5rem;font-size:0.95rem;">Check All Answers</button></div>
+</div>
+
+<!-- FORK PRACTICE -->
+<div class="page" id="page-fork">
+  <div class="section-title">Fork Practice</div>
+  <div class="section-sub">Both midterms had a fork question worth 15 points. Practice until this is automatic.</div>
+  <div class="alert"><strong>Key rules:</strong> fork() returns 0 to child, positive PID to parent. After fork(), BOTH processes continue from the next instruction. Order between processes is NOT guaranteed. if(fork()) = parent runs if-body. if(!fork()) = child runs if-body.</div>
+
+  <div class="fork-card">
+    <div class="fork-card-header">Problem 1 -- From midterm version 4</div>
+    <div class="fork-card-body">
+      <div class="fork-code">fork(); // A
+cout &lt;&lt; "1" &lt;&lt; endl;
+if (fork() &gt; 0) { // B
+    fork(); // C
+    cout &lt;&lt; "2" &lt;&lt; endl;
+}
+cout &lt;&lt; "3" &lt;&lt; endl;</div>
+      <div class="fork-questions">
+        <div class="fork-q-row"><div class="fork-q-label">How many total processes run (including the original)?</div><input class="fork-q-input" type="text" id="f1q1" placeholder="Enter a number"><div class="fork-q-feedback" id="f1q1-fb"></div></div>
+        <div class="fork-q-row"><div class="fork-q-label">How many times is "1" printed?</div><input class="fork-q-input" type="text" id="f1q2" placeholder="Enter a number"><div class="fork-q-feedback" id="f1q2-fb"></div></div>
+        <div class="fork-q-row"><div class="fork-q-label">Give one possible output</div><input class="fork-q-input" type="text" id="f1q3" placeholder='e.g. 123 123 3 3 23 3'><div class="fork-q-feedback" id="f1q3-fb"></div></div>
+      </div>
+      <div style="margin-top:1rem;display:flex;gap:0.75rem;flex-wrap:wrap;">
+        <button class="btn btn-outline" onclick="checkFork1()">Check Answers</button>
+        <button class="btn btn-ghost" onclick="revealFork('fork1-reveal')">Show Full Solution</button>
+      </div>
+      <div class="fork-reveal" id="fork1-reveal">
+        <strong>Walk-through:</strong><br>
+        Fork A fires. Original and Child-A both continue. Both will print "1".<br>
+        Fork B fires in both Original and Child-A. For each: parent side (fork &gt; 0) enters the if-block and does fork C then prints "2" then "3". Child side does not enter if-block and just prints "3".<br>
+        Fork C fires only inside the if-block. Parent of C prints "2" then "3". Child of C just prints "3".<br><br>
+        <strong>Process tree:</strong><pre>Original           -- prints 1, 2, 3
+  Child-of-A        -- prints 1, 2, 3
+    Child-of-C-from-Child-A -- prints 3
+  Child-of-B-from-Original  -- prints 3
+  Child-of-C-from-Original  -- prints 3
+  Child-of-B-from-Child-A   -- prints 3</pre>
+        <strong>Total processes: 6</strong><br>
+        "1" is printed <strong>2 times</strong> (Original and Child-A before fork B).<br>
+        <strong>One valid output:</strong> 123 123 3 3 23 3
+      </div>
+    </div>
+  </div>
+
+  <div class="fork-card">
+    <div class="fork-card-header">Problem 2 -- From midterm version 3</div>
+    <div class="fork-card-body">
+      <div class="fork-code">if (fork() != 0) { // A
+    cout &lt;&lt; "1" &lt;&lt; endl;
+} else {
+    cout &lt;&lt; "2" &lt;&lt; endl;
+    fork(); // B
+}
+fork(); // C
+cout &lt;&lt; "3" &lt;&lt; endl;</div>
+      <div class="fork-questions">
+        <div class="fork-q-row"><div class="fork-q-label">How many total processes run?</div><input class="fork-q-input" type="text" id="f2q1" placeholder="Enter a number"><div class="fork-q-feedback" id="f2q1-fb"></div></div>
+        <div class="fork-q-row"><div class="fork-q-label">Which process(es) print "1"?</div><input class="fork-q-input" type="text" id="f2q2" placeholder="parent or child?"><div class="fork-q-feedback" id="f2q2-fb"></div></div>
+        <div class="fork-q-row"><div class="fork-q-label">Give one possible output</div><input class="fork-q-input" type="text" id="f2q3" placeholder="e.g. 13 23 3 3 3 3"><div class="fork-q-feedback" id="f2q3-fb"></div></div>
+      </div>
+      <div style="margin-top:1rem;display:flex;gap:0.75rem;flex-wrap:wrap;">
+        <button class="btn btn-outline" onclick="checkFork2()">Check Answers</button>
+        <button class="btn btn-ghost" onclick="revealFork('fork2-reveal')">Show Full Solution</button>
+      </div>
+      <div class="fork-reveal" id="fork2-reveal">
+        <strong>Walk-through:</strong><br>
+        Fork A: Original (parent, fork != 0 is true) enters if-body and prints "1". Child-of-A (fork == 0, goes to else) prints "2" then hits fork B.<br>
+        Fork B: Only in the else-block. Child-of-A and its new Child-of-B both continue.<br>
+        Fork C: Outside the if-else, runs in ALL processes. Original, Child-of-A, and Child-of-B all hit fork C, each spawning one more child. Every process prints "3".<br><br>
+        <strong>Process tree:</strong><pre>Original                  -- prints 1, 3
+  Child-of-A               -- prints 2, 3
+    Child-of-B              -- prints 3
+      Child-of-C-of-B       -- prints 3
+    Child-of-C-of-A         -- prints 3
+  Child-of-C-of-Original   -- prints 3</pre>
+        <strong>Total processes: 6</strong><br>
+        "1" is printed by <strong>the original (parent)</strong> only.<br>
+        <strong>One valid output:</strong> 13 23 3 3 3 3
+      </div>
+    </div>
+  </div>
+
+  <div class="fork-card">
+    <div class="fork-card-header">Problem 3 -- Practice (straight forks, no if)</div>
+    <div class="fork-card-body">
+      <div class="fork-code">fork(); // A
+cout &lt;&lt; "1" &lt;&lt; endl;
+fork(); // B
+cout &lt;&lt; "2" &lt;&lt; endl;</div>
+      <div class="fork-questions">
+        <div class="fork-q-row"><div class="fork-q-label">How many total processes run?</div><input class="fork-q-input" type="text" id="f3q1" placeholder="Enter a number"><div class="fork-q-feedback" id="f3q1-fb"></div></div>
+        <div class="fork-q-row"><div class="fork-q-label">How many times is "1" printed?</div><input class="fork-q-input" type="text" id="f3q2" placeholder="Enter a number"><div class="fork-q-feedback" id="f3q2-fb"></div></div>
+        <div class="fork-q-row"><div class="fork-q-label">How many times is "2" printed?</div><input class="fork-q-input" type="text" id="f3q3" placeholder="Enter a number"><div class="fork-q-feedback" id="f3q3-fb"></div></div>
+      </div>
+      <div style="margin-top:1rem;display:flex;gap:0.75rem;flex-wrap:wrap;">
+        <button class="btn btn-outline" onclick="checkFork3()">Check Answers</button>
+        <button class="btn btn-ghost" onclick="revealFork('fork3-reveal')">Show Full Solution</button>
+      </div>
+      <div class="fork-reveal" id="fork3-reveal">
+        <strong>Process tree:</strong><pre>Original      -- prints 1, 2
+  Child-of-A   -- prints 1, 2
+    Child-of-B-from-Child-A -- prints 2 only
+  Child-of-B-from-Original  -- prints 2 only</pre>
+        <strong>Total: 4 processes. "1" prints 2 times. "2" prints 4 times.</strong><br>
+        One valid output: 12 12 2 2
+      </div>
+    </div>
+  </div>
+
+  <div class="fork-card">
+    <div class="fork-card-header">Problem 4 -- Practice (if/else fork logic)</div>
+    <div class="fork-card-body">
+      <div class="fork-code">if (fork()) // A -- parent enters if, child enters else
+    cout &lt;&lt; "1" &lt;&lt; endl;
+else {
+    fork(); // B
+    cout &lt;&lt; "2" &lt;&lt; endl;
+}
+cout &lt;&lt; "3" &lt;&lt; endl;</div>
+      <div class="fork-questions">
+        <div class="fork-q-row"><div class="fork-q-label">How many total processes run?</div><input class="fork-q-input" type="text" id="f4q1" placeholder="Enter a number"><div class="fork-q-feedback" id="f4q1-fb"></div></div>
+        <div class="fork-q-row"><div class="fork-q-label">Give one valid possible output</div><input class="fork-q-input" type="text" id="f4q2" placeholder="e.g. 13 23 23"><div class="fork-q-feedback" id="f4q2-fb"></div></div>
+      </div>
+      <div style="margin-top:1rem;display:flex;gap:0.75rem;flex-wrap:wrap;">
+        <button class="btn btn-outline" onclick="checkFork4()">Check Answers</button>
+        <button class="btn btn-ghost" onclick="revealFork('fork4-reveal')">Show Full Solution</button>
+      </div>
+      <div class="fork-reveal" id="fork4-reveal">
+        <strong>Walk-through:</strong><br>
+        Fork A: Original gets positive return (truthy) -- enters if, prints "1" then "3".<br>
+        Child-of-A gets 0 (falsy) -- enters else, hits fork B, prints "2" then "3".<br>
+        Child-of-B: starts after fork B in the else-block, prints "2" then "3".<br><br>
+        <strong>Total: 3 processes.</strong><br>
+        One valid output: 13 23 23
+      </div>
+    </div>
+  </div>
+  <div class="fork-card">
+    <div class="fork-card-header">Problem 5 -- From midterm version 2</div>
+    <div class="fork-card-body">
+      <div class="fork-code">cout &lt;&lt; "1" &lt;&lt; endl;
+if (fork()) { // A -- parent enters if, child enters else
+    cout &lt;&lt; "2" &lt;&lt; endl;
+} else {
+    fork(); // B
+    fork(); // C
+}
+cout &lt;&lt; "3" &lt;&lt; endl;</div>
+      <div class="fork-questions">
+        <div class="fork-q-row"><div class="fork-q-label">How many total processes run?</div><input class="fork-q-input" type="text" id="f5q1" placeholder="Enter a number"><div class="fork-q-feedback" id="f5q1-fb"></div></div>
+        <div class="fork-q-row"><div class="fork-q-label">How many times is "1" printed?</div><input class="fork-q-input" type="text" id="f5q2" placeholder="Enter a number"><div class="fork-q-feedback" id="f5q2-fb"></div></div>
+        <div class="fork-q-row"><div class="fork-q-label">Give one possible output</div><input class="fork-q-input" type="text" id="f5q3" placeholder="e.g. 123 13 3 3 3 3"><div class="fork-q-feedback" id="f5q3-fb"></div></div>
+      </div>
+      <div style="margin-top:1rem;display:flex;gap:0.75rem;flex-wrap:wrap;">
+        <button class="btn btn-outline" onclick="checkFork5()">Check Answers</button>
+        <button class="btn btn-ghost" onclick="revealFork('fork5-reveal')">Show Full Solution</button>
+      </div>
+      <div class="fork-reveal" id="fork5-reveal">
+        <strong>Walk-through:</strong><br>
+        "1" runs before any fork -- so only the original process prints it. Then fork A fires.<br>
+        Original (parent, fork() truthy) enters if-body: prints "2" then "3".<br>
+        Child-of-A (fork() = 0, falsy) enters else-body: hits fork B, then fork C.<br>
+        Fork B: Child-of-A spawns Child-of-B. Both continue to fork C.<br>
+        Fork C fires in Child-of-A AND Child-of-B, spawning two more processes.<br>
+        Everyone eventually reaches cout "3".<br><br>
+        <strong>Process tree:</strong><pre>Original                -- prints 1, 2, 3
+  Child-of-A             -- prints 3 (hits B and C in else)
+    Child-of-B            -- prints 3
+      Child-of-C-of-B     -- prints 3
+    Child-of-C-of-A       -- prints 3</pre>
+        <strong>Total: 5 processes.</strong><br>
+        "1" prints <strong>1 time</strong> (before any fork).<br>
+        "3" prints <strong>5 times</strong> (every process reaches it).<br>
+        One valid output: 123 3 3 3 3
+      </div>
+    </div>
+  </div>
+</div>
+<div class="page" id="page-visuals">
+  <div class="section-title">Visual Diagrams</div>
+  <div class="section-sub">Key concepts illustrated. All diagrams reflect Prof. Shostak's definitions.</div>
+
+  <!-- PROCESS STATES -->
+  <div class="qa-card" style="overflow:visible;">
+    <div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Process State Diagram -- New, Ready, Running, Waiting, Terminated</span><span class="arrow">&#9658;</span></div>
+    <div class="qa-answer">
+      <p style="margin-bottom:1rem;font-size:0.88rem;">A process moves through 5 states during its lifetime. The arrows show what triggers each transition.</p>
+      <svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:700px;display:block;margin:0 auto;">
+        <defs>
+          <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#c93d76"/></marker>
+        </defs>
+        <!-- Nodes -->
+        <ellipse cx="80" cy="160" rx="65" ry="32" fill="#fce8f0" stroke="#c93d76" stroke-width="2"/>
+        <text x="80" y="155" text-anchor="middle" font-size="13" font-weight="700" fill="#7c3a5e">New</text>
+        <text x="80" y="172" text-anchor="middle" font-size="10" fill="#6b4a5a">PCB created</text>
+
+        <ellipse cx="250" cy="80" rx="65" ry="32" fill="#fce8f0" stroke="#c93d76" stroke-width="2"/>
+        <text x="250" y="75" text-anchor="middle" font-size="13" font-weight="700" fill="#7c3a5e">Ready</text>
+        <text x="250" y="92" text-anchor="middle" font-size="10" fill="#6b4a5a">In ready queue</text>
+
+        <ellipse cx="430" cy="80" rx="65" ry="32" fill="#e05990" stroke="#a52e5e" stroke-width="2"/>
+        <text x="430" y="75" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">Running</text>
+        <text x="430" y="92" text-anchor="middle" font-size="10" fill="#fce8f0">Using CPU</text>
+
+        <ellipse cx="430" cy="230" rx="65" ry="32" fill="#fce8f0" stroke="#c93d76" stroke-width="2"/>
+        <text x="430" y="225" text-anchor="middle" font-size="13" font-weight="700" fill="#7c3a5e">Waiting</text>
+        <text x="430" y="242" text-anchor="middle" font-size="10" fill="#6b4a5a">I/O in progress</text>
+
+        <ellipse cx="620" cy="160" rx="65" ry="32" fill="#fce8f0" stroke="#c93d76" stroke-width="2"/>
+        <text x="620" y="155" text-anchor="middle" font-size="13" font-weight="700" fill="#7c3a5e">Terminated</text>
+        <text x="620" y="172" text-anchor="middle" font-size="10" fill="#6b4a5a">Resources freed</text>
+
+        <!-- Arrows -->
+        <line x1="145" y1="140" x2="185" y2="98" stroke="#c93d76" stroke-width="2" marker-end="url(#arr)"/>
+        <text x="148" y="120" font-size="10" fill="#c93d76">admitted</text>
+
+        <line x1="315" y1="80" x2="365" y2="80" stroke="#c93d76" stroke-width="2" marker-end="url(#arr)"/>
+        <text x="328" y="73" font-size="10" fill="#c93d76">scheduled</text>
+
+        <path d="M430,48 Q340,10 250,48" stroke="#c93d76" stroke-width="2" fill="none" marker-end="url(#arr)"/>
+        <text x="320" y="18" font-size="10" fill="#c93d76">preempted</text>
+
+        <line x1="430" y1="112" x2="430" y2="198" stroke="#c93d76" stroke-width="2" marker-end="url(#arr)"/>
+        <text x="436" y="160" font-size="10" fill="#c93d76">I/O request</text>
+
+        <path d="M365,230 Q290,270 250,112" stroke="#c93d76" stroke-width="2" fill="none" marker-end="url(#arr)"/>
+        <text x="268" y="270" font-size="10" fill="#c93d76">I/O done</text>
+
+        <line x1="495" y1="100" x2="558" y2="140" stroke="#c93d76" stroke-width="2" marker-end="url(#arr)"/>
+        <text x="510" y="118" font-size="10" fill="#c93d76">exit()</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ZOMBIE AND ORPHAN -->
+  <div class="qa-card" style="overflow:visible;">
+    <div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Zombie vs Orphan Process -- What makes each one</span><span class="arrow">&#9658;</span></div>
+    <div class="qa-answer">
+      <svg viewBox="0 0 700 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:700px;display:block;margin:0 auto;">
+        <defs>
+          <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#c93d76"/></marker>
+        </defs>
+        <!-- ZOMBIE side -->
+        <text x="175" y="25" text-anchor="middle" font-size="14" font-weight="700" fill="#7c3a5e">ZOMBIE PROCESS</text>
+        <rect x="120" y="40" width="110" height="44" rx="8" fill="#e05990" stroke="#a52e5e" stroke-width="2"/>
+        <text x="175" y="58" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">Parent</text>
+        <text x="175" y="74" text-anchor="middle" font-size="10" fill="#fce8f0">still running</text>
+
+        <rect x="120" y="140" width="110" height="44" rx="8" fill="#fce8f0" stroke="#c93d76" stroke-width="2" stroke-dasharray="5,3"/>
+        <text x="175" y="158" text-anchor="middle" font-size="12" font-weight="700" fill="#7c3a5e">Child</text>
+        <text x="175" y="174" text-anchor="middle" font-size="10" fill="#6b4a5a">called exit() -- ZOMBIE</text>
+
+        <line x1="175" y1="84" x2="175" y2="140" stroke="#c93d76" stroke-width="2" marker-end="url(#arr2)"/>
+        <text x="182" y="116" font-size="10" fill="#c93d76">never called wait()</text>
+
+        <rect x="60" y="210" width="230" height="36" rx="6" fill="#fff8e6" stroke="#e6c200" stroke-width="1.5"/>
+        <text x="175" y="232" text-anchor="middle" font-size="10" fill="#8a6000">PCB stays. No resources. Parent must call wait() to clean up.</text>
+
+        <!-- ORPHAN side -->
+        <text x="525" y="25" text-anchor="middle" font-size="14" font-weight="700" fill="#7c3a5e">ORPHAN PROCESS</text>
+        <rect x="470" y="40" width="110" height="44" rx="8" fill="#fce8f0" stroke="#c93d76" stroke-width="2" stroke-dasharray="5,3"/>
+        <text x="525" y="58" text-anchor="middle" font-size="12" font-weight="700" fill="#7c3a5e">Parent</text>
+        <text x="525" y="74" text-anchor="middle" font-size="10" fill="#6b4a5a">called exit() -- GONE</text>
+
+        <rect x="470" y="140" width="110" height="44" rx="8" fill="#e05990" stroke="#a52e5e" stroke-width="2"/>
+        <text x="525" y="158" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">Child</text>
+        <text x="525" y="174" text-anchor="middle" font-size="10" fill="#fce8f0">still running -- ORPHAN</text>
+
+        <line x1="525" y1="84" x2="525" y2="140" stroke="#c93d76" stroke-width="2" marker-end="url(#arr2)"/>
+        <text x="532" y="116" font-size="10" fill="#c93d76">no wait() called</text>
+
+        <rect x="410" y="210" width="230" height="36" rx="6" fill="#fff8e6" stroke="#e6c200" stroke-width="1.5"/>
+        <text x="525" y="228" text-anchor="middle" font-size="10" fill="#8a6000">OS adopts it or uses cascading termination</text>
+        <text x="525" y="240" text-anchor="middle" font-size="10" fill="#8a6000">to kill all descendants.</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- PROCESS MEMORY LAYOUT -->
+  <div class="qa-card" style="overflow:visible;">
+    <div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Process Memory Layout -- Text, Data, Heap, Stack</span><span class="arrow">&#9658;</span></div>
+    <div class="qa-answer">
+      <svg viewBox="0 0 500 340" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:500px;display:block;margin:0 auto;">
+        <text x="250" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#7c3a5e">Process Memory (Low address at bottom, High at top)</text>
+
+        <!-- Stack -->
+        <rect x="140" y="35" width="220" height="65" rx="0" fill="#e05990" stroke="#a52e5e" stroke-width="2"/>
+        <text x="250" y="60" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">Stack</text>
+        <text x="250" y="77" text-anchor="middle" font-size="10" fill="#fce8f0">Local vars, params, return addresses</text>
+        <text x="250" y="92" text-anchor="middle" font-size="10" fill="#fce8f0">LIFO, no holes. Each thread has its own.</text>
+        <text x="108" y="68" text-anchor="end" font-size="10" fill="#6b4a5a">High</text>
+        <text x="108" y="98" text-anchor="end" font-size="10" fill="#6b4a5a">addr</text>
+        <!-- Arrow down for stack growth -->
+        <text x="390" y="55" font-size="20" fill="#c93d76">&#8595;</text>
+        <text x="392" y="72" font-size="10" fill="#c93d76">grows</text>
+        <text x="392" y="84" font-size="10" fill="#c93d76">down</text>
+
+        <!-- Gap -->
+        <rect x="140" y="100" width="220" height="30" rx="0" fill="#fdf0f5" stroke="#f4a8c7" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="250" y="120" text-anchor="middle" font-size="10" fill="#c93d76" font-style="italic">-- unused space --</text>
+
+        <!-- Heap -->
+        <rect x="140" y="130" width="220" height="65" rx="0" fill="#f9cfe0" stroke="#c93d76" stroke-width="2"/>
+        <text x="250" y="155" text-anchor="middle" font-size="13" font-weight="700" fill="#7c3a5e">Heap</text>
+        <text x="250" y="172" text-anchor="middle" font-size="10" fill="#6b4a5a">Dynamic memory (new operator)</text>
+        <text x="250" y="187" text-anchor="middle" font-size="10" fill="#6b4a5a">Fragmented, full of holes</text>
+        <!-- Arrow up for heap growth -->
+        <text x="390" y="165" font-size="20" fill="#c93d76">&#8593;</text>
+        <text x="392" y="182" font-size="10" fill="#c93d76">grows</text>
+        <text x="392" y="194" font-size="10" fill="#c93d76">up</text>
+
+        <!-- Data -->
+        <rect x="140" y="195" width="220" height="55" rx="0" fill="#fce8f0" stroke="#c93d76" stroke-width="2"/>
+        <text x="250" y="218" text-anchor="middle" font-size="13" font-weight="700" fill="#7c3a5e">Data</text>
+        <text x="250" y="238" text-anchor="middle" font-size="10" fill="#6b4a5a">Global variables, static variables</text>
+
+        <!-- Text -->
+        <rect x="140" y="250" width="220" height="55" rx="0" fill="#fce8f0" stroke="#c93d76" stroke-width="2"/>
+        <text x="250" y="273" text-anchor="middle" font-size="13" font-weight="700" fill="#7c3a5e">Text (Code)</text>
+        <text x="250" y="293" text-anchor="middle" font-size="10" fill="#6b4a5a">Program instructions</text>
+        <text x="108" y="300" text-anchor="end" font-size="10" fill="#6b4a5a">Low</text>
+        <text x="108" y="312" text-anchor="end" font-size="10" fill="#6b4a5a">addr</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- PAGING -->
+  <div class="qa-card" style="overflow:visible;">
+    <div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Paging -- How logical pages map to physical frames</span><span class="arrow">&#9658;</span></div>
+    <div class="qa-answer">
+      <svg viewBox="0 0 680 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:680px;display:block;margin:0 auto;">
+        <defs>
+          <marker id="arr3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#c93d76"/></marker>
+        </defs>
+        <text x="100" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#7c3a5e">Logical Memory</text>
+        <text x="340" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#7c3a5e">Page Table</text>
+        <text x="570" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#7c3a5e">Physical Memory</text>
+
+        <!-- Logical pages -->
+        <rect x="40" y="35" width="120" height="45" rx="4" fill="#e05990" stroke="#a52e5e" stroke-width="2"/>
+        <text x="100" y="55" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">Page 0</text>
+        <text x="100" y="72" text-anchor="middle" font-size="10" fill="#fce8f0">Process A</text>
+
+        <rect x="40" y="85" width="120" height="45" rx="4" fill="#ed7fb0" stroke="#c93d76" stroke-width="2"/>
+        <text x="100" y="105" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">Page 1</text>
+        <text x="100" y="122" text-anchor="middle" font-size="10" fill="#fce8f0">Process A</text>
+
+        <rect x="40" y="135" width="120" height="45" rx="4" fill="#f4a8c7" stroke="#c93d76" stroke-width="2"/>
+        <text x="100" y="155" text-anchor="middle" font-size="12" font-weight="700" fill="#7c3a5e">Page 2</text>
+        <text x="100" y="172" text-anchor="middle" font-size="10" fill="#6b4a5a">Process A</text>
+
+        <!-- Page table -->
+        <rect x="280" y="35" width="120" height="35" rx="4" fill="#fff" stroke="#border" stroke-width="1.5"/>
+        <text x="340" y="50" text-anchor="middle" font-size="11" fill="#2d1a24">Page 0 &#8594; Frame 2</text>
+        <text x="340" y="65" text-anchor="middle" font-size="10" fill="#6b4a5a">(one entry per page)</text>
+
+        <rect x="280" y="80" width="120" height="35" rx="4" fill="#fff" stroke="#f0d0df" stroke-width="1.5"/>
+        <text x="340" y="100" text-anchor="middle" font-size="11" fill="#2d1a24">Page 1 &#8594; Frame 0</text>
+
+        <rect x="280" y="125" width="120" height="35" rx="4" fill="#fff" stroke="#f0d0df" stroke-width="1.5"/>
+        <text x="340" y="145" text-anchor="middle" font-size="11" fill="#2d1a24">Page 2 &#8594; Frame 3</text>
+
+        <!-- Physical frames -->
+        <rect x="510" y="35" width="120" height="45" rx="4" fill="#f9cfe0" stroke="#c93d76" stroke-width="2"/>
+        <text x="570" y="55" text-anchor="middle" font-size="12" font-weight="700" fill="#7c3a5e">Frame 0</text>
+        <text x="570" y="72" text-anchor="middle" font-size="10" fill="#6b4a5a">Page 1 of A</text>
+
+        <rect x="510" y="85" width="120" height="45" rx="4" fill="#fce8f0" stroke="#ed7fb0" stroke-width="2"/>
+        <text x="570" y="105" text-anchor="middle" font-size="12" font-weight="700" fill="#7c3a5e">Frame 1</text>
+        <text x="570" y="122" text-anchor="middle" font-size="10" fill="#6b4a5a">(free)</text>
+
+        <rect x="510" y="135" width="120" height="45" rx="4" fill="#e05990" stroke="#a52e5e" stroke-width="2"/>
+        <text x="570" y="155" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">Frame 2</text>
+        <text x="570" y="172" text-anchor="middle" font-size="10" fill="#fce8f0">Page 0 of A</text>
+
+        <rect x="510" y="185" width="120" height="45" rx="4" fill="#f4a8c7" stroke="#c93d76" stroke-width="2"/>
+        <text x="570" y="205" text-anchor="middle" font-size="12" font-weight="700" fill="#7c3a5e">Frame 3</text>
+        <text x="570" y="222" text-anchor="middle" font-size="10" fill="#6b4a5a">Page 2 of A</text>
+
+        <!-- Arrows from page table to frames -->
+        <line x1="400" y1="52" x2="510" y2="162" stroke="#c93d76" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arr3)"/>
+        <line x1="400" y1="97" x2="510" y2="57" stroke="#c93d76" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arr3)"/>
+        <line x1="400" y1="142" x2="510" y2="207" stroke="#c93d76" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arr3)"/>
+
+        <rect x="40" y="240" width="620" height="40" rx="6" fill="#fff8e6" stroke="#e6c200" stroke-width="1.5"/>
+        <text x="350" y="257" text-anchor="middle" font-size="11" fill="#8a6000">Key insight: Pages do NOT need to be contiguous in physical memory.</text>
+        <text x="350" y="273" text-anchor="middle" font-size="11" fill="#8a6000">Page 0 is in Frame 2, Page 1 is in Frame 0 -- they are scattered but that is fine.</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- TLB -->
+  <div class="qa-card" style="overflow:visible;">
+    <div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">TLB -- Translation Lookaside Buffer, Hit vs Miss</span><span class="arrow">&#9658;</span></div>
+    <div class="qa-answer">
+      <svg viewBox="0 0 680 280" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:680px;display:block;margin:0 auto;">
+        <defs>
+          <marker id="arr4" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#c93d76"/></marker>
+          <marker id="arr4g" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#2d7a4f"/></marker>
+          <marker id="arr4r" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#b83232"/></marker>
+        </defs>
+
+        <!-- CPU -->
+        <rect x="20" y="110" width="90" height="50" rx="8" fill="#e05990" stroke="#a52e5e" stroke-width="2"/>
+        <text x="65" y="132" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">CPU</text>
+        <text x="65" y="150" text-anchor="middle" font-size="10" fill="#fce8f0">logical addr</text>
+
+        <!-- MMU box -->
+        <rect x="150" y="70" width="200" height="150" rx="8" fill="#fce8f0" stroke="#c93d76" stroke-width="2"/>
+        <text x="250" y="92" text-anchor="middle" font-size="12" font-weight="700" fill="#7c3a5e">MMU</text>
+
+        <!-- TLB inside MMU -->
+        <rect x="165" y="100" width="170" height="60" rx="6" fill="#e05990" stroke="#a52e5e" stroke-width="2"/>
+        <text x="250" y="122" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">TLB (cache)</text>
+        <text x="250" y="140" text-anchor="middle" font-size="10" fill="#fce8f0">Most recently used</text>
+        <text x="250" y="153" text-anchor="middle" font-size="10" fill="#fce8f0">page table entries</text>
+
+        <!-- RAM / Page Table -->
+        <rect x="420" y="90" width="120" height="60" rx="8" fill="#f9cfe0" stroke="#c93d76" stroke-width="2"/>
+        <text x="480" y="115" text-anchor="middle" font-size="11" font-weight="700" fill="#7c3a5e">Page Table</text>
+        <text x="480" y="135" text-anchor="middle" font-size="10" fill="#6b4a5a">in RAM (slow)</text>
+
+        <!-- Physical RAM -->
+        <rect x="560" y="110" width="100" height="50" rx="8" fill="#fce8f0" stroke="#c93d76" stroke-width="2"/>
+        <text x="610" y="132" text-anchor="middle" font-size="11" font-weight="700" fill="#7c3a5e">RAM</text>
+        <text x="610" y="150" text-anchor="middle" font-size="10" fill="#6b4a5a">physical addr</text>
+
+        <!-- CPU to MMU -->
+        <line x1="110" y1="135" x2="150" y2="135" stroke="#c93d76" stroke-width="2" marker-end="url(#arr4)"/>
+
+        <!-- TLB HIT path -->
+        <path d="M350,120 Q390,80 420,110" stroke="#2d7a4f" stroke-width="2" fill="none" marker-end="url(#arr4g)" stroke-dasharray="5,2"/>
+        <text x="375" y="75" font-size="10" fill="#2d7a4f" font-weight="700">HIT: fast path</text>
+
+        <!-- TLB MISS path -->
+        <path d="M350,145 L420,145" stroke="#b83232" stroke-width="2" fill="none" marker-end="url(#arr4r)"/>
+        <text x="358" y="160" font-size="10" fill="#b83232" font-weight="700">MISS: goes to RAM</text>
+
+        <!-- RAM to physical -->
+        <line x1="540" y1="135" x2="560" y2="135" stroke="#c93d76" stroke-width="2" marker-end="url(#arr4)"/>
+
+        <!-- Legend -->
+        <rect x="20" y="240" width="640" height="30" rx="6" fill="#e8f7ee" stroke="#9dd8b5" stroke-width="1.5"/>
+        <text x="340" y="260" text-anchor="middle" font-size="11" fill="#2d7a4f">TLB Hit = entry found in cache, no RAM lookup needed (fast). TLB Miss = must go to RAM page table (slow extra trip).</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- READY QUEUE / IO QUEUE -->
+  <div class="qa-card" style="overflow:visible;">
+    <div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Ready Queue and I/O Queue -- How processes flow</span><span class="arrow">&#9658;</span></div>
+    <div class="qa-answer">
+      <svg viewBox="0 0 680 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:680px;display:block;margin:0 auto;">
+        <defs>
+          <marker id="arr5" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#c93d76"/></marker>
+        </defs>
+        <!-- Ready Queue -->
+        <rect x="20" y="80" width="180" height="50" rx="8" fill="#fce8f0" stroke="#c93d76" stroke-width="2"/>
+        <text x="110" y="101" text-anchor="middle" font-size="12" font-weight="700" fill="#7c3a5e">Ready Queue</text>
+        <text x="110" y="120" text-anchor="middle" font-size="10" fill="#6b4a5a">P1, P2, P3 waiting for CPU</text>
+        <text x="110" y="30" text-anchor="middle" font-size="10" fill="#c93d76">One per system</text>
+
+        <!-- CPU -->
+        <rect x="260" y="80" width="100" height="50" rx="8" fill="#e05990" stroke="#a52e5e" stroke-width="2"/>
+        <text x="310" y="101" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">CPU</text>
+        <text x="310" y="120" text-anchor="middle" font-size="10" fill="#fce8f0">Running P1</text>
+
+        <!-- I/O Queue -->
+        <rect x="430" y="80" width="180" height="50" rx="8" fill="#fce8f0" stroke="#c93d76" stroke-width="2"/>
+        <text x="520" y="101" text-anchor="middle" font-size="12" font-weight="700" fill="#7c3a5e">I/O Queue</text>
+        <text x="520" y="120" text-anchor="middle" font-size="10" fill="#6b4a5a">Waiting for I/O device</text>
+        <text x="520" y="30" text-anchor="middle" font-size="10" fill="#c93d76">One per I/O device</text>
+
+        <!-- Arrows -->
+        <line x1="200" y1="105" x2="260" y2="105" stroke="#c93d76" stroke-width="2" marker-end="url(#arr5)"/>
+        <text x="218" y="98" font-size="10" fill="#c93d76">scheduled</text>
+
+        <line x1="360" y1="105" x2="430" y2="105" stroke="#c93d76" stroke-width="2" marker-end="url(#arr5)"/>
+        <text x="365" y="98" font-size="10" fill="#c93d76">I/O request</text>
+
+        <!-- Back arrow from I/O to Ready -->
+        <path d="M520,130 Q520,180 110,180 Q110,150 110,130" stroke="#c93d76" stroke-width="2" fill="none" marker-end="url(#arr5)"/>
+        <text x="310" y="195" text-anchor="middle" font-size="10" fill="#c93d76">I/O done -- back to ready queue</text>
+
+        <!-- Preempt arrow -->
+        <path d="M310,80 Q310,40 110,40 Q110,70 110,80" stroke="#c93d76" stroke-width="2" fill="none" stroke-dasharray="4,2" marker-end="url(#arr5)"/>
+        <text x="210" y="35" text-anchor="middle" font-size="10" fill="#c93d76">preempted (timer)</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- RACE CONDITION -->
+  <div class="qa-card" style="overflow:visible;">
+    <div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Race Condition -- Why glob++ from two threads causes corruption</span><span class="arrow">&#9658;</span></div>
+    <div class="qa-answer">
+      <svg viewBox="0 0 680 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:680px;display:block;margin:0 auto;">
+        <text x="340" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#7c3a5e">Both threads do glob++ (glob starts at 5, expected result: 7)</text>
+
+        <!-- Thread 1 column -->
+        <text x="140" y="48" text-anchor="middle" font-size="12" font-weight="700" fill="#e05990">Thread 1</text>
+        <rect x="40" y="58" width="200" height="34" rx="6" fill="#fce8f0" stroke="#c93d76" stroke-width="1.5"/>
+        <text x="140" y="72" text-anchor="middle" font-size="11" fill="#2d1a24">LOAD glob,r1</text>
+        <text x="140" y="86" text-anchor="middle" font-size="10" fill="#6b4a5a">r1 = 5 (reads glob)</text>
+
+        <rect x="40" y="100" width="200" height="34" rx="6" fill="#fce8f0" stroke="#c93d76" stroke-width="1.5"/>
+        <text x="140" y="114" text-anchor="middle" font-size="11" fill="#2d1a24">r1 = r1 + 1</text>
+        <text x="140" y="128" text-anchor="middle" font-size="10" fill="#6b4a5a">r1 = 6</text>
+
+        <!-- PAUSE banner -->
+        <rect x="40" y="142" width="200" height="28" rx="6" fill="#b83232"/>
+        <text x="140" y="161" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">-- PAUSED by OS --</text>
+
+        <rect x="40" y="178" width="200" height="34" rx="6" fill="#fce8f0" stroke="#c93d76" stroke-width="1.5"/>
+        <text x="140" y="192" text-anchor="middle" font-size="11" fill="#2d1a24">STORE r1,glob</text>
+        <text x="140" y="206" text-anchor="middle" font-size="10" fill="#b83232">writes 6 -- but should be 7!</text>
+
+        <!-- Thread 2 column -->
+        <text x="540" y="48" text-anchor="middle" font-size="12" font-weight="700" fill="#e05990">Thread 2 (runs while T1 paused)</text>
+        <rect x="440" y="100" width="200" height="34" rx="6" fill="#f9cfe0" stroke="#c93d76" stroke-width="1.5"/>
+        <text x="540" y="114" text-anchor="middle" font-size="11" fill="#2d1a24">LOAD glob,r1</text>
+        <text x="540" y="128" text-anchor="middle" font-size="10" fill="#6b4a5a">r1 = 5 (reads SAME glob)</text>
+
+        <rect x="440" y="142" width="200" height="34" rx="6" fill="#f9cfe0" stroke="#c93d76" stroke-width="1.5"/>
+        <text x="540" y="156" text-anchor="middle" font-size="11" fill="#2d1a24">r1 = r1 + 1</text>
+        <text x="540" y="170" text-anchor="middle" font-size="10" fill="#6b4a5a">r1 = 6</text>
+
+        <rect x="440" y="184" width="200" height="34" rx="6" fill="#f9cfe0" stroke="#c93d76" stroke-width="1.5"/>
+        <text x="540" y="198" text-anchor="middle" font-size="11" fill="#2d1a24">STORE r1,glob</text>
+        <text x="540" y="212" text-anchor="middle" font-size="10" fill="#6b4a5a">glob = 6 (correct so far)</text>
+
+        <!-- Result -->
+        <rect x="120" y="228" width="440" height="26" rx="6" fill="#fdeaea" stroke="#f2aaaa" stroke-width="1.5"/>
+        <text x="340" y="246" text-anchor="middle" font-size="11" font-weight="700" fill="#b83232">Result: glob = 6 instead of 7. One increment was LOST. This is a race condition.</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- DINING PHILOSOPHERS -->
+  <div class="qa-card" style="overflow:visible;">
+    <div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Dining Philosophers -- How deadlock occurs</span><span class="arrow">&#9658;</span></div>
+    <div class="qa-answer">
+      <svg viewBox="0 0 500 380" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:500px;display:block;margin:0 auto;">
+        <text x="250" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#7c3a5e">5 Philosophers, 5 Chopsticks -- All grab LEFT at once = Deadlock</text>
+
+        <!-- Table -->
+        <circle cx="250" cy="190" r="70" fill="#fdf0f5" stroke="#f4a8c7" stroke-width="2"/>
+        <text x="250" y="186" text-anchor="middle" font-size="11" fill="#7c3a5e">Round</text>
+        <text x="250" y="202" text-anchor="middle" font-size="11" fill="#7c3a5e">Table</text>
+
+        <!-- Philosophers at 5 positions (72 degrees apart) -->
+        <!-- P0 top -->
+        <circle cx="250" cy="80" r="28" fill="#e05990" stroke="#a52e5e" stroke-width="2"/>
+        <text x="250" y="76" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">P0</text>
+        <text x="250" y="92" text-anchor="middle" font-size="9" fill="#fce8f0">hungry</text>
+
+        <!-- P1 top-right -->
+        <circle cx="370" cy="138" r="28" fill="#e05990" stroke="#a52e5e" stroke-width="2"/>
+        <text x="370" y="134" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">P1</text>
+        <text x="370" y="150" text-anchor="middle" font-size="9" fill="#fce8f0">hungry</text>
+
+        <!-- P2 bottom-right -->
+        <circle cx="325" cy="285" r="28" fill="#e05990" stroke="#a52e5e" stroke-width="2"/>
+        <text x="325" y="281" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">P2</text>
+        <text x="325" y="297" text-anchor="middle" font-size="9" fill="#fce8f0">hungry</text>
+
+        <!-- P3 bottom-left -->
+        <circle cx="175" cy="285" r="28" fill="#e05990" stroke="#a52e5e" stroke-width="2"/>
+        <text x="175" y="281" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">P3</text>
+        <text x="175" y="297" text-anchor="middle" font-size="9" fill="#fce8f0">hungry</text>
+
+        <!-- P4 top-left -->
+        <circle cx="130" cy="138" r="28" fill="#e05990" stroke="#a52e5e" stroke-width="2"/>
+        <text x="130" y="134" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">P4</text>
+        <text x="130" y="150" text-anchor="middle" font-size="9" fill="#fce8f0">hungry</text>
+
+        <!-- Chopsticks (between each pair) as small rectangles -->
+        <rect x="302" y="92" width="14" height="34" rx="4" fill="#2d7a4f" stroke="#1a5c36" stroke-width="1.5" transform="rotate(36,309,109)"/>
+        <text x="322" y="107" font-size="9" fill="#2d7a4f">C0</text>
+
+        <rect x="360" y="196" width="14" height="34" rx="4" fill="#2d7a4f" stroke="#1a5c36" stroke-width="1.5" transform="rotate(108,367,213)"/>
+        <text x="372" y="222" font-size="9" fill="#2d7a4f">C1</text>
+
+        <rect x="266" y="268" width="14" height="34" rx="4" fill="#2d7a4f" stroke="#1a5c36" stroke-width="1.5" transform="rotate(180,273,285)"/>
+        <text x="248" y="310" font-size="9" fill="#2d7a4f">C2</text>
+
+        <rect x="148" y="234" width="14" height="34" rx="4" fill="#2d7a4f" stroke="#1a5c36" stroke-width="1.5" transform="rotate(252,155,251)"/>
+        <text x="120" y="268" font-size="9" fill="#2d7a4f">C3</text>
+
+        <rect x="162" y="110" width="14" height="34" rx="4" fill="#2d7a4f" stroke="#1a5c36" stroke-width="1.5" transform="rotate(324,169,127)"/>
+        <text x="138" y="108" font-size="9" fill="#2d7a4f">C4</text>
+
+        <!-- Deadlock label -->
+        <rect x="60" y="340" width="380" height="32" rx="6" fill="#fdeaea" stroke="#f2aaaa" stroke-width="1.5"/>
+        <text x="250" y="358" text-anchor="middle" font-size="11" font-weight="700" fill="#b83232">All grab LEFT chopstick -- nobody can grab RIGHT -- DEADLOCK</text>
+      </svg>
+      <p style="font-size:0.85rem;color:#6b4a5a;margin-top:0.5rem;">Philosophers = threads/processes. Chopsticks = mutex locks. Deadlock = nobody progresses forward.</p>
+    </div>
+  </div>
+
+  <!-- CONTEXT SWITCH -->
+  <div class="qa-card" style="overflow:visible;">
+    <div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Context Switch -- Steps to switch from P1 to P2</span><span class="arrow">&#9658;</span></div>
+    <div class="qa-answer">
+      <svg viewBox="0 0 680 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:680px;display:block;margin:0 auto;">
+        <defs>
+          <marker id="arr6" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#c93d76"/></marker>
+        </defs>
+        <!-- Steps as boxes -->
+        <rect x="10" y="70" width="110" height="60" rx="8" fill="#e05990" stroke="#a52e5e" stroke-width="2"/>
+        <text x="65" y="95" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">P1 Running</text>
+        <text x="65" y="112" text-anchor="middle" font-size="10" fill="#fce8f0">using CPU</text>
+
+        <line x1="120" y1="100" x2="150" y2="100" stroke="#c93d76" stroke-width="2" marker-end="url(#arr6)"/>
+
+        <rect x="150" y="70" width="120" height="60" rx="8" fill="#fce8f0" stroke="#c93d76" stroke-width="2"/>
+        <text x="210" y="93" text-anchor="middle" font-size="11" font-weight="700" fill="#7c3a5e">Pause P1</text>
+        <text x="210" y="108" text-anchor="middle" font-size="10" fill="#6b4a5a">Stop execution</text>
+        <text x="210" y="122" text-anchor="middle" font-size="10" fill="#6b4a5a">of P1</text>
+
+        <line x1="270" y1="100" x2="300" y2="100" stroke="#c93d76" stroke-width="2" marker-end="url(#arr6)"/>
+
+        <rect x="300" y="55" width="130" height="90" rx="8" fill="#fce8f0" stroke="#c93d76" stroke-width="2"/>
+        <text x="365" y="78" text-anchor="middle" font-size="11" font-weight="700" fill="#7c3a5e">Save P1 Context</text>
+        <text x="365" y="94" text-anchor="middle" font-size="10" fill="#6b4a5a">Write registers +</text>
+        <text x="365" y="108" text-anchor="middle" font-size="10" fill="#6b4a5a">PC to RAM</text>
+        <text x="365" y="124" text-anchor="middle" font-size="10" fill="#b83232">(RAM is slow!)</text>
+        <text x="365" y="138" text-anchor="middle" font-size="10" fill="#b83232">overhead here</text>
+
+        <line x1="430" y1="100" x2="460" y2="100" stroke="#c93d76" stroke-width="2" marker-end="url(#arr6)"/>
+
+        <rect x="460" y="55" width="130" height="90" rx="8" fill="#fce8f0" stroke="#c93d76" stroke-width="2"/>
+        <text x="525" y="78" text-anchor="middle" font-size="11" font-weight="700" fill="#7c3a5e">Load P2 Context</text>
+        <text x="525" y="94" text-anchor="middle" font-size="10" fill="#6b4a5a">Read registers +</text>
+        <text x="525" y="108" text-anchor="middle" font-size="10" fill="#6b4a5a">PC from RAM</text>
+        <text x="525" y="124" text-anchor="middle" font-size="10" fill="#b83232">(RAM is slow!)</text>
+        <text x="525" y="138" text-anchor="middle" font-size="10" fill="#b83232">overhead here</text>
+
+        <line x1="590" y1="100" x2="618" y2="100" stroke="#c93d76" stroke-width="2" marker-end="url(#arr6)"/>
+
+        <rect x="618" y="70" width="52" height="60" rx="8" fill="#e05990" stroke="#a52e5e" stroke-width="2"/>
+        <text x="644" y="95" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">P2</text>
+        <text x="644" y="112" text-anchor="middle" font-size="10" fill="#fce8f0">runs</text>
+
+        <rect x="10" y="160" width="660" height="30" rx="6" fill="#fdeaea" stroke="#f2aaaa" stroke-width="1.5"/>
+        <text x="340" y="180" text-anchor="middle" font-size="11" fill="#b83232">Each context switch = 2 RAM operations. RAM is slow. This is why syscalls and multitasking have performance overhead.</text>
+      </svg>
+    </div>
+  </div>
+
+</div>
+
+<div class="page" id="page-review">
+  <div class="section-title">Review -- Fundamentals from Bob's Guide</div>
+  <div class="section-sub">These are the "Review Old Items" from Bob's study guide. Know these cold -- they are fair game on a cumulative final.</div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a program? What is data?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Program</strong> = A static list of CPU instructions stored in an executable file. It does not change.<br><br><strong>Data</strong> = Information stored and processed by a computer. Data and program instructions are both stored in RAM and on disk as bits and bytes.</div></div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What does it mean to run a program? What component executes it? Where are running programs stored?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">Running a program means loading its instructions from disk into <strong>RAM</strong> and having the <strong>CPU</strong> fetch and execute those instructions one by one via the machine cycle.<br><br>Running programs are stored in <strong>RAM</strong>. RAM also stores the program's data -- variables, the stack, heap, etc. Programs are NEVER executed directly from disk.</div></div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What do we know about RAM? What is a memory stall?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>RAM (Random Access Memory)</strong> = Fast, volatile (loses data when power off), temporary storage. Programs must be in RAM to execute. Much faster than hard disk but much slower than CPU registers.<br><br><strong>Memory stall</strong> = A delay in CPU execution that occurs when the CPU has to wait for data to be fetched from RAM. Because RAM is slow relative to the CPU, the CPU idles during this wait. This is why cache memory exists.</div></div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is cache memory? What is its purpose?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Cache memory</strong> = A small, extremely fast memory built into or very close to the CPU. Its purpose is to reduce memory stalls by storing recently or frequently accessed data so the CPU does not have to wait for slow RAM as often.<br><br>Cache is much faster than RAM but much smaller. When the CPU needs data, it checks cache first (cache hit = fast) before going to RAM (cache miss = slow).</div></div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is ROM memory? What does it store?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>ROM (Read-Only Memory)</strong> = Non-volatile memory that retains data without power. It stores the firmware -- the very first code that runs when you turn on a computer (like the BIOS/UEFI). The CPU reads from ROM at startup to begin the boot process. Unlike RAM, you cannot write to ROM during normal operation.</div></div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is an executable file?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Executable file</strong> = A file stored on disk that contains machine code (CPU instructions) for a program, along with any data the program needs to start. When you "run" a program, the OS reads this file and loads it into RAM to create a process.</div></div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">How do speeds of CPU, RAM and hard disk compare?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">From fastest to slowest:<br><br><strong>CPU registers</strong> = fastest (nanoseconds, part of the CPU itself)<br><strong>Cache</strong> = very fast (slightly slower than registers)<br><strong>RAM</strong> = fast but much slower than CPU (tens of nanoseconds -- causes memory stalls)<br><strong>Hard disk (HDD)</strong> = extremely slow compared to RAM (milliseconds -- orders of magnitude slower)<br><strong>SSD</strong> = between HDD and RAM but still much slower than RAM<br><br>This hierarchy is why programs must be in RAM to run efficiently -- disk access during execution would be catastrophically slow.</div></div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a machine cycle? What are its steps?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Machine cycle</strong> = The basic sequence the CPU repeats continuously to execute a program. Also called the fetch-decode-execute cycle.<br><br>Steps:<ul><li><strong>Fetch</strong> = CPU reads the next instruction from RAM at the address stored in the Program Counter (PC)</li><li><strong>Decode</strong> = CPU figures out what the instruction means</li><li><strong>Execute</strong> = CPU carries out the instruction</li><li><strong>PC increments</strong> to point to the next instruction, then repeat</li></ul></div></div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is CPU frequency? What does it measure? What is a CPU clock? What is a CPU core?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>CPU clock</strong> = An electronic signal that pulses at a fixed rate, synchronizing all operations inside the CPU.<br><br><strong>CPU frequency</strong> = The number of clock cycles per second. Measured in <strong>Hz</strong> (hertz). Modern CPUs run at gigahertz (GHz) -- billions of cycles per second. Higher frequency = more instructions executed per second (roughly).<br><br><strong>CPU core</strong> = An independent processing unit within the CPU that can execute instructions. A quad-core CPU has 4 cores (can run 4 streams of instructions simultaneously). An octa-core has 8 cores.</div></div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a byte? What is a bit? How many bits in a byte? How many bits in 1 KB?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Bit</strong> = The smallest unit of data. Either 0 or 1.<br><br><strong>Byte</strong> = 8 bits. The standard unit of memory addressing.<br><br><strong>1 KB</strong> = 1,024 bytes = 1,024 x 8 = <strong>8,192 bits</strong>.<br><br>Memory sizes: 1 KB = 1,024 bytes / 1 MB = 1,024 KB / 1 GB = 1,024 MB / 1 TB = 1,024 GB.</div></div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a memory address? What is the address of a larger chunk of memory?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Memory address</strong> = A unique number that identifies a specific byte in RAM. Every byte has its own address.<br><br><strong>Address of a larger chunk</strong> = The address of its first byte. For example, if an int takes 4 bytes starting at address 1000, the address of that int is 1000 (pointing to the first byte).</div></div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is the length of a memory address? What does "32-bit address" mean? How much memory can you address?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Length of a memory address</strong> = The number of bits used to represent an address.<br><br><strong>32-bit address</strong> = Each address is 32 bits long. With 32 bits you can represent 2^32 unique addresses = 4,294,967,296 = about <strong>4 GB</strong> of addressable memory. This is why old 32-bit systems were limited to 4 GB of RAM.<br><br><strong>64-bit address</strong> = 2^64 unique addresses = an astronomically large amount of memory (16 exabytes -- far more than any current system has).<br><br>Formula: with N-bit addresses you can address <strong>2^N bytes</strong>.</div></div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is the relationship between a C++ variable, RAM and memory address? What is a C++ pointer?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">When you declare a variable in C++, the compiler allocates space for it in RAM (on the stack or heap). The variable has a <strong>memory address</strong> -- the location of its first byte in RAM.<br><br><strong>C++ pointer</strong> = A variable that stores a memory address (instead of a regular value like an int or char). It "points to" another variable's location in RAM. You get the address of a variable with <code>&amp;x</code> and you access the value at an address with <code>*ptr</code>.</div></div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Common sizes of C++ data types. Does signed/unsigned affect size?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">
+    <ul>
+      <li><strong>char</strong> = 1 byte (8 bits)</li>
+      <li><strong>short</strong> = 2 bytes (16 bits)</li>
+      <li><strong>int</strong> = 4 bytes (32 bits)</li>
+      <li><strong>long</strong> = 4 or 8 bytes (platform-dependent)</li>
+      <li><strong>long long</strong> = 8 bytes (64 bits)</li>
+      <li><strong>float</strong> = 4 bytes (32 bits)</li>
+      <li><strong>double</strong> = 8 bytes (64 bits)</li>
+    </ul>
+    <strong>Signed/unsigned does NOT affect size</strong> -- int, signed int, and unsigned int are all 4 bytes. Signed/unsigned only affects the range of values (signed can be negative, unsigned cannot but gets double the positive range).
+  </div></div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Hexadecimal numbers -- why do we use them? How do we convert hex to binary quickly?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Why hex?</strong> = Hexadecimal (base 16) is a compact way to represent binary. Each hex digit maps exactly to 4 binary bits, making it much shorter than binary to write while still being easy to convert.<br><br><strong>Quick conversion</strong> = Replace each hex digit with its 4-bit binary equivalent:<br><pre>0=0000  1=0001  2=0010  3=0011
+4=0100  5=0101  6=0110  7=0111
+8=1000  9=1001  A=1010  B=1011
+C=1100  D=1101  E=1110  F=1111</pre>
+Example: 0xFF = 1111 1111 = 255 in decimal.<br>Example: 0x1A = 0001 1010 = 26 in decimal.</div></div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is "little-endian"? (appeared on version 2 midterm)</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Endianness</strong> = The order in which bytes of a multi-byte value are stored in memory.<br><br><strong>Little-endian</strong> = The <strong>least significant byte</strong> (the smallest part) is stored at the <strong>lowest memory address</strong>. Most modern CPUs (including x86/x64) use little-endian.<br><br>Example: the int value 0x12345678 stored at address 1000:<ul><li>Address 1000: 0x78 (least significant)</li><li>Address 1001: 0x56</li><li>Address 1002: 0x34</li><li>Address 1003: 0x12 (most significant)</li></ul><strong>Big-endian</strong> = Most significant byte at lowest address (the "natural" reading order).</div></div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a word? What is the PC (Program Counter)?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Word</strong> = The natural data size the CPU processes in one operation. On a 32-bit system a word is 4 bytes; on a 64-bit system a word is 8 bytes.<br><br><strong>Program Counter (PC)</strong> = A special CPU register that holds the memory address of the next instruction to be fetched and executed. After each instruction, the PC automatically increments to point to the next one. It is saved and restored during context switches.</div></div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What language does the CPU understand? How do we run higher-level programs?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">The CPU only understands <strong>machine code</strong> -- binary instructions specific to that CPU architecture (like x86-64).<br><br>Higher-level programs (C++, Python, Java) are run by:<ul><li><strong>Compilation</strong> (C, C++) -- a compiler translates source code entirely into machine code before running. Fast at runtime.</li><li><strong>Interpretation</strong> (Python) -- an interpreter reads and executes source code line by line at runtime. Portable but slower.</li><li><strong>Both</strong> (Java) -- compiled to bytecode first, then interpreted/JIT-compiled by the JVM at runtime.</li></ul></div></div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Stack overflow -- what is it and what causes it?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">The stack has a <strong>fixed size limit</strong> set by the OS. If a program exceeds this limit (usually from infinite or very deep recursion, or allocating too many large local variables), the stack runs out of space.<br><br>This causes a <strong>stack overflow</strong>, which crashes the program. This is why you should not allocate very large arrays as local variables -- put them on the heap with new instead.</div></div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Bob's note: do processes physically move in RAM when their state changes?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>No.</strong> When a process changes state (e.g., from Running to Waiting), the OS simply updates the state field in its PCB. The process stays in the exact same location in RAM throughout.<br><br>Visualizations that show processes physically moving between boxes (like moving into the I/O queue box) are simplifications for clarity. No actual movement of data in RAM happens. The "queues" are just lists of PCB references maintained by the OS.</div></div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Bob's note: copy-on-write optimization for fork() + exec()</span><span class="arrow">&#9658;</span></div><div class="qa-answer">When fork() is called, the OS creates a copy of the process -- but making a full copy of all memory is expensive.<br><br><strong>Copy-on-write (COW)</strong> = An optimization where the OS does NOT immediately copy the memory on fork(). Instead, both parent and child share the same memory pages, marked as read-only. A copy is only made when one of them tries to <strong>write</strong> to a page.<br><br>This is especially useful when fork() is immediately followed by exec(), because exec() replaces all memory anyway -- so no copy was ever needed. The OS detects this and skips copying entirely.</div></div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Bob's note: ready queue -- one per core, not per system?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">Bob's guide specifies: there is typically <strong>one ready queue per CPU core</strong>. Shostak's class notes say one ready queue per system.<br><br>For the exam, use <strong>Shostak's definition</strong>: one ready queue in the system. Bob's note reflects how modern multi-core schedulers actually work, but Shostak tests on his definition.</div></div>
+
+</div>
+
+<div class="page" id="page-flashcards">
+  <div class="section-sub">Click the card to reveal the answer. Rate yourself to track progress.</div>
+  <div class="fc-controls">
+    <select id="fcCategory" onchange="startFlashcards()">
+      <option value="all">All Topics</option>
+      <option value="basics">OS Basics</option>
+      <option value="processes">Processes</option>
+      <option value="threads">Threads and Networking</option>
+      <option value="memory">Memory Management</option>
+      <option value="sync">Synchronization</option>
+      <option value="review">Review Basics</option>
+    </select>
+    <button class="btn btn-outline" onclick="shuffleCards()">Shuffle</button>
+    <button class="btn btn-ghost" onclick="resetScore()">Reset</button>
+    <div class="fc-progress" id="fcProgress">Card 1 of 1</div>
+  </div>
+  <div class="flashcard-wrap" onclick="flipCard()">
+    <div class="flashcard" id="flashcard">
+      <div class="fc-face fc-front">
+        <div class="fc-label">Question</div>
+        <div class="fc-q" id="fcQuestion">Loading...</div>
+        <div class="fc-hint">tap to reveal answer</div>
+      </div>
+      <div class="fc-face fc-back">
+        <div class="fc-label">Answer -- Prof. Shostak</div>
+        <div class="fc-a" id="fcAnswer">Loading...</div>
+      </div>
+    </div>
+  </div>
+  <div class="fc-nav">
+    <button class="btn btn-ghost" onclick="prevCard()">Prev</button>
+    <button class="btn btn-primary" onclick="nextCard()">Next</button>
+  </div>
+  <div id="fcRatingArea" style="display:none;">
+    <div class="fc-rating">
+      <button class="rating-btn rating-got" onclick="rateCard(true)">Got it</button>
+      <button class="rating-btn rating-missed" onclick="rateCard(false)">Missed</button>
+    </div>
+  </div>
+  <div class="fc-score">
+    <span>Got it: <span class="score-got" id="scoreGot">0</span></span>
+    <span>Missed: <span class="score-missed" id="scoreMissed">0</span></span>
+  </div>
+</div>
+
+</main>
+
+<script>
+function showPage(name, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  if (btn) { btn.classList.add('active'); }
+  else { document.querySelectorAll('nav button').forEach(b => { if (b.getAttribute('onclick') && b.getAttribute('onclick').includes("'" + name + "'")) b.classList.add('active'); }); }
+  if (name === 'flashcards') startFlashcards();
+  window.scrollTo(0,0);
+}
+function toggleCard(el) { el.parentElement.classList.toggle('open'); }
+
+// PRACTICE
+const pAnswers = [
+  { keys: ['portab','any machine','without compil','no compil','run on any','interpreter installed'], text: '<strong>Correct answer:</strong> The main advantage is <strong>portability</strong> -- the same code can run on any machine that has the interpreter installed. No separate compilation step needed. Python and JavaScript are examples. Do NOT say "fast" -- that is the advantage of COMPILED languages.' },
+  { keys: ['virtual memory','hard disk','hard drive','swap','fake larger','technique to fake'], text: '<strong>Correct answer:</strong> Through <strong>virtual memory</strong> -- a technique to fake larger RAM using the hard disk. Portions of programs not currently needed are copied to the hard disk. When needed, they are copied back to RAM. Programs still only run from RAM.' },
+  { keys: ['interrupt','signal','handler','isr','pause','resume','interrupt handler'], text: '<strong>Correct answer:</strong> The mechanism is <strong>interrupts</strong>. When an unpredictable event occurs (keypress, network packet), an interrupt signal is generated. It reaches the CPU. The CPU pauses its current activity. The CPU runs the <strong>interrupt handler</strong> (ISR). Once done, the interrupt is cleared and the CPU resumes.' },
+  { keys: ['local var','function param','return address','lifo','no hole','private to each thread'], text: '<strong>Correct answer:</strong> The stack stores <strong>local variables, function parameters, and return addresses</strong>. It has clean LIFO order and no holes. Each thread has its own stack (private). The heap, by contrast, holds dynamic memory (new operator) and is fragmented with holes.' },
+  { keys: ['program','process','identify which','multiple program','port','specific program','application'], text: '<strong>Correct answer:</strong> An IP address only identifies a <strong>computer</strong>. A computer runs many programs simultaneously. A port number identifies <strong>which specific program</strong> on that computer should receive the message. IP address + port = a full address (a socket).' },
+  { keys: ['exec','crash','fault','independ','different program','tab'], text: '<strong>Correct answer:</strong> Two reasons: (1) Processes can run <strong>exec()</strong> to launch a completely different program -- threads cannot. (2) Processes are <strong>fault-independent</strong> -- if one crashes, others keep running. If one thread crashes, the entire process and all its threads stop.' },
+  { keys: ['fake','one at a time','context switch','only one program','single core'], text: '<strong>Correct answer:</strong> Multitasking = a technique to <strong>fake</strong> simultaneous executions of multiple processes on a single CPU core. In reality, only one program runs at a time. The OS switches between processes via <strong>context switching</strong>. If switching is fast enough, programs appear simultaneous. Not truly simultaneous on a single core.' },
+  { keys: ['corrupt','modif','shared resource','at least one','yes','can happen'], text: '<strong>Correct answer:</strong> Race condition = a scenario when a shared resource becomes corrupted because multiple threads/processes access it and <strong>at least one modifies it</strong>. If one modifies and others read: <strong>yes</strong>, race condition can happen. If everybody only reads: no race condition.' },
+  { keys: ['fixed','same size','page','frame','map','internal frag','more than needed'], text: '<strong>Correct answer:</strong> Paging = a technique that divides both logical and physical memory into fixed same-sized chunks (pages and frames) and maps them freely without needing contiguous physical memory. Suffers from <strong>internal fragmentation</strong> -- must give full pages even if only part is needed.' },
+  { keys: ['nobody','block','chopstick','philosopher','mutex','lock'], text: '<strong>Correct answer:</strong> Deadlock = a scenario when multiple threads/processes block each other and <strong>nobody</strong> progresses forward. Dining Philosophers: N philosophers each need BOTH a left and right chopstick (mutex locks / shared resources). If all grab left simultaneously, none can grab right -- deadlock.' },
+  { keys: ['dynamic','new operator','new ','holes','fragmented','allocated at runtime','heap'], text: '<strong>Correct answer:</strong> The heap stores <strong>dynamically allocated memory</strong> -- memory created with the <code>new</code> operator at runtime. It is fragmented and full of holes because memory can be allocated and freed in any order. Unlike the stack which has clean LIFO order with no holes, the heap can have gaps scattered throughout.' },
+  { keys: ['wast','pcb','memory','parent','exit','wait','collect','zombie','resource'], text: '<strong>Correct answer:</strong> When a parent exits without calling wait(), its children become <strong>orphan processes</strong>. The problem is their PCBs remain in the system and nobody can collect their exit status. This wastes OS resources. Also, orphan processes can themselves become zombie processes with no parent to clean them up. The OS prevents this using cascading termination or adoption by another process.' },
+  { keys: ['faster','os once','harder','same computer','request os','share ram','shared region'], text: '<strong>Correct answer:</strong> Shared memory = the OS creates a shared region of RAM that multiple processes can access directly. <strong>Advantages:</strong> faster than message passing (OS help needed only once to set up; after that processes communicate directly); only requests OS once. <strong>Disadvantages:</strong> harder to program correctly (risk of race conditions); works only on the same computer.' },
+  { keys: ['std::thread','thread','printexponent','12','join'], text: '<strong>Correct answer:</strong> Create a std::thread object, pass the function name and argument, then call join(). Example: std::thread t{PrintExponent, 12}; then t.join();' },
+  { keys: ['tlb','cache','translation lookaside','hit','miss','page table','ram slow','locality'], text: '<strong>Correct answer:</strong> <strong>TLB (Translation Lookaside Buffer)</strong> = A memory device inside the MMU that caches the most recently used page table entries. It exists because keeping the full page table in RAM would require an extra slow RAM lookup on every memory access. <strong>TLB Hit</strong> = needed entry found in TLB, fast. <strong>TLB Miss</strong> = not found, MMU must go to RAM (slow). Works because of the locality principle -- programs reuse the same memory pages repeatedly.' },
+  { keys: ['exclusiv','progress','bounded','mutual exclusion','wait forever','idle'], text: '<strong>Correct answer:</strong> Three properties: <strong>(1) Exclusivity (Mutual Exclusion)</strong> = only one thread/process can be in its critical section at a time -- executions must not overlap. <strong>(2) Progress</strong> = the shared resource does not stay idle if somebody needs it. <strong>(3) Bounded Waiting</strong> = nobody waits forever; there is a hard limit on how many other threads enter before a waiting thread gets its turn.' },
+  { keys: ['hard disk','not in ram','disk','pause','copy','load','page fault','expensive'], text: '<strong>Correct answer:</strong> <strong>Page fault</strong> = a situation when required code or data is on the hard disk but not in RAM. Step by step: CPU tries to access a page -- MMU sees it is not in RAM -- triggers a page fault -- program is put on hold -- OS copies the missing page from disk to RAM -- execution resumes. It is expensive because <strong>hard disk access is orders of magnitude slower than RAM</strong>.' },
+];
+const pointVals = [10,15,15,10,10,15,15,15,15,15,10,15,15,15,15,15,15];
+
+function checkAllAnswers() {
+  let total = 0, max = 0;
+  for (let i = 1; i <= 17; i++) {
+    const ans = (document.getElementById('ans'+i).value||'').toLowerCase();
+    const res = document.getElementById('res'+i);
+    const pa = pAnswers[i-1];
+    const pts = pointVals[i-1];
+    max += pts;
+    const hit = ans.length > 10 && pa.keys.some(k => ans.includes(k));
+    res.style.display = 'block';
+    const lbl = res.querySelector('.res-label');
+    const body = res.querySelector('.res-answer');
+    if (hit) { res.className='pq-result correct'; lbl.textContent='Good answer -- '+pts+'/'+pts+' pts'; total+=pts; }
+    else if (ans.length < 10) { res.className='pq-result wrong'; lbl.textContent='No answer -- 0/'+pts+' pts'; }
+    else { res.className='pq-result partial'; lbl.textContent='Missing key terms -- check the correct answer below'; }
+    body.innerHTML = pa.text;
+  }
+  const bar = document.getElementById('gradeBar');
+  bar.style.display = 'block';
+  document.getElementById('gradeScore').textContent = total+' / '+max;
+  const pct = Math.round(total/max*100);
+  document.getElementById('gradeMsg').textContent = pct>=80 ? 'Strong performance. Review any missed questions.' : pct>=60 ? 'Getting there. Focus on the questions marked partial.' : 'Keep studying -- use the study guide tabs and flashcards.';
+  bar.scrollIntoView({behavior:'smooth'});
+}
+function resetPractice() {
+  for (let i=1;i<=17;i++) { document.getElementById('ans'+i).value=''; document.getElementById('res'+i).style.display='none'; }
+  document.getElementById('gradeBar').style.display='none';
+}
+
+// FORK
+function showFeedback(id, correct, msg) {
+  const el = document.getElementById(id);
+  el.style.display = 'block';
+  el.className = 'fork-q-feedback ' + (correct?'correct':'wrong');
+  el.textContent = msg;
+}
+function checkFork1() {
+  const q1 = (document.getElementById('f1q1').value||'').trim();
+  const q2 = (document.getElementById('f1q2').value||'').trim();
+  const q3 = (document.getElementById('f1q3').value||'').trim();
+  showFeedback('f1q1-fb', q1==='6', q1==='6' ? 'Correct -- 6 total processes.' : 'Not quite. Answer is 6. Show solution for details.');
+  showFeedback('f1q2-fb', q2==='2', q2==='2' ? 'Correct -- "1" is printed 2 times (Original and Child-A before fork B).' : 'Answer is 2. Only processes alive before fork B print "1".');
+  showFeedback('f1q3-fb', q3.length>0, q3.length>0 ? 'Many orderings are valid. Show solution for a concrete example.' : 'Please enter an answer.');
+}
+function checkFork2() {
+  const q1 = (document.getElementById('f2q1').value||'').trim();
+  const q2 = (document.getElementById('f2q2').value||'').toLowerCase();
+  const q3 = (document.getElementById('f2q3').value||'').trim();
+  showFeedback('f2q1-fb', q1==='6', q1==='6' ? 'Correct -- 6 total processes.' : 'Not quite. Answer is 6.');
+  const q2ok = q2.includes('original') || q2.includes('parent') || q2.includes('!= 0');
+  showFeedback('f2q2-fb', q2ok, q2ok ? 'Correct -- the original process (parent, fork != 0 is true) prints "1".' : 'The original process. fork() != 0 is true for the parent, so it enters the if-body.');
+  showFeedback('f2q3-fb', q3.length>0, q3.length>0 ? 'Many orderings valid. Show solution for a concrete example.' : 'Please enter an answer.');
+}
+function checkFork3() {
+  const q1=(document.getElementById('f3q1').value||'').trim();
+  const q2=(document.getElementById('f3q2').value||'').trim();
+  const q3=(document.getElementById('f3q3').value||'').trim();
+  showFeedback('f3q1-fb',q1==='4',q1==='4'?'Correct -- 4 processes.':'Answer is 4.');
+  showFeedback('f3q2-fb',q2==='2',q2==='2'?'Correct -- 2 times. Only processes before fork B print "1".':'Answer is 2.');
+  showFeedback('f3q3-fb',q3==='4',q3==='4'?'Correct -- 4 times. All 4 processes print "2".':'Answer is 4.');
+}
+function checkFork4() {
+  const q1=(document.getElementById('f4q1').value||'').trim();
+  const q2=(document.getElementById('f4q2').value||'').trim();
+  showFeedback('f4q1-fb',q1==='3',q1==='3'?'Correct -- 3 processes.':'Answer is 3.');
+  showFeedback('f4q2-fb',q2.length>0,q2.length>0?'Many orderings valid. 13 23 23 is one example.':'Please enter an answer.');
+}
+function checkFork5() {
+  const q1=(document.getElementById('f5q1').value||'').trim();
+  const q2=(document.getElementById('f5q2').value||'').trim();
+  const q3=(document.getElementById('f5q3').value||'').trim();
+  showFeedback('f5q1-fb',q1==='5',q1==='5'?'Correct -- 5 processes.':'Not quite. The answer is 5. Show solution for the full tree.');
+  showFeedback('f5q2-fb',q2==='1',q2==='1'?'Correct -- "1" prints only once, before any fork fires.':'Answer is 1. cout "1" runs before fork A, so only the original process prints it.');
+  showFeedback('f5q3-fb',q3.length>0,q3.length>0?'Many orderings are valid. Show solution for a concrete example.':'Please enter an answer.');
+}
+function revealFork(id) {
+  const el = document.getElementById(id);
+  el.style.display = el.style.display==='block' ? 'none' : 'block';
+}
+
+// FLASHCARDS
+const allCards = [
+  {cat:'basics',q:'What is an Operating System?',a:'<strong>OS Definition</strong> = A program that manages hardware and provides other programs with an environment to run in.'},
+  {cat:'basics',q:'What is multitasking? How is it arranged?',a:'<strong>Multitasking</strong> = A technique to <strong>fake</strong> simultaneous executions of multiple processes on a single CPU core. Only one program runs at a time. Arranged through <strong>context switching</strong>.'},
+  {cat:'basics',q:'User mode vs kernel mode. Why dual modes?',a:'<strong>User Mode</strong> = safe instructions only. <strong>Kernel Mode</strong> = all instructions allowed. CPU switches to kernel mode on system calls. Dual modes exist for safety and stability.'},
+  {cat:'basics',q:'What is a system call? Why slow?',a:'<strong>System Call</strong> = Request for service from user-level app to OS. Slow because it triggers 2 context switches, each requiring RAM operations. RAM is slow compared to CPU.'},
+  {cat:'basics',q:'What is virtual memory?',a:'<strong>Virtual Memory</strong> = A technique to fake larger RAM using the hard disk. Portions not needed are swapped to disk. Programs still run from RAM only. Expensive performance-wise.'},
+  {cat:'basics',q:'What is an interrupt? Sequence when one arrives?',a:'<strong>Interrupt</strong> = A signal about an important event requiring immediate attention. Sequence: generated, reaches CPU, CPU pauses, CPU runs <strong>interrupt handler</strong> (ISR), handler finishes, cleared, CPU resumes.'},
+  {cat:'basics',q:'What is a driver?',a:'<strong>Driver</strong> = A small program that handles communications between the OS and devices.'},
+  {cat:'basics',q:'File? File system? Logical disk?',a:'<strong>File</strong> = Related data on hard disk under one name. <strong>File System</strong> = Data about all files including physical coordinates on disk. <strong>Logical Disk</strong> = Portion of hard disk described in a separate file system.'},
+  {cat:'basics',q:'How many bits in 1 KB?',a:'1 byte = 8 bits. 1 KB = 1,024 bytes. 1 KB = <strong>8,192 bits</strong>.'},
+  {cat:'basics',q:'Interpreter -- what is it and what is its advantage?',a:'<strong>Interpreter</strong> = Executes code line by line at runtime. <strong>Advantage = portability</strong> -- same code runs on any machine with the interpreter. Examples: Python, JavaScript.'},
+  {cat:'basics',q:'Compiler -- what is it and what is its advantage?',a:'<strong>Compiler</strong> = Translates entire code into machine code before execution. <strong>Advantage = speed</strong>. Examples: C, C++.'},
+  {cat:'processes',q:'Process vs program?',a:'<strong>Process</strong> = A program in execution. <strong>Program</strong> = Static code on disk. Process is active (in RAM). One program can have multiple processes.'},
+  {cat:'processes',q:'PCB -- what is it? Typical components?',a:'<strong>PCB</strong> = A record for a single process maintained by the OS. Contains: PID, parent PID, process state, CPU scheduling info, memory info, open files, I/O devices, register file, program counter.'},
+  {cat:'processes',q:'Five process states?',a:'<strong>New</strong> -- loading from disk. <strong>Ready</strong> -- in ready queue. <strong>Running</strong> -- using CPU. <strong>Waiting</strong> -- waiting for I/O. <strong>Terminated</strong> -- done.'},
+  {cat:'processes',q:'Ready queue? I/O queue? How many of each?',a:'<strong>Ready Queue</strong> = Collection of processes ready to use CPU. <strong>One</strong> ready queue. <strong>I/O Queue</strong> = Collection waiting for an I/O device. <strong>One per I/O device</strong>.'},
+  {cat:'processes',q:'What is a context switch? Why overhead?',a:'<strong>Context Switch</strong> = Steps to switch execution from one process to another. Overhead: requires 2 RAM operations (save + load context). RAM is slow.'},
+  {cat:'processes',q:'Layout of process in memory?',a:'<strong>Text</strong> = code. <strong>Data</strong> = global/static variables. <strong>Heap</strong> = dynamic memory, fragmented. <strong>Stack</strong> = local vars, params, no holes, each thread has its own.'},
+  {cat:'processes',q:'fork() -- what does it do? Return values?',a:'<strong>fork()</strong> = Creates an almost exact copy of the process. Returns <strong>0 to child</strong>, <strong>positive PID to parent</strong>. Both continue from next instruction.'},
+  {cat:'processes',q:'exec()? exit()? wait()?',a:'<strong>exec()</strong> = Replaces process with new program. <strong>exit()</strong> = Stops process, releases resources, PCB stays (zombie). <strong>wait()</strong> = Parent pauses until child terminates, receives exit status.'},
+  {cat:'processes',q:'Zombie? Orphan?',a:'<strong>Zombie</strong> = Called exit() but parent has not called wait(). <strong>Orphan</strong> = Parent exited without wait(). System adopts orphans or uses cascading termination.'},
+  {cat:'processes',q:'IPC -- two general classes?',a:'<strong>Message Passing</strong> = Through OS, slower, safer, works across computers. <strong>Shared Memory</strong> = Direct shared region, faster after setup, same computer only.'},
+  {cat:'threads',q:'Thread -- what is it? Shares vs not shares?',a:'<strong>Thread</strong> = Independent execution from separate program counter. <strong>Shares</strong>: text, data, heap. <strong>Does NOT share</strong>: stack.'},
+  {cat:'threads',q:'Why threads instead of processes?',a:'Memory efficient, fast to create, faster context switch, shared memory by default, less OS overhead.'},
+  {cat:'threads',q:'Why processes instead of threads?',a:'Can run exec(). Fault-independent -- crash in one does not kill others. Thread crash kills whole process.'},
+  {cat:'threads',q:'Socket? DNS?',a:'<strong>Socket</strong> = IP address + port. <strong>DNS</strong> = Internet phonebook translating domain names to IP addresses.'},
+  {cat:'threads',q:'Why is IP address not enough alone?',a:'IP identifies the computer, not which program. A computer runs many programs. <strong>Port</strong> identifies which specific program gets the message.'},
+  {cat:'memory',q:'Physical vs logical address?',a:'<strong>Physical</strong> = Real RAM address. <strong>Logical (Virtual)</strong> = Address process uses, as if it owns all memory from 0. One physical address space. One logical address space per process.'},
+  {cat:'memory',q:'What is the MMU?',a:'<strong>MMU</strong> = Memory Management Unit. Converts logical addresses to physical addresses. Sits between CPU and RAM.'},
+  {cat:'memory',q:'External vs internal fragmentation?',a:'<strong>External</strong> = Free memory not allocated to any process, holes too small. CMA problem. <strong>Internal</strong> = Allocated to process but not used -- OS gave more than needed. Paging problem.'},
+  {cat:'memory',q:'Paging? Page? Frame? What fragmentation?',a:'<strong>Paging</strong> = Fixed same-sized chunks of logical and physical memory mapped freely. <strong>Page</strong> = logical chunk. <strong>Frame</strong> = physical chunk. Same size. Causes <strong>internal fragmentation</strong>.'},
+  {cat:'memory',q:'TLB? TLB hit vs miss?',a:'<strong>TLB</strong> = Cache inside MMU for most useful page table entries. <strong>Hit</strong> = found, fast. <strong>Miss</strong> = not found, extra RAM trip.'},
+  {cat:'memory',q:'On-demand paging? Page fault?',a:'<strong>On-demand paging</strong> = Only load what is needed now; rest stays on disk. <strong>Page fault</strong> = Required code/data on disk, not in RAM. Program pauses while OS loads it.'},
+  {cat:'sync',q:'Synchronization problems? Hazards?',a:'Programming problems from multithreaded code or programs exchanging data. Two hazards: <strong>race condition</strong> and <strong>deadlock</strong>.'},
+  {cat:'sync',q:'What is a race condition?',a:'<strong>Race Condition</strong> = Shared resource corrupted because multiple threads/processes access it and at least one modifies it.'},
+  {cat:'sync',q:'Critical Section Problem -- three properties?',a:'<strong>Exclusivity</strong> = Only 1 at a time. <strong>Progress</strong> = Not idle if needed. <strong>Bounded Waiting</strong> = Nobody waits forever.'},
+  {cat:'sync',q:'Atomic function -- both parts of definition?',a:'1. Only one can run at a time -- all others pause. 2. Uninterruptible. Hardware-implemented -- no program code, hardware circuitry, single special CPU instruction.'},
+  {cat:'sync',q:'Busy waiting? Spinlock? When is it good?',a:'<strong>Busy waiting</strong> = Waiting using constant CPU. <strong>Spinlock</strong> = Uses busy waiting. Good when wait time is short and cheaper than a context switch.'},
+  {cat:'sync',q:'Mutex -- what if busy?',a:'<strong>Mutex</strong> = Mutual exclusion lock. If busy: process <strong>pauses and waits for mutex to be free before proceeding</strong>. OS puts it to sleep.'},
+  {cat:'sync',q:'Dining Philosophers -- philosophers = ? chopsticks = ?',a:'<strong>Philosophers</strong> = Threads/processes. <strong>Chopsticks</strong> = Mutex locks / shared resources. All grab left at once = deadlock.'},
+  {cat:'sync',q:'Deadlock?',a:'<strong>Deadlock</strong> = Multiple threads/processes block each other and <strong>nobody</strong> progresses forward.'},
+  {cat:'review',q:'What is a bit? What is a byte? How many bits in 1 KB?',a:'<strong>Bit</strong> = smallest unit, 0 or 1. <strong>Byte</strong> = 8 bits. <strong>1 KB</strong> = 1,024 bytes = 8,192 bits.'},
+  {cat:'review',q:'What is RAM? What is a memory stall?',a:'<strong>RAM</strong> = Fast volatile memory where running programs are stored. <strong>Memory stall</strong> = CPU delay while waiting for slow RAM data. Cache exists to reduce stalls.'},
+  {cat:'review',q:'What is cache memory?',a:'Small, extremely fast memory near the CPU. Stores recently used data to reduce memory stalls. Cache hit = fast. Cache miss = must go to RAM (slow).'},
+  {cat:'review',q:'What is ROM?',a:'<strong>ROM</strong> = Read-Only Memory. Non-volatile (keeps data without power). Stores firmware/BIOS -- the first code that runs when a computer starts.'},
+  {cat:'review',q:'What is the machine cycle? What are its steps?',a:'The basic fetch-decode-execute loop the CPU repeats continuously: <strong>Fetch</strong> instruction from RAM at PC address, <strong>Decode</strong> it, <strong>Execute</strong> it, then PC increments to next instruction.'},
+  {cat:'review',q:'What is CPU frequency? What is a CPU core?',a:'<strong>Frequency</strong> = Clock cycles per second, measured in Hz (GHz). Higher = faster. <strong>Core</strong> = independent processing unit. Quad-core = 4 simultaneous instruction streams.'},
+  {cat:'review',q:'32-bit address -- how much memory can it address?',a:'With N-bit addresses you can address 2^N bytes. <strong>32-bit</strong> = 2^32 = ~4 GB. <strong>64-bit</strong> = 2^64 = enormous (16 exabytes). Old 32-bit systems were limited to 4 GB RAM.'},
+  {cat:'review',q:'What is little-endian?',a:'<strong>Little-endian</strong> = Least significant byte stored at the lowest memory address. Most modern CPUs (x86/x64) use little-endian. Big-endian is the opposite (most significant byte first).'},
+  {cat:'review',q:'What is a C++ pointer?',a:'A variable that stores a <strong>memory address</strong> (instead of a regular value). Points to another variable\'s location in RAM. Get address with &amp;x, access value at address with *ptr.'},
+  {cat:'review',q:'Does signed/unsigned affect the size of C++ types?',a:'<strong>No.</strong> int, signed int, and unsigned int are all 4 bytes. Signed/unsigned only affects the range -- signed allows negatives, unsigned doubles positive range.'},
+  {cat:'review',q:'Hex to binary conversion -- how?',a:'Each hex digit = exactly 4 binary bits. 0=0000, 1=0001 ... 9=1001, A=1010, B=1011, C=1100, D=1101, E=1110, F=1111. Example: 0xFF = 11111111 = 255.'},
+  {cat:'review',q:'Stack overflow -- what causes it?',a:'The stack has a fixed OS-set size limit. Exceeded by infinite/deep recursion or very large local arrays. Causes program crash. Fix: put large data on heap with new.'},
+  {cat:'review',q:'Do processes physically move in RAM when state changes?',a:'<strong>No.</strong> The OS only updates the state field in the PCB. The process stays in the same RAM location. Visualizations showing physical movement are simplifications.'},
+  {cat:'review',q:'Copy-on-write optimization for fork() + exec()',a:'Fork() does NOT immediately copy all memory. Parent and child share pages until one writes (then a copy is made). If exec() follows fork() immediately, no copy ever needed -- OS detects this and skips the copy entirely.'},
+];
+
+let currentDeck=[], currentIndex=0, isFlipped=false, scoreGot=0, scoreMissed=0, ratedCurrent=false;
+function startFlashcards() {
+  const cat = document.getElementById('fcCategory').value;
+  currentDeck = cat==='all' ? [...allCards] : allCards.filter(c=>c.cat===cat);
+  currentIndex=0; isFlipped=false; scoreGot=0; scoreMissed=0; ratedCurrent=false;
+  updateScoreDisplay(); showCurrentCard();
+}
+function shuffleCards() {
+  for(let i=currentDeck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[currentDeck[i],currentDeck[j]]=[currentDeck[j],currentDeck[i]];}
+  currentIndex=0; isFlipped=false; ratedCurrent=false; showCurrentCard();
+}
+function showCurrentCard() {
+  if(!currentDeck.length) return;
+  const card = currentDeck[currentIndex];
+  document.getElementById('fcQuestion').textContent = card.q;
+  document.getElementById('fcAnswer').innerHTML = card.a;
+  document.getElementById('fcProgress').textContent = 'Card '+(currentIndex+1)+' of '+currentDeck.length;
+  document.getElementById('flashcard').classList.remove('flipped');
+  isFlipped=false;
+  document.getElementById('fcRatingArea').style.display='none';
+  ratedCurrent=false;
+}
+function flipCard() {
+  isFlipped=!isFlipped;
+  document.getElementById('flashcard').classList.toggle('flipped',isFlipped);
+  if(isFlipped) document.getElementById('fcRatingArea').style.display='block';
+}
+function nextCard() { currentIndex=(currentIndex+1)%currentDeck.length; showCurrentCard(); }
+function prevCard() { currentIndex=(currentIndex-1+currentDeck.length)%currentDeck.length; showCurrentCard(); }
+function rateCard(got) {
+  if(ratedCurrent) return; ratedCurrent=true;
+  if(got) scoreGot++; else scoreMissed++;
+  updateScoreDisplay(); setTimeout(nextCard,400);
+}
+function resetScore() { scoreGot=0; scoreMissed=0; updateScoreDisplay(); currentIndex=0; showCurrentCard(); }
+function updateScoreDisplay() {
+  document.getElementById('scoreGot').textContent=scoreGot;
+  document.getElementById('scoreMissed').textContent=scoreMissed;
+}
+startFlashcards();
+</script>
+</body>
+</html>
