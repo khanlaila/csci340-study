@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CSCI 340 OS Final Study Guide</title>
+<title>csci340finalpractice</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -146,7 +146,7 @@
 </head>
 <body>
 <header>
-  <h1>CSCI 340 Final Study Guide</h1>
+  <h1>csci340finalpractice</h1>
   <p>Operating Systems -- Prof. Shostak -- Spring 2026</p>
   <span class="header-badge">Final: May 21, 2026 at 5:20 PM -- Cumulative -- 50% of grade</span>
 </header>
@@ -169,7 +169,7 @@
 
 <!-- OVERVIEW -->
 <div class="page active" id="page-overview">
-  <div class="section-title">CSCI 340 -- Final Exam Study Guide</div>
+  <div class="section-title">csci340finalpractice</div>
   <div class="section-sub">All answers are taken directly from Prof. Shostak's class notes. His exact definitions are what matter on the exam.</div>
   <div class="alert"><strong>Important:</strong> Shostak grades on his exact definitions. Vague answers get 0 points. Always use the key terms he used in class. The passing threshold for the final is 55/100.</div>
   <div class="overview-grid">
@@ -181,7 +181,7 @@
     <div class="overview-card" onclick="showPage('practice',null)"><div class="oc-title">Practice Exam</div><div class="oc-count">10 questions pulled from both midterms</div></div>
     <div class="overview-card" onclick="showPage('fork',null)"><div class="oc-title">Fork Practice</div><div class="oc-count">Process trees and output -- both midterms had this</div></div>
     <div class="overview-card" onclick="showPage('visuals',null)"><div class="oc-title">Visual Diagrams</div><div class="oc-count">Process states, memory layout, paging, deadlock and more</div></div>
-    <div class="overview-card" onclick="showPage('review',null)"><div class="oc-title">Review Basics</div><div class="oc-count">Memory addresses, bits/bytes, CPU, hex, pointers -- from Bob's guide</div></div>
+    <div class="overview-card" onclick="showPage('review',null)"><div class="oc-title">Review Basics</div><div class="oc-count">Memory addresses, bits/bytes, CPU, hex, pointers -- review guide</div></div>
     <div class="overview-card" onclick="showPage('flashcards',null)"><div class="oc-title">Flashcards</div><div class="oc-count">Quiz yourself on all topics</div></div>
   </div>
 
@@ -1017,8 +1017,8 @@ cout &lt;&lt; "3" &lt;&lt; endl;</div>
 </div>
 
 <div class="page" id="page-review">
-  <div class="section-title">Review -- Fundamentals from Bob's Guide</div>
-  <div class="section-sub">These are the "Review Old Items" from Bob's study guide. Know these cold -- they are fair game on a cumulative final.</div>
+  <div class="section-title">Review -- Fundamentals</div>
+  <div class="section-sub">These are the "Review Old Items" from the study guide. Know these cold -- they are fair game on a cumulative final.</div>
 
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a program? What is data?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Program</strong> = A static list of CPU instructions stored in an executable file. It does not change.<br><br><strong>Data</strong> = Information stored and processed by a computer. Data and program instructions are both stored in RAM and on disk as bits and bytes.</div></div>
 
@@ -1073,11 +1073,11 @@ Example: 0xFF = 1111 1111 = 255 in decimal.<br>Example: 0x1A = 0001 1010 = 26 in
 
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Stack overflow -- what is it and what causes it?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">The stack has a <strong>fixed size limit</strong> set by the OS. If a program exceeds this limit (usually from infinite or very deep recursion, or allocating too many large local variables), the stack runs out of space.<br><br>This causes a <strong>stack overflow</strong>, which crashes the program. This is why you should not allocate very large arrays as local variables -- put them on the heap with new instead.</div></div>
 
-  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Bob's note: do processes physically move in RAM when their state changes?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>No.</strong> When a process changes state (e.g., from Running to Waiting), the OS simply updates the state field in its PCB. The process stays in the exact same location in RAM throughout.<br><br>Visualizations that show processes physically moving between boxes (like moving into the I/O queue box) are simplifications for clarity. No actual movement of data in RAM happens. The "queues" are just lists of PCB references maintained by the OS.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Do processes physically move in RAM when their state changes?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>No.</strong> When a process changes state (e.g., from Running to Waiting), the OS simply updates the state field in its PCB. The process stays in the exact same location in RAM throughout.<br><br>Visualizations that show processes physically moving between boxes (like moving into the I/O queue box) are simplifications for clarity. No actual movement of data in RAM happens. The "queues" are just lists of PCB references maintained by the OS.</div></div>
 
-  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Bob's note: copy-on-write optimization for fork() + exec()</span><span class="arrow">&#9658;</span></div><div class="qa-answer">When fork() is called, the OS creates a copy of the process -- but making a full copy of all memory is expensive.<br><br><strong>Copy-on-write (COW)</strong> = An optimization where the OS does NOT immediately copy the memory on fork(). Instead, both parent and child share the same memory pages, marked as read-only. A copy is only made when one of them tries to <strong>write</strong> to a page.<br><br>This is especially useful when fork() is immediately followed by exec(), because exec() replaces all memory anyway -- so no copy was ever needed. The OS detects this and skips copying entirely.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Copy-on-write optimization for fork() + exec()</span><span class="arrow">&#9658;</span></div><div class="qa-answer">When fork() is called, the OS creates a copy of the process -- but making a full copy of all memory is expensive.<br><br><strong>Copy-on-write (COW)</strong> = An optimization where the OS does NOT immediately copy the memory on fork(). Instead, both parent and child share the same memory pages, marked as read-only. A copy is only made when one of them tries to <strong>write</strong> to a page.<br><br>This is especially useful when fork() is immediately followed by exec(), because exec() replaces all memory anyway -- so no copy was ever needed. The OS detects this and skips copying entirely.</div></div>
 
-  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Bob's note: ready queue -- one per core, not per system?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">Bob's guide specifies: there is typically <strong>one ready queue per CPU core</strong>. Shostak's class notes say one ready queue per system.<br><br>For the exam, use <strong>Shostak's definition</strong>: one ready queue in the system. Bob's note reflects how modern multi-core schedulers actually work, but Shostak tests on his definition.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Ready queue -- one per core, not per system?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">The guide specifies: there is typically <strong>one ready queue per CPU core</strong>. Shostak's class notes say one ready queue per system.<br><br>For the exam, use <strong>Shostak's definition</strong>: one ready queue in the system. This note reflects how modern multi-core schedulers actually work, but Shostak tests on his definition.</div></div>
 
 </div>
 
