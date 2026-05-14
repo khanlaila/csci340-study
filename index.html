@@ -1272,8 +1272,8 @@ function setStudyStarButtonState(button, starred) {
   if (icon) icon.textContent = starred ? '★' : '☆';
   if (label) label.textContent = starred ? 'Starred' : 'Star';
 }
-function focusStudyQuestion(page, targetId) {
-  const card = document.getElementById(targetId);
+function focusStudyQuestion(page, key) {
+  const card = [...document.querySelectorAll(`#page-${page} .qa-card`)].find(el => el.dataset.studyKey === key);
   if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 function renderStudyPage(page) {
@@ -1289,16 +1289,13 @@ function renderStudyPage(page) {
   pageEl.appendChild(buildStudySidebar(page));
 
   const starred = getStudyStars(page);
-  main.querySelectorAll('.qa-card').forEach((card, index) => {
+  main.querySelectorAll('.qa-card').forEach(card => {
     const question = card.querySelector('.qa-question');
     const text = card.querySelector('.qa-question-text');
     const arrow = card.querySelector('.arrow');
     if (!question || !text) return;
     const key = normalizeKey(text.textContent);
-    const targetId = `study-${page}-${index + 1}`;
-    card.id = targetId;
     card.dataset.studyKey = key;
-    card.dataset.studyTarget = targetId;
     if (!question.querySelector('.qa-question-actions')) {
       const actions = document.createElement('div');
       actions.className = 'qa-question-actions';
@@ -1343,8 +1340,7 @@ function renderStudyPageSidebar(page) {
   list.innerHTML = starred.map(key => {
     const card = cardMap.get(key);
     const text = card ? card.querySelector('.qa-question-text')?.textContent || key : key;
-    const targetId = card ? card.id : '';
-    return `<div class="study-star-item"><div onclick='focusStudyQuestion(${JSON.stringify(page)}, ${JSON.stringify(targetId)})' style="cursor:pointer;">${text}</div><button class="btn btn-ghost" type="button" onclick='unstarStudyQuestion(${JSON.stringify(page)}, ${JSON.stringify(key)})'>Remove</button></div>`;
+    return `<div class="study-star-item"><div onclick='focusStudyQuestion(${JSON.stringify(page)}, ${JSON.stringify(key)})' style="cursor:pointer;">${text}</div><button class="btn btn-ghost" type="button" onclick='unstarStudyQuestion(${JSON.stringify(page)}, ${JSON.stringify(key)})'>Remove</button></div>`;
   }).join('');
 }
 function unstarStudyQuestion(page, key) {
