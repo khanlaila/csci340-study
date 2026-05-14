@@ -1208,7 +1208,19 @@ function toggleCard(el) { el.parentElement.classList.toggle('open'); }
 // TOPIC TRACKER
 const topicPages = ['basics', 'processes', 'threads', 'memory', 'sync', 'visuals', 'review'];
 const topicTrackerKey = 'csci340-topic-stars';
-let currentTrackerPage = 'basics';
+const topicTrackerPageKey = 'csci340-topic-tracker-page';
+function getSavedTrackerPage() {
+  try {
+    const saved = localStorage.getItem(topicTrackerPageKey);
+    return topicPages.includes(saved) ? saved : 'basics';
+  } catch (err) {
+    return 'basics';
+  }
+}
+function saveTrackerPage(page) {
+  try { localStorage.setItem(topicTrackerPageKey, page); } catch (err) {}
+}
+let currentTrackerPage = getSavedTrackerPage();
 const topicPageTitles = {
   basics: 'OS Basics',
   processes: 'Processes',
@@ -1239,6 +1251,7 @@ function updateTopicTrackerCount(count) {
 }
 function setTrackerPage(page) {
   currentTrackerPage = page;
+  saveTrackerPage(page);
   renderTopicTracker(page);
 }
 function setTopicStarButtonState(button, starred) {
@@ -1344,6 +1357,7 @@ function initTopicTracker() {
     });
     renderTopicPageStars(page);
   });
+  currentTrackerPage = getSavedTrackerPage();
   renderTopicTracker(currentTrackerPage);
 }
 
