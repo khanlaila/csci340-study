@@ -86,6 +86,10 @@
   .pq-num { background: var(--pink-500); color: #fff; border-radius: 50%; width: 26px; height: 26px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.78rem; font-weight: 700; margin-top: 1px; }
   .pq-pts { font-size: 0.75rem; color: var(--text-soft); margin-left: auto; flex-shrink: 0; }
   .pq-question-text { font-weight: 500; font-size: 0.95rem; line-height: 1.5; flex: 1; }
+  .pq-star-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem; background: #fff; color: var(--pink-600); border: 1.5px solid var(--pink-400); border-radius: 100px; padding: 0.36rem 0.7rem; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .pq-star-btn:hover { background: var(--pink-100); }
+  .pq-star-btn.starred { background: #fff7d9; border-color: #d8b100; color: #8a6000; }
+  .practice-star-count { font-size: 0.82rem; color: var(--pink-600); background: var(--pink-100); border: 1px solid var(--pink-300); border-radius: 999px; padding: 0.35rem 0.75rem; font-weight: 600; }
   .pq-body { padding: 1rem 1.3rem; }
   .pq-textarea { width: 100%; min-height: 100px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; border: 1.5px solid var(--border); border-radius: 8px; padding: 0.75rem 1rem; resize: vertical; background: var(--blush); color: var(--text); line-height: 1.6; transition: border-color 0.2s; }
   .pq-textarea:focus { outline: none; border-color: var(--pink-400); background: #fff; }
@@ -317,6 +321,7 @@ access.unlock();</pre></div></div>
   <div class="practice-header">
     <div><div class="ph-title">Spring 2026 Practice -- Cumulative Final Prep</div><div class="ph-sub">24 questions drawn from the study guide and exam scans. Type your answer, then click Check All.</div></div>
     <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;">
+      <div class="practice-star-count" id="practiceStarCount">Starred: 0</div>
       <button class="btn btn-primary" onclick="checkAllAnswers()">Check All Answers</button>
       <button class="btn btn-ghost" onclick="resetPractice()">Reset</button>
     </div>
@@ -1158,6 +1163,71 @@ function showPage(name, btn) {
 }
 function toggleCard(el) { el.parentElement.classList.toggle('open'); }
 
+// PRACTICE STARS
+const practiceStarKey = 'csci340-practice-stars';
+function getPracticeStars() {
+  try {
+    const raw = localStorage.getItem(practiceStarKey);
+    const stars = raw ? JSON.parse(raw) : [];
+    return Array.isArray(stars) ? stars : [];
+  } catch (err) {
+    return [];
+  }
+}
+function savePracticeStars(stars) {
+  try { localStorage.setItem(practiceStarKey, JSON.stringify(stars)); } catch (err) {}
+}
+function normalizePracticeKey(text) {
+  return (text || '').replace(/\s+/g, ' ').trim();
+}
+function updatePracticeStarCount() {
+  const el = document.getElementById('practiceStarCount');
+  if (el) el.textContent = 'Starred: ' + getPracticeStars().length;
+}
+function renderPracticeStars() {
+  const starred = getPracticeStars();
+  document.querySelectorAll('#page-practice .pq-card').forEach(card => {
+    const key = card.dataset.practiceKey || normalizePracticeKey(card.querySelector('.pq-question-text')?.textContent);
+    card.dataset.practiceKey = key;
+    const btn = card.querySelector('.pq-star-btn');
+    const isStarred = starred.includes(key);
+    if (btn) {
+      btn.classList.toggle('starred', isStarred);
+      btn.textContent = isStarred ? '★ Starred' : '☆ Star';
+    }
+  });
+  updatePracticeStarCount();
+}
+function togglePracticeStar(key) {
+  const cleanKey = normalizePracticeKey(key);
+  const stars = getPracticeStars();
+  const idx = stars.indexOf(cleanKey);
+  if (idx >= 0) stars.splice(idx, 1);
+  else stars.push(cleanKey);
+  savePracticeStars(stars);
+  renderPracticeStars();
+}
+function initPracticeStars() {
+  document.querySelectorAll('#page-practice .pq-card').forEach(card => {
+    const header = card.querySelector('.pq-header');
+    const pts = card.querySelector('.pq-pts');
+    const question = card.querySelector('.pq-question-text');
+    if (!header || !pts || !question) return;
+    const key = normalizePracticeKey(question.textContent);
+    card.dataset.practiceKey = key;
+    if (!card.querySelector('.pq-star-btn')) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'pq-star-btn';
+      btn.textContent = '☆ Star';
+      btn.style.marginLeft = 'auto';
+      btn.addEventListener('click', () => togglePracticeStar(key));
+      header.insertBefore(btn, pts);
+    }
+  });
+  renderPracticeStars();
+}
+
 // PRACTICE
 const pAnswers = [
   { keys: ['portab','any machine','without compil','no compil','run on any','interpreter installed'], text: '<strong>Correct answer:</strong> The main advantage is <strong>portability</strong> -- the same code can run on any machine that has the interpreter installed. No separate compilation step needed. Python and JavaScript are examples. Do NOT say "fast" -- that is the advantage of COMPILED languages.' },
@@ -1390,6 +1460,7 @@ function updateScoreDisplay() {
 }
 updateCountdown();
 setInterval(updateCountdown, 1000);
+initPracticeStars();
 startFlashcards();
 </script>
 </body>
