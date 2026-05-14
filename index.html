@@ -54,6 +54,7 @@
   .qa-question { padding: 1.1rem 1.3rem; cursor: pointer; display: flex; align-items: flex-start; gap: 0.75rem; user-select: none; background: var(--cream); }
   .qa-question:hover { background: var(--pink-100); }
   .qa-question-text { flex: 1; font-weight: 500; font-size: 0.95rem; line-height: 1.5; }
+  .qa-question-actions { display: inline-flex; align-items: center; gap: 0.4rem; margin-left: auto; flex-shrink: 0; }
   .qa-question .arrow { font-size: 0.75rem; color: var(--pink-500); transition: transform 0.25s; margin-top: 0.2rem; flex-shrink: 0; }
   .qa-card.open .arrow { transform: rotate(90deg); }
   .qa-answer { display: none; padding: 1.1rem 1.3rem; background: #fff; border-top: 1.5px solid var(--border); font-size: 0.92rem; line-height: 1.7; }
@@ -63,6 +64,18 @@
   .qa-answer pre { font-family: 'DM Mono', monospace; background: #fdf0f5; border: 1px solid var(--border); border-radius: 8px; padding: 1rem; font-size: 0.82rem; overflow-x: auto; margin-top: 0.6rem; line-height: 1.6; }
   .qa-answer ul { padding-left: 1.4rem; margin-top: 0.4rem; }
   .qa-answer ul li { margin-bottom: 0.3rem; }
+  .qa-star-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem; background: #fff; color: var(--pink-600); border: 1.5px solid var(--pink-400); border-radius: 100px; padding: 0.35rem 0.7rem; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .qa-star-btn:hover { background: var(--pink-100); }
+  .qa-star-btn.starred { background: #fff7d9; border-color: #d8b100; color: #8a6000; }
+  .tracker-summary { display: inline-flex; align-items: center; gap: 0.45rem; background: var(--pink-100); border: 1px solid var(--pink-300); border-radius: 999px; padding: 0.45rem 0.85rem; color: var(--pink-700); font-weight: 600; font-size: 0.88rem; margin-bottom: 1rem; }
+  .tracker-group { background: #fff; border: 1.5px solid var(--border); border-radius: 14px; box-shadow: var(--shadow); margin-bottom: 1rem; overflow: hidden; }
+  .tracker-group-header { background: var(--cream); border-bottom: 1.5px solid var(--border); padding: 0.95rem 1.2rem; font-weight: 700; color: var(--mauve); display: flex; justify-content: space-between; gap: 0.75rem; }
+  .tracker-group-count { font-size: 0.8rem; color: var(--text-soft); font-weight: 600; }
+  .tracker-item { padding: 0.9rem 1.2rem; border-top: 1px solid #f5e2ea; display: flex; flex-direction: column; gap: 0.6rem; }
+  .tracker-item:first-child { border-top: none; }
+  .tracker-item-title { font-size: 0.9rem; line-height: 1.5; cursor: pointer; }
+  .tracker-item-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .tracker-empty { background: #fff; border: 1.5px dashed var(--border); border-radius: 14px; padding: 1rem 1.2rem; color: var(--text-soft); }
   .alert { background: var(--pink-100); border: 1.5px solid var(--pink-300); border-radius: 12px; padding: 1rem 1.3rem; margin-bottom: 1.5rem; font-size: 0.9rem; color: var(--mauve); }
   .alert strong { color: var(--rose); }
   .overview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
@@ -175,6 +188,7 @@
   <button onclick="showPage('fork',this)">Fork Practice</button>
   <button onclick="showPage('visuals',this)">Visual Diagrams</button>
   <button onclick="showPage('review',this)">Review Basics</button>
+  <button onclick="showPage('tracker',this)">Tracker</button>
   <button onclick="showPage('flashcards',this)">Flashcards</button>
 </nav>
 
@@ -195,6 +209,7 @@
     <div class="overview-card" onclick="showPage('fork',null)"><div class="oc-title">Fork Practice</div><div class="oc-count">Process trees and output -- both midterms had this</div></div>
     <div class="overview-card" onclick="showPage('visuals',null)"><div class="oc-title">Visual Diagrams</div><div class="oc-count">Process states, memory layout, paging, deadlock and more</div></div>
     <div class="overview-card" onclick="showPage('review',null)"><div class="oc-title">Review Basics</div><div class="oc-count">Memory addresses, bits/bytes, CPU, hex, pointers -- review guide</div></div>
+    <div class="overview-card" onclick="showPage('tracker',null)"><div class="oc-title">Tracker</div><div class="oc-count">Star terms to practice again by topic</div></div>
     <div class="overview-card" onclick="showPage('flashcards',null)"><div class="oc-title">Flashcards</div><div class="oc-count">Quiz yourself on all topics</div></div>
   </div>
 
@@ -258,7 +273,7 @@ t2.join();</pre></div></div>
   <div class="section-title">Memory Management</div>
   <div class="section-sub">Physical vs logical addresses, MMU, paging, TLB, page faults</div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Physical address vs logical address. How many of each exist?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Logical Memory Address</strong> can also be called a Virtual Memory Address.<br><br><strong>Physical Memory Address</strong> = the real address of the real RAM device.<br><br>There is only one physical address space in your system, because there is only one physical RAM device in your PC.</div></div>
-  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What kind of address does the CPU use? What arrives at RAM?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">When CPU fetches address they access using logical address from the instruction.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What kind of address does the CPU use? What arrives at RAM?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">When CPU fetches address they access using <strong>logical address</strong> from the instruction.<br><br>Addresses used in instructions are logical addresses. The MMU converts them to physical addresses, and the <strong>physical address</strong> arrives at RAM.</div></div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is the MMU?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Memory Management Unit</strong> = a device that converts logical addresses to physical addresses.<br><br>This device is responsible for dealing with addresses, before running a program, the OS calls the MMU saying it’s about to run a program, and says this program believes it owns all the memory in the computer, the OS tells the MMU to catch addresses that running programs use and convert them from program specific addresses to physical memory addresses.</div></div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is contiguous memory allocation? What fragmentation?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Contiguous Memory Allocation</strong> = A method for the OS to promise a range of available memory provided to a process in one piece.<br><br><strong>Base Value</strong> = where process starts in memory.<br><strong>Limit Value</strong> = size of process.<br><br><strong>Memory Hole</strong> = fragmented, unusable free gaps in physical memory or unallocated regions in virtual address space.<br><strong>Fragmentation</strong> = wasted memory because of inefficient memory usage.</div></div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">External fragmentation vs internal fragmentation?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>External Fragmentation</strong> = a kind of fragmentation where wasted memory is not allocated for any process, where holes are too small and scattered to be useful.<br><br><strong>Internal Fragmentation</strong> = wasted memory allocated to a process but not being used because the OS gave it more than it needed.<br><br>Doesn’t occur in CMA since the OS gives exactly how much it needs but it does happen in paging.</div></div>
@@ -1104,6 +1119,14 @@ Example: 0xFF = 1111 1111 = 255 in decimal.<br>Example: 0x1A = 0001 1010 = 26 in
 
 </div>
 
+<!-- TRACKER -->
+<div class="page" id="page-tracker">
+  <div class="section-title">Topic Tracker</div>
+  <div class="section-sub">Star terms in the topic sections and come back here to review them by topic.</div>
+  <div class="tracker-summary" id="trackerSummary">Starred: 0</div>
+  <div id="trackerList"></div>
+</div>
+
 <div class="page" id="page-flashcards">
   <div class="section-sub">Click the card to reveal the answer. Rate yourself to track progress.</div>
   <div class="fc-controls">
@@ -1158,10 +1181,148 @@ function showPage(name, btn) {
   document.getElementById('page-' + name).classList.add('active');
   if (btn) { btn.classList.add('active'); }
   else { document.querySelectorAll('nav button').forEach(b => { if (b.getAttribute('onclick') && b.getAttribute('onclick').includes("'" + name + "'")) b.classList.add('active'); }); }
+  if (name === 'tracker') renderTopicTracker();
   if (name === 'flashcards') startFlashcards();
   window.scrollTo(0,0);
 }
 function toggleCard(el) { el.parentElement.classList.toggle('open'); }
+
+// TOPIC TRACKER
+const topicPages = ['basics', 'processes', 'threads', 'memory', 'sync', 'visuals', 'review'];
+const topicTrackerKey = 'csci340-topic-stars';
+const topicPageTitles = {
+  basics: 'OS Basics',
+  processes: 'Processes',
+  threads: 'Threads + IPC',
+  memory: 'Memory',
+  sync: 'Synchronization',
+  visuals: 'Visual Diagrams',
+  review: 'Review Basics',
+};
+function getTopicStars() {
+  try {
+    const raw = localStorage.getItem(topicTrackerKey);
+    const stars = raw ? JSON.parse(raw) : [];
+    return Array.isArray(stars) ? stars : [];
+  } catch (err) {
+    return [];
+  }
+}
+function saveTopicStars(stars) {
+  try { localStorage.setItem(topicTrackerKey, JSON.stringify(stars)); } catch (err) {}
+}
+function normalizeTopicKey(text) {
+  return (text || '').replace(/\s+/g, ' ').trim();
+}
+function updateTopicTrackerCount() {
+  const el = document.getElementById('trackerSummary');
+  if (el) el.textContent = 'Starred: ' + getTopicStars().length;
+}
+function setTopicStarButtonState(button, starred) {
+  if (!button) return;
+  button.classList.toggle('starred', starred);
+  button.textContent = starred ? '★ Starred' : '☆ Star';
+}
+function toggleTopicStar(page, targetId, title, key) {
+  const cleanKey = normalizeTopicKey(key);
+  const stars = getTopicStars();
+  const idx = stars.findIndex(item => item.page === page && item.key === cleanKey);
+  if (idx >= 0) stars.splice(idx, 1);
+  else stars.push({ page, targetId, title, key: cleanKey });
+  saveTopicStars(stars);
+  renderTopicTracker();
+  renderTopicPageStars(page);
+}
+function jumpToTopicStar(targetId) {
+  const card = document.getElementById(targetId);
+  if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+function removeTopicStar(page, key) {
+  const cleanKey = normalizeTopicKey(key);
+  const stars = getTopicStars().filter(item => !(item.page === page && item.key === cleanKey));
+  saveTopicStars(stars);
+  renderTopicTracker();
+  renderTopicPageStars(page);
+}
+function renderTopicTracker() {
+  const list = document.getElementById('trackerList');
+  if (!list) return;
+  const stars = getTopicStars();
+  updateTopicTrackerCount();
+  if (!stars.length) {
+    list.innerHTML = '<div class="tracker-empty">No starred terms yet. Use the star button on any topic question.</div>';
+    return;
+  }
+  const grouped = {};
+  stars.forEach(item => {
+    if (!grouped[item.page]) grouped[item.page] = [];
+    grouped[item.page].push(item);
+  });
+  list.innerHTML = topicPages.filter(page => grouped[page] && grouped[page].length).map(page => {
+    const items = grouped[page];
+    return `
+      <div class="tracker-group">
+        <div class="tracker-group-header">
+          <span>${topicPageTitles[page] || page}</span>
+          <span class="tracker-group-count">${items.length} starred</span>
+        </div>
+        ${items.map(item => `
+          <div class="tracker-item">
+            <div class="tracker-item-title" onclick='jumpToTopicStar(${JSON.stringify(item.targetId)})'>${item.title}</div>
+            <div class="tracker-item-actions">
+              <button class="btn btn-ghost" type="button" onclick='jumpToTopicStar(${JSON.stringify(item.targetId)})'>Go to term</button>
+              <button class="btn btn-ghost" type="button" onclick='removeTopicStar(${JSON.stringify(item.page)}, ${JSON.stringify(item.key)})'>Remove</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }).join('');
+}
+function renderTopicPageStars(page) {
+  const stars = getTopicStars().filter(item => item.page === page);
+  document.querySelectorAll(`#page-${page} .qa-card`).forEach(card => {
+    const btn = card.querySelector('.qa-star-btn');
+    if (!btn) return;
+    const title = card.dataset.topicTitle || normalizeTopicKey(card.querySelector('.qa-question-text')?.textContent);
+    const key = card.dataset.topicKey || title;
+    const isStarred = stars.some(item => item.key === key);
+    setTopicStarButtonState(btn, isStarred);
+  });
+}
+function initTopicTracker() {
+  topicPages.forEach((page, pageIndex) => {
+    const cards = document.querySelectorAll(`#page-${page} .qa-card`);
+    cards.forEach((card, cardIndex) => {
+      const question = card.querySelector('.qa-question');
+      const text = card.querySelector('.qa-question-text');
+      const arrow = card.querySelector('.arrow');
+      if (!question || !text) return;
+      const title = normalizeTopicKey(text.textContent);
+      const key = title;
+      const targetId = card.id || `topic-${page}-${cardIndex + 1}`;
+      card.id = targetId;
+      card.dataset.topicTitle = title;
+      card.dataset.topicKey = key;
+      if (!question.querySelector('.qa-question-actions')) {
+        const actions = document.createElement('div');
+        actions.className = 'qa-question-actions';
+        const starBtn = document.createElement('button');
+        starBtn.type = 'button';
+        starBtn.className = 'qa-star-btn';
+        starBtn.textContent = '☆ Star';
+        starBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          toggleTopicStar(page, targetId, title, key);
+        });
+        actions.appendChild(starBtn);
+        question.insertBefore(actions, arrow || null);
+      }
+    });
+    renderTopicPageStars(page);
+  });
+  renderTopicTracker();
+}
 
 // PRACTICE STARS
 const practiceStarKey = 'csci340-practice-stars';
@@ -1389,7 +1550,7 @@ const allCards = [
   {cat:'threads',q:'Why processes instead of threads?',a:'Can run exec(). Fault-independent -- crash in one does not kill others. Thread crash kills whole process.'},
   {cat:'threads',q:'Socket? DNS?',a:'<strong>Socket</strong> = IP address + port. <strong>DNS</strong> = Internet phonebook translating domain names to IP addresses.'},
   {cat:'threads',q:'Why is IP address not enough alone?',a:'IP identifies the computer, not which program. A computer runs many programs. <strong>Port</strong> identifies which specific program gets the message.'},
-  {cat:'memory',q:'Physical vs logical address?',a:'<strong>Physical</strong> = Real RAM address. <strong>Logical (Virtual)</strong> = Address process uses, as if it owns all memory from 0. One physical address space. One logical address space per process.'},
+  {cat:'memory',q:'Physical vs logical address?',a:'<strong>Logical Memory Address</strong> can also be called a <strong>Virtual Memory Address</strong>.<br><br><strong>Physical Memory Address</strong> = the real address of the real RAM device.<br><br>There is only one physical address space in your system, because there is only one physical RAM device in your PC.'},
   {cat:'memory',q:'What is the MMU?',a:'<strong>MMU</strong> = Memory Management Unit. Converts logical addresses to physical addresses. Sits between CPU and RAM.'},
   {cat:'memory',q:'External vs internal fragmentation?',a:'<strong>External</strong> = Free memory not allocated to any process, holes too small. CMA problem. <strong>Internal</strong> = Allocated to process but not used -- OS gave more than needed. Paging problem.'},
   {cat:'memory',q:'Paging? Page? Frame? What fragmentation?',a:'<strong>Paging</strong> = Fixed same-sized chunks of logical and physical memory mapped freely. <strong>Page</strong> = logical chunk. <strong>Frame</strong> = physical chunk. Same size. Causes <strong>internal fragmentation</strong>.'},
@@ -1460,6 +1621,7 @@ function updateScoreDisplay() {
 }
 updateCountdown();
 setInterval(updateCountdown, 1000);
+initTopicTracker();
 initPracticeStars();
 startFlashcards();
 </script>
