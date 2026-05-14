@@ -68,6 +68,8 @@
   .qa-star-btn:hover { background: var(--pink-100); }
   .qa-star-btn.starred { background: #fff7d9; border-color: #d8b100; color: #8a6000; }
   .tracker-summary { display: inline-flex; align-items: center; gap: 0.45rem; background: var(--pink-100); border: 1px solid var(--pink-300); border-radius: 999px; padding: 0.45rem 0.85rem; color: var(--pink-700); font-weight: 600; font-size: 0.88rem; margin-bottom: 1rem; }
+  .tracker-select { font-family: 'DM Sans', sans-serif; padding: 0.55rem 0.9rem; border: 1.5px solid var(--border); border-radius: 10px; background: #fff; color: var(--text); font-size: 0.9rem; cursor: pointer; }
+  .tracker-select:focus { outline: none; border-color: var(--pink-400); }
   .tracker-group { background: #fff; border: 1.5px solid var(--border); border-radius: 14px; box-shadow: var(--shadow); margin-bottom: 1rem; overflow: hidden; }
   .tracker-group-header { background: var(--cream); border-bottom: 1.5px solid var(--border); padding: 0.95rem 1.2rem; font-weight: 700; color: var(--mauve); display: flex; justify-content: space-between; gap: 0.75rem; }
   .tracker-group-count { font-size: 0.8rem; color: var(--text-soft); font-weight: 600; }
@@ -1123,6 +1125,17 @@ Example: 0xFF = 1111 1111 = 255 in decimal.<br>Example: 0x1A = 0001 1010 = 26 in
 <div class="page" id="page-tracker">
   <div class="section-title">Topic Tracker</div>
   <div class="section-sub" id="trackerSubtitle">Showing terms starred in OS Basics.</div>
+  <div style="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem;">
+    <select id="trackerPageSelect" class="tracker-select" onchange="setTrackerPage(this.value)">
+      <option value="basics">OS Basics</option>
+      <option value="processes">Processes</option>
+      <option value="threads">Threads + IPC</option>
+      <option value="memory">Memory</option>
+      <option value="sync">Synchronization</option>
+      <option value="visuals">Visual Diagrams</option>
+      <option value="review">Review Basics</option>
+    </select>
+  </div>
   <div class="tracker-summary" id="trackerTitle">OS Basics</div>
   <div class="tracker-summary" id="trackerSummary">Starred: 0</div>
   <div id="trackerList"></div>
@@ -1224,6 +1237,10 @@ function updateTopicTrackerCount(count) {
   const el = document.getElementById('trackerSummary');
   if (el) el.textContent = 'Starred: ' + count;
 }
+function setTrackerPage(page) {
+  currentTrackerPage = page;
+  renderTopicTracker(page);
+}
 function setTopicStarButtonState(button, starred) {
   if (!button) return;
   button.classList.toggle('starred', starred);
@@ -1257,6 +1274,8 @@ function renderTopicTracker(page = currentTrackerPage) {
   const stars = getTopicStars();
   const filtered = stars.filter(item => item.page === page);
   updateTopicTrackerCount(filtered.length);
+  const select = document.getElementById('trackerPageSelect');
+  if (select) select.value = page;
   const titleEl = document.getElementById('trackerTitle');
   const subEl = document.getElementById('trackerSubtitle');
   if (titleEl) titleEl.textContent = topicPageTitles[page] || page;
