@@ -371,19 +371,16 @@ access.unlock();</pre></div></div>
   <div class="alert"><strong>Key rules:</strong> fork() returns 0 to child, positive PID to parent. After fork(), BOTH processes continue from the next instruction. Order between processes is NOT guaranteed. if(fork()) = parent runs if-body. if(!fork()) = child runs if-body.</div>
 
   <div class="fork-card">
-    <div class="fork-card-header">Problem 1 -- From midterm version 4</div>
+    <div class="fork-card-header">Problem 1 -- Straight forks, no if</div>
     <div class="fork-card-body">
-      <div class="fork-code">fork(); // A
+      <div class="fork-code"><pre>fork(); // A
 cout &lt;&lt; "1" &lt;&lt; endl;
-if (fork() &gt; 0) { // B
-    fork(); // C
-    cout &lt;&lt; "2" &lt;&lt; endl;
-}
-cout &lt;&lt; "3" &lt;&lt; endl;</div>
+fork(); // B
+cout &lt;&lt; "2" &lt;&lt; endl;</pre></div>
       <div class="fork-questions">
-        <div class="fork-q-row"><div class="fork-q-label">How many total processes run (including the original)?</div><input class="fork-q-input" type="text" id="f1q1" placeholder="Enter a number"><div class="fork-q-feedback" id="f1q1-fb"></div></div>
+        <div class="fork-q-row"><div class="fork-q-label">How many total processes run?</div><input class="fork-q-input" type="text" id="f1q1" placeholder="Enter a number"><div class="fork-q-feedback" id="f1q1-fb"></div></div>
         <div class="fork-q-row"><div class="fork-q-label">How many times is "1" printed?</div><input class="fork-q-input" type="text" id="f1q2" placeholder="Enter a number"><div class="fork-q-feedback" id="f1q2-fb"></div></div>
-        <div class="fork-q-row"><div class="fork-q-label">Give one possible output</div><input class="fork-q-input" type="text" id="f1q3" placeholder='e.g. 123 123 3 3 23 3'><div class="fork-q-feedback" id="f1q3-fb"></div></div>
+        <div class="fork-q-row"><div class="fork-q-label">How many times is "2" printed?</div><input class="fork-q-input" type="text" id="f1q3" placeholder="Enter a number"><div class="fork-q-feedback" id="f1q3-fb"></div></div>
       </div>
       <div style="margin-top:1rem;display:flex;gap:0.75rem;flex-wrap:wrap;">
         <button class="btn btn-outline" onclick="checkFork1()">Check Answers</button>
@@ -391,8 +388,77 @@ cout &lt;&lt; "3" &lt;&lt; endl;</div>
       </div>
       <div class="fork-reveal" id="fork1-reveal">
         <strong>Walk-through:</strong><br>
-        Fork A fires. Original and Child-A both continue. Both will print "1".<br>
-        Fork B fires in both Original and Child-A. For each: parent side (fork &gt; 0) enters the if-block and does fork C then prints "2" then "3". Child side does not enter if-block and just prints "3".<br>
+        Original and Child-A both continue after fork A.<br>
+        fork B fires in both processes. Each child of B just prints "2" and finishes. Each parent of B prints "1" then "2".<br><br>
+        <strong>Process tree:</strong><pre>Original
+  Child-of-A
+    Child-of-B-from-Child-A
+  Child-of-B-from-Original</pre>
+        <strong>Total processes: 4</strong><br>
+        "1" is printed <strong>2 times</strong>.<br>
+        "2" is printed <strong>4 times</strong>.<br>
+        One valid output: 12 12 2 2
+      </div>
+    </div>
+  </div>
+
+  <div class="fork-card">
+    <div class="fork-card-header">Problem 2 -- If/else fork logic</div>
+    <div class="fork-card-body">
+      <div class="fork-code"><pre>if (fork()) // A
+    cout &lt;&lt; "1" &lt;&lt; endl;
+else {
+    fork(); // B
+    cout &lt;&lt; "2" &lt;&lt; endl;
+}
+cout &lt;&lt; "3" &lt;&lt; endl;</pre></div>
+      <div class="fork-questions">
+        <div class="fork-q-row"><div class="fork-q-label">How many total processes run?</div><input class="fork-q-input" type="text" id="f2q1" placeholder="Enter a number"><div class="fork-q-feedback" id="f2q1-fb"></div></div>
+        <div class="fork-q-row"><div class="fork-q-label">Which process(es) print "1"?</div><input class="fork-q-input" type="text" id="f2q2" placeholder="parent or child?"><div class="fork-q-feedback" id="f2q2-fb"></div></div>
+        <div class="fork-q-row"><div class="fork-q-label">Give one possible output</div><input class="fork-q-input" type="text" id="f2q3" placeholder="e.g. 13 23 23"><div class="fork-q-feedback" id="f2q3-fb"></div></div>
+      </div>
+      <div style="margin-top:1rem;display:flex;gap:0.75rem;flex-wrap:wrap;">
+        <button class="btn btn-outline" onclick="checkFork2()">Check Answers</button>
+        <button class="btn btn-ghost" onclick="revealFork('fork2-reveal')">Show Full Solution</button>
+      </div>
+      <div class="fork-reveal" id="fork2-reveal">
+        <strong>Walk-through:</strong><br>
+        Fork A: Original (parent) enters if-body and prints "1". Child-of-A goes to else and prints "2" then hits fork B.<br>
+        Fork B only happens in the else-block.<br>
+        Since cout "3" is outside the if-else, every process prints "3".<br><br>
+        <strong>Process tree:</strong><pre>Original
+  Child-of-A
+    Child-of-B</pre>
+        <strong>Total processes: 3</strong><br>
+        "1" is printed by <strong>the original (parent)</strong> only.<br>
+        One valid output: 13 23 23
+      </div>
+    </div>
+  </div>
+
+  <div class="fork-card">
+    <div class="fork-card-header">Problem 3 -- From midterm version 4</div>
+    <div class="fork-card-body">
+      <div class="fork-code"><pre>fork(); // A
+cout &lt;&lt; "1" &lt;&lt; endl;
+if (fork() &gt; 0) { // B
+    fork(); // C
+    cout &lt;&lt; "2" &lt;&lt; endl;
+}
+cout &lt;&lt; "3" &lt;&lt; endl;</pre></div>
+      <div class="fork-questions">
+        <div class="fork-q-row"><div class="fork-q-label">How many total processes run (including the original)?</div><input class="fork-q-input" type="text" id="f3q1" placeholder="Enter a number"><div class="fork-q-feedback" id="f3q1-fb"></div></div>
+        <div class="fork-q-row"><div class="fork-q-label">How many times is "1" printed?</div><input class="fork-q-input" type="text" id="f3q2" placeholder="Enter a number"><div class="fork-q-feedback" id="f3q2-fb"></div></div>
+        <div class="fork-q-row"><div class="fork-q-label">Give one possible output</div><input class="fork-q-input" type="text" id="f3q3" placeholder='e.g. 123 123 3 3 23 3'><div class="fork-q-feedback" id="f3q3-fb"></div></div>
+      </div>
+      <div style="margin-top:1rem;display:flex;gap:0.75rem;flex-wrap:wrap;">
+        <button class="btn btn-outline" onclick="checkFork3()">Check Answers</button>
+        <button class="btn btn-ghost" onclick="revealFork('fork3-reveal')">Show Full Solution</button>
+      </div>
+      <div class="fork-reveal" id="fork3-reveal">
+        <strong>Walk-through:</strong><br>
+        Fork A fires. Original and Child-A both continue. Both print "1".<br>
+        Fork B fires in both Original and Child-A. For each: parent side enters the if-block and does fork C then prints "2" then "3". Child side does not enter if-block and just prints "3".<br>
         Fork C fires only inside the if-block. Parent of C prints "2" then "3". Child of C just prints "3".<br><br>
         <strong>Process tree:</strong><pre>Original           -- prints 1, 2, 3
   Child-of-A        -- prints 1, 2, 3
@@ -401,33 +467,33 @@ cout &lt;&lt; "3" &lt;&lt; endl;</div>
   Child-of-C-from-Original  -- prints 3
   Child-of-B-from-Child-A   -- prints 3</pre>
         <strong>Total processes: 6</strong><br>
-        "1" is printed <strong>2 times</strong> (Original and Child-A before fork B).<br>
+        "1" is printed <strong>2 times</strong>.<br>
         <strong>One valid output:</strong> 123 123 3 3 23 3
       </div>
     </div>
   </div>
 
   <div class="fork-card">
-    <div class="fork-card-header">Problem 2 -- From midterm version 3</div>
+    <div class="fork-card-header">Problem 4 -- From midterm version 3</div>
     <div class="fork-card-body">
-      <div class="fork-code">if (fork() != 0) { // A
+      <div class="fork-code"><pre>if (fork() != 0) { // A
     cout &lt;&lt; "1" &lt;&lt; endl;
 } else {
     cout &lt;&lt; "2" &lt;&lt; endl;
     fork(); // B
 }
 fork(); // C
-cout &lt;&lt; "3" &lt;&lt; endl;</div>
+cout &lt;&lt; "3" &lt;&lt; endl;</pre></div>
       <div class="fork-questions">
-        <div class="fork-q-row"><div class="fork-q-label">How many total processes run?</div><input class="fork-q-input" type="text" id="f2q1" placeholder="Enter a number"><div class="fork-q-feedback" id="f2q1-fb"></div></div>
-        <div class="fork-q-row"><div class="fork-q-label">Which process(es) print "1"?</div><input class="fork-q-input" type="text" id="f2q2" placeholder="parent or child?"><div class="fork-q-feedback" id="f2q2-fb"></div></div>
-        <div class="fork-q-row"><div class="fork-q-label">Give one possible output</div><input class="fork-q-input" type="text" id="f2q3" placeholder="e.g. 13 23 3 3 3 3"><div class="fork-q-feedback" id="f2q3-fb"></div></div>
+        <div class="fork-q-row"><div class="fork-q-label">How many total processes run?</div><input class="fork-q-input" type="text" id="f4q1" placeholder="Enter a number"><div class="fork-q-feedback" id="f4q1-fb"></div></div>
+        <div class="fork-q-row"><div class="fork-q-label">Which process(es) print "1"?</div><input class="fork-q-input" type="text" id="f4q2" placeholder="parent or child?"><div class="fork-q-feedback" id="f4q2-fb"></div></div>
+        <div class="fork-q-row"><div class="fork-q-label">Give one possible output</div><input class="fork-q-input" type="text" id="f4q3" placeholder="e.g. 13 23 3 3 3 3"><div class="fork-q-feedback" id="f4q3-fb"></div></div>
       </div>
       <div style="margin-top:1rem;display:flex;gap:0.75rem;flex-wrap:wrap;">
-        <button class="btn btn-outline" onclick="checkFork2()">Check Answers</button>
-        <button class="btn btn-ghost" onclick="revealFork('fork2-reveal')">Show Full Solution</button>
+        <button class="btn btn-outline" onclick="checkFork4()">Check Answers</button>
+        <button class="btn btn-ghost" onclick="revealFork('fork4-reveal')">Show Full Solution</button>
       </div>
-      <div class="fork-reveal" id="fork2-reveal">
+      <div class="fork-reveal" id="fork4-reveal">
         <strong>Walk-through:</strong><br>
         Fork A: Original (parent, fork != 0 is true) enters if-body and prints "1". Child-of-A (fork == 0, goes to else) prints "2" then hits fork B.<br>
         Fork B: Only in the else-block. Child-of-A and its new Child-of-B both continue.<br>
@@ -446,71 +512,16 @@ cout &lt;&lt; "3" &lt;&lt; endl;</div>
   </div>
 
   <div class="fork-card">
-    <div class="fork-card-header">Problem 3 -- Practice (straight forks, no if)</div>
-    <div class="fork-card-body">
-      <div class="fork-code">fork(); // A
-cout &lt;&lt; "1" &lt;&lt; endl;
-fork(); // B
-cout &lt;&lt; "2" &lt;&lt; endl;</div>
-      <div class="fork-questions">
-        <div class="fork-q-row"><div class="fork-q-label">How many total processes run?</div><input class="fork-q-input" type="text" id="f3q1" placeholder="Enter a number"><div class="fork-q-feedback" id="f3q1-fb"></div></div>
-        <div class="fork-q-row"><div class="fork-q-label">How many times is "1" printed?</div><input class="fork-q-input" type="text" id="f3q2" placeholder="Enter a number"><div class="fork-q-feedback" id="f3q2-fb"></div></div>
-        <div class="fork-q-row"><div class="fork-q-label">How many times is "2" printed?</div><input class="fork-q-input" type="text" id="f3q3" placeholder="Enter a number"><div class="fork-q-feedback" id="f3q3-fb"></div></div>
-      </div>
-      <div style="margin-top:1rem;display:flex;gap:0.75rem;flex-wrap:wrap;">
-        <button class="btn btn-outline" onclick="checkFork3()">Check Answers</button>
-        <button class="btn btn-ghost" onclick="revealFork('fork3-reveal')">Show Full Solution</button>
-      </div>
-      <div class="fork-reveal" id="fork3-reveal">
-        <strong>Process tree:</strong><pre>Original      -- prints 1, 2
-  Child-of-A   -- prints 1, 2
-    Child-of-B-from-Child-A -- prints 2 only
-  Child-of-B-from-Original  -- prints 2 only</pre>
-        <strong>Total: 4 processes. "1" prints 2 times. "2" prints 4 times.</strong><br>
-        One valid output: 12 12 2 2
-      </div>
-    </div>
-  </div>
-
-  <div class="fork-card">
-    <div class="fork-card-header">Problem 4 -- Practice (if/else fork logic)</div>
-    <div class="fork-card-body">
-      <div class="fork-code">if (fork()) // A -- parent enters if, child enters else
-    cout &lt;&lt; "1" &lt;&lt; endl;
-else {
-    fork(); // B
-    cout &lt;&lt; "2" &lt;&lt; endl;
-}
-cout &lt;&lt; "3" &lt;&lt; endl;</div>
-      <div class="fork-questions">
-        <div class="fork-q-row"><div class="fork-q-label">How many total processes run?</div><input class="fork-q-input" type="text" id="f4q1" placeholder="Enter a number"><div class="fork-q-feedback" id="f4q1-fb"></div></div>
-        <div class="fork-q-row"><div class="fork-q-label">Give one valid possible output</div><input class="fork-q-input" type="text" id="f4q2" placeholder="e.g. 13 23 23"><div class="fork-q-feedback" id="f4q2-fb"></div></div>
-      </div>
-      <div style="margin-top:1rem;display:flex;gap:0.75rem;flex-wrap:wrap;">
-        <button class="btn btn-outline" onclick="checkFork4()">Check Answers</button>
-        <button class="btn btn-ghost" onclick="revealFork('fork4-reveal')">Show Full Solution</button>
-      </div>
-      <div class="fork-reveal" id="fork4-reveal">
-        <strong>Walk-through:</strong><br>
-        Fork A: Original gets positive return (truthy) -- enters if, prints "1" then "3".<br>
-        Child-of-A gets 0 (falsy) -- enters else, hits fork B, prints "2" then "3".<br>
-        Child-of-B: starts after fork B in the else-block, prints "2" then "3".<br><br>
-        <strong>Total: 3 processes.</strong><br>
-        One valid output: 13 23 23
-      </div>
-    </div>
-  </div>
-  <div class="fork-card">
     <div class="fork-card-header">Problem 5 -- From midterm version 2</div>
     <div class="fork-card-body">
-      <div class="fork-code">cout &lt;&lt; "1" &lt;&lt; endl;
+      <div class="fork-code"><pre>cout &lt;&lt; "1" &lt;&lt; endl;
 if (fork()) { // A -- parent enters if, child enters else
     cout &lt;&lt; "2" &lt;&lt; endl;
 } else {
     fork(); // B
     fork(); // C
 }
-cout &lt;&lt; "3" &lt;&lt; endl;</div>
+cout &lt;&lt; "3" &lt;&lt; endl;</pre></div>
       <div class="fork-questions">
         <div class="fork-q-row"><div class="fork-q-label">How many total processes run?</div><input class="fork-q-input" type="text" id="f5q1" placeholder="Enter a number"><div class="fork-q-feedback" id="f5q1-fb"></div></div>
         <div class="fork-q-row"><div class="fork-q-label">How many times is "1" printed?</div><input class="fork-q-input" type="text" id="f5q2" placeholder="Enter a number"><div class="fork-q-feedback" id="f5q2-fb"></div></div>
@@ -1207,15 +1218,15 @@ function checkFork1() {
   const q1 = (document.getElementById('f1q1').value||'').trim();
   const q2 = (document.getElementById('f1q2').value||'').trim();
   const q3 = (document.getElementById('f1q3').value||'').trim();
-  showFeedback('f1q1-fb', q1==='6', q1==='6' ? 'Correct -- 6 total processes.' : 'Not quite. Answer is 6. Show solution for details.');
-  showFeedback('f1q2-fb', q2==='2', q2==='2' ? 'Correct -- "1" is printed 2 times (Original and Child-A before fork B).' : 'Answer is 2. Only processes alive before fork B print "1".');
-  showFeedback('f1q3-fb', q3.length>0, q3.length>0 ? 'Many orderings are valid. Show solution for a concrete example.' : 'Please enter an answer.');
+  showFeedback('f1q1-fb', q1==='4', q1==='4' ? 'Correct -- 4 total processes.' : 'Not quite. Answer is 4.');
+  showFeedback('f1q2-fb', q2==='2', q2==='2' ? 'Correct -- "1" is printed 2 times.' : 'Answer is 2.');
+  showFeedback('f1q3-fb', q3==='4', q3==='4' ? 'Correct -- "2" is printed 4 times.' : 'Answer is 4.');
 }
 function checkFork2() {
   const q1 = (document.getElementById('f2q1').value||'').trim();
   const q2 = (document.getElementById('f2q2').value||'').toLowerCase();
   const q3 = (document.getElementById('f2q3').value||'').trim();
-  showFeedback('f2q1-fb', q1==='6', q1==='6' ? 'Correct -- 6 total processes.' : 'Not quite. Answer is 6.');
+  showFeedback('f2q1-fb', q1==='3', q1==='3' ? 'Correct -- 3 total processes.' : 'Not quite. Answer is 3.');
   const q2ok = q2.includes('original') || q2.includes('parent') || q2.includes('!= 0');
   showFeedback('f2q2-fb', q2ok, q2ok ? 'Correct -- the original process (parent, fork != 0 is true) prints "1".' : 'The original process. fork() != 0 is true for the parent, so it enters the if-body.');
   showFeedback('f2q3-fb', q3.length>0, q3.length>0 ? 'Many orderings valid. Show solution for a concrete example.' : 'Please enter an answer.');
@@ -1224,15 +1235,18 @@ function checkFork3() {
   const q1=(document.getElementById('f3q1').value||'').trim();
   const q2=(document.getElementById('f3q2').value||'').trim();
   const q3=(document.getElementById('f3q3').value||'').trim();
-  showFeedback('f3q1-fb',q1==='4',q1==='4'?'Correct -- 4 processes.':'Answer is 4.');
+  showFeedback('f3q1-fb',q1==='6',q1==='6'?'Correct -- 6 processes.':'Answer is 6.');
   showFeedback('f3q2-fb',q2==='2',q2==='2'?'Correct -- 2 times. Only processes before fork B print "1".':'Answer is 2.');
-  showFeedback('f3q3-fb',q3==='4',q3==='4'?'Correct -- 4 times. All 4 processes print "2".':'Answer is 4.');
+  showFeedback('f3q3-fb',q3.length>0,q3.length>0?'Many orderings are valid. Show solution for a concrete example.':'Please enter an answer.');
 }
 function checkFork4() {
   const q1=(document.getElementById('f4q1').value||'').trim();
   const q2=(document.getElementById('f4q2').value||'').trim();
-  showFeedback('f4q1-fb',q1==='3',q1==='3'?'Correct -- 3 processes.':'Answer is 3.');
-  showFeedback('f4q2-fb',q2.length>0,q2.length>0?'Many orderings valid. 13 23 23 is one example.':'Please enter an answer.');
+  const q3=(document.getElementById('f4q3').value||'').trim();
+  showFeedback('f4q1-fb',q1==='6',q1==='6'?'Correct -- 6 processes.':'Answer is 6.');
+  const q2ok = q2.includes('original') || q2.includes('parent') || q2.includes('!= 0');
+  showFeedback('f4q2-fb',q2ok,q2ok?'Correct -- the original process (parent, fork != 0 is true) prints "1".':'The original process. fork() != 0 is true for the parent, so it enters the if-body.');
+  showFeedback('f4q3-fb',q3.length>0,q3.length>0?'Many orderings are valid. Show solution for a concrete example.':'Please enter an answer.');
 }
 function checkFork5() {
   const q1=(document.getElementById('f5q1').value||'').trim();
