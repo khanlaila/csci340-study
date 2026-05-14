@@ -1122,7 +1122,8 @@ Example: 0xFF = 1111 1111 = 255 in decimal.<br>Example: 0x1A = 0001 1010 = 26 in
 <!-- TRACKER -->
 <div class="page" id="page-tracker">
   <div class="section-title">Topic Tracker</div>
-  <div class="section-sub">Star terms in the topic sections and come back here to review them by topic.</div>
+  <div class="section-sub" id="trackerSubtitle">Showing terms starred in OS Basics.</div>
+  <div class="tracker-summary" id="trackerTitle">OS Basics</div>
   <div class="tracker-summary" id="trackerSummary">Starred: 0</div>
   <div id="trackerList"></div>
 </div>
@@ -1181,7 +1182,11 @@ function showPage(name, btn) {
   document.getElementById('page-' + name).classList.add('active');
   if (btn) { btn.classList.add('active'); }
   else { document.querySelectorAll('nav button').forEach(b => { if (b.getAttribute('onclick') && b.getAttribute('onclick').includes("'" + name + "'")) b.classList.add('active'); }); }
-  if (name === 'tracker') renderTopicTracker();
+  if (topicPages.includes(name)) {
+    currentTrackerPage = name;
+    renderTopicPageStars(name);
+  }
+  if (name === 'tracker') renderTopicTracker(currentTrackerPage);
   if (name === 'flashcards') startFlashcards();
   window.scrollTo(0,0);
 }
@@ -1190,6 +1195,7 @@ function toggleCard(el) { el.parentElement.classList.toggle('open'); }
 // TOPIC TRACKER
 const topicPages = ['basics', 'processes', 'threads', 'memory', 'sync', 'visuals', 'review'];
 const topicTrackerKey = 'csci340-topic-stars';
+let currentTrackerPage = 'basics';
 const topicPageTitles = {
   basics: 'OS Basics',
   processes: 'Processes',
@@ -1214,9 +1220,9 @@ function saveTopicStars(stars) {
 function normalizeTopicKey(text) {
   return (text || '').replace(/\s+/g, ' ').trim();
 }
-function updateTopicTrackerCount() {
+function updateTopicTrackerCount(count) {
   const el = document.getElementById('trackerSummary');
-  if (el) el.textContent = 'Starred: ' + getTopicStars().length;
+  if (el) el.textContent = 'Starred: ' + count;
 }
 function setTopicStarButtonState(button, starred) {
   if (!button) return;
@@ -1230,7 +1236,8 @@ function toggleTopicStar(page, targetId, title, key) {
   if (idx >= 0) stars.splice(idx, 1);
   else stars.push({ page, targetId, title, key: cleanKey });
   saveTopicStars(stars);
-  renderTopicTracker();
+  currentTrackerPage = page;
+  renderTopicTracker(page);
   renderTopicPageStars(page);
 }
 function jumpToTopicStar(targetId) {
@@ -1241,43 +1248,40 @@ function removeTopicStar(page, key) {
   const cleanKey = normalizeTopicKey(key);
   const stars = getTopicStars().filter(item => !(item.page === page && item.key === cleanKey));
   saveTopicStars(stars);
-  renderTopicTracker();
+  renderTopicTracker(currentTrackerPage);
   renderTopicPageStars(page);
 }
-function renderTopicTracker() {
+function renderTopicTracker(page = currentTrackerPage) {
   const list = document.getElementById('trackerList');
   if (!list) return;
   const stars = getTopicStars();
-  updateTopicTrackerCount();
-  if (!stars.length) {
+  const filtered = stars.filter(item => item.page === page);
+  updateTopicTrackerCount(filtered.length);
+  const titleEl = document.getElementById('trackerTitle');
+  const subEl = document.getElementById('trackerSubtitle');
+  if (titleEl) titleEl.textContent = topicPageTitles[page] || page;
+  if (subEl) subEl.textContent = 'Showing terms starred in ' + (topicPageTitles[page] || page) + '.';
+  if (!filtered.length) {
     list.innerHTML = '<div class="tracker-empty">No starred terms yet. Use the star button on any topic question.</div>';
     return;
   }
-  const grouped = {};
-  stars.forEach(item => {
-    if (!grouped[item.page]) grouped[item.page] = [];
-    grouped[item.page].push(item);
-  });
-  list.innerHTML = topicPages.filter(page => grouped[page] && grouped[page].length).map(page => {
-    const items = grouped[page];
-    return `
-      <div class="tracker-group">
-        <div class="tracker-group-header">
-          <span>${topicPageTitles[page] || page}</span>
-          <span class="tracker-group-count">${items.length} starred</span>
-        </div>
-        ${items.map(item => `
-          <div class="tracker-item">
-            <div class="tracker-item-title" onclick='jumpToTopicStar(${JSON.stringify(item.targetId)})'>${item.title}</div>
-            <div class="tracker-item-actions">
-              <button class="btn btn-ghost" type="button" onclick='jumpToTopicStar(${JSON.stringify(item.targetId)})'>Go to term</button>
-              <button class="btn btn-ghost" type="button" onclick='removeTopicStar(${JSON.stringify(item.page)}, ${JSON.stringify(item.key)})'>Remove</button>
-            </div>
-          </div>
-        `).join('')}
+  list.innerHTML = `
+    <div class="tracker-group">
+      <div class="tracker-group-header">
+        <span>${topicPageTitles[page] || page}</span>
+        <span class="tracker-group-count">${filtered.length} starred</span>
       </div>
-    `;
-  }).join('');
+      ${filtered.map(item => `
+        <div class="tracker-item">
+          <div class="tracker-item-title" onclick='jumpToTopicStar(${JSON.stringify(item.targetId)})'>${item.title}</div>
+          <div class="tracker-item-actions">
+            <button class="btn btn-ghost" type="button" onclick='jumpToTopicStar(${JSON.stringify(item.targetId)})'>Go to term</button>
+            <button class="btn btn-ghost" type="button" onclick='removeTopicStar(${JSON.stringify(item.page)}, ${JSON.stringify(item.key)})'>Remove</button>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
 }
 function renderTopicPageStars(page) {
   const stars = getTopicStars().filter(item => item.page === page);
@@ -1321,7 +1325,7 @@ function initTopicTracker() {
     });
     renderTopicPageStars(page);
   });
-  renderTopicTracker();
+  renderTopicTracker(currentTrackerPage);
 }
 
 // PRACTICE STARS
