@@ -201,17 +201,17 @@
 </header>
 
 <nav id="mainNav">
-  <button class="active" data-page="overview" type="button">Overview</button>
-  <button data-page="basics" type="button">OS Basics</button>
-  <button data-page="processes" type="button">Processes</button>
-  <button data-page="threads" type="button">Threads + IPC</button>
-  <button data-page="memory" type="button">Memory</button>
-  <button data-page="sync" type="button">Synchronization</button>
-  <button data-page="practice" type="button">Practice Exam</button>
-  <button data-page="fork" type="button">Fork Practice</button>
-  <button data-page="visuals" type="button">Visual Diagrams</button>
-  <button data-page="review" type="button">Review Basics</button>
-  <button data-page="flashcards" type="button">Flashcards</button>
+  <button class="active" onclick="showPage('overview',this)">Overview</button>
+  <button onclick="showPage('basics',this)">OS Basics</button>
+  <button onclick="showPage('processes',this)">Processes</button>
+  <button onclick="showPage('threads',this)">Threads + IPC</button>
+  <button onclick="showPage('memory',this)">Memory</button>
+  <button onclick="showPage('sync',this)">Synchronization</button>
+  <button onclick="showPage('practice',this)">Practice Exam</button>
+  <button onclick="showPage('fork',this)">Fork Practice</button>
+  <button onclick="showPage('visuals',this)">Visual Diagrams</button>
+  <button onclick="showPage('review',this)">Review Basics</button>
+  <button onclick="showPage('flashcards',this)">Flashcards</button>
 </nav>
 
 <main>
@@ -222,16 +222,16 @@
   <div class="section-sub">All answers are taken directly from Prof. Shostak's class notes. His exact definitions are what matter on the exam.</div>
   <div class="alert"><strong>Important:</strong> Shostak grades on his exact definitions. Vague answers get 0 points. Always use the key terms he used in class. The passing threshold for the final is 55/100.</div>
   <div class="overview-grid">
-    <div class="overview-card" data-page="basics"><div class="oc-title">OS Basics</div><div class="oc-count">Programs, CPU, RAM, kernels, dual mode, interrupts</div></div>
-    <div class="overview-card" data-page="processes"><div class="oc-title">Processes</div><div class="oc-count">States, PCB, fork/exec/exit/wait, IPC</div></div>
-    <div class="overview-card" data-page="threads"><div class="oc-title">Threads + Networking</div><div class="oc-count">Threads, sockets, ports, DNS</div></div>
-    <div class="overview-card" data-page="memory"><div class="oc-title">Memory Management</div><div class="oc-count">Paging, frames, TLB, MMU, page fault</div></div>
-    <div class="overview-card" data-page="sync"><div class="oc-title">Synchronization</div><div class="oc-count">Race conditions, mutex, deadlock, semaphores</div></div>
-    <div class="overview-card" data-page="practice"><div class="oc-title">Practice Exam</div><div class="oc-count">10 questions pulled from both midterms</div></div>
-    <div class="overview-card" data-page="fork"><div class="oc-title">Fork Practice</div><div class="oc-count">Process trees and output -- both midterms had this</div></div>
-    <div class="overview-card" data-page="visuals"><div class="oc-title">Visual Diagrams</div><div class="oc-count">Process states, memory layout, paging, deadlock and more</div></div>
-    <div class="overview-card" data-page="review"><div class="oc-title">Review Basics</div><div class="oc-count">Memory addresses, bits/bytes, CPU, hex, pointers -- review guide</div></div>
-    <div class="overview-card" data-page="flashcards"><div class="oc-title">Flashcards</div><div class="oc-count">Quiz yourself on all topics</div></div>
+    <div class="overview-card" onclick="showPage('basics',null)"><div class="oc-title">OS Basics</div><div class="oc-count">Programs, CPU, RAM, kernels, dual mode, interrupts</div></div>
+    <div class="overview-card" onclick="showPage('processes',null)"><div class="oc-title">Processes</div><div class="oc-count">States, PCB, fork/exec/exit/wait, IPC</div></div>
+    <div class="overview-card" onclick="showPage('threads',null)"><div class="oc-title">Threads + Networking</div><div class="oc-count">Threads, sockets, ports, DNS</div></div>
+    <div class="overview-card" onclick="showPage('memory',null)"><div class="oc-title">Memory Management</div><div class="oc-count">Paging, frames, TLB, MMU, page fault</div></div>
+    <div class="overview-card" onclick="showPage('sync',null)"><div class="oc-title">Synchronization</div><div class="oc-count">Race conditions, mutex, deadlock, semaphores</div></div>
+    <div class="overview-card" onclick="showPage('practice',null)"><div class="oc-title">Practice Exam</div><div class="oc-count">10 questions pulled from both midterms</div></div>
+    <div class="overview-card" onclick="showPage('fork',null)"><div class="oc-title">Fork Practice</div><div class="oc-count">Process trees and output -- both midterms had this</div></div>
+    <div class="overview-card" onclick="showPage('visuals',null)"><div class="oc-title">Visual Diagrams</div><div class="oc-count">Process states, memory layout, paging, deadlock and more</div></div>
+    <div class="overview-card" onclick="showPage('review',null)"><div class="oc-title">Review Basics</div><div class="oc-count">Memory addresses, bits/bytes, CPU, hex, pointers -- review guide</div></div>
+    <div class="overview-card" onclick="showPage('flashcards',null)"><div class="oc-title">Flashcards</div><div class="oc-count">Quiz yourself on all topics</div></div>
   </div>
 
 </div>
@@ -1225,23 +1225,13 @@ Example: 0xFF = 1111 1111 = 255 in decimal.<br>Example: 0x1A = 0001 1010 = 26 in
 function showPage(name, btn) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-  const targetPage = document.getElementById('page-' + name);
-  if (!targetPage) return;
-  targetPage.classList.add('active');
+  document.getElementById('page-' + name).classList.add('active');
   if (btn) { btn.classList.add('active'); }
-  else { document.querySelectorAll('nav button[data-page]').forEach(b => { if (b.dataset.page === name) b.classList.add('active'); }); }
+  else { document.querySelectorAll('nav button').forEach(b => { if (b.getAttribute('onclick') && b.getAttribute('onclick').includes("'" + name + "'")) b.classList.add('active'); }); }
   if (name === 'flashcards') startFlashcards();
   window.scrollTo(0,0);
 }
 function toggleCard(el) { el.parentElement.classList.toggle('open'); }
-
-function initNavigation() {
-  document.querySelectorAll('nav button[data-page], .overview-card[data-page]').forEach(el => {
-    el.addEventListener('click', () => {
-      showPage(el.dataset.page, el.matches('nav button') ? el : null);
-    });
-  });
-}
 
 // STUDY SECTIONS
 const studyPages = ['basics', 'processes', 'threads', 'memory', 'sync', 'visuals', 'review'];
@@ -1767,7 +1757,6 @@ function updateScoreDisplay() {
 }
 updateCountdown();
 setInterval(updateCountdown, 1000);
-initNavigation();
 initStudyPages();
 initPracticeStars();
 syncFlashcardNotes();
