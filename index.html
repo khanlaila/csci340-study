@@ -63,22 +63,6 @@
   .qa-answer pre { font-family: 'DM Mono', monospace; background: #fdf0f5; border: 1px solid var(--border); border-radius: 8px; padding: 1rem; font-size: 0.82rem; overflow-x: auto; margin-top: 0.6rem; line-height: 1.6; }
   .qa-answer ul { padding-left: 1.4rem; margin-top: 0.4rem; }
   .qa-answer ul li { margin-bottom: 0.3rem; }
-  .study-layout { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 1rem; align-items: start; }
-  .study-main { min-width: 0; }
-  .study-sidebar { background: #fff; border: 1.5px solid var(--border); border-radius: 16px; box-shadow: var(--shadow); padding: 1rem; position: sticky; top: 88px; }
-  .study-side-title { font-weight: 700; color: var(--mauve); font-size: 0.95rem; margin-bottom: 0.25rem; }
-  .study-side-sub { color: var(--text-soft); font-size: 0.8rem; line-height: 1.5; margin-bottom: 0.9rem; }
-  .study-starred-list { display: flex; flex-direction: column; gap: 0.5rem; max-height: 220px; overflow-y: auto; padding-right: 0.2rem; margin-bottom: 1rem; }
-  .study-star-item { background: var(--pink-100); border: 1px solid var(--pink-300); border-radius: 10px; padding: 0.55rem 0.7rem; font-size: 0.82rem; line-height: 1.5; }
-  .study-star-item button { margin-top: 0.35rem; padding: 0.35rem 0.65rem; }
-  .study-empty { color: var(--text-soft); font-size: 0.82rem; line-height: 1.5; background: #faf7f9; border: 1px dashed var(--border); border-radius: 10px; padding: 0.8rem; }
-  .study-notes textarea { width: 100%; min-height: 180px; border: 1.5px solid var(--border); border-radius: 10px; padding: 0.8rem; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; line-height: 1.6; resize: vertical; background: var(--blush); color: var(--text); }
-  .study-notes textarea:focus { outline: none; border-color: var(--pink-400); background: #fff; }
-  .qa-question-actions { display: inline-flex; align-items: center; gap: 0.4rem; margin-left: auto; flex-shrink: 0; }
-  .qa-star-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem; background: #fff; color: var(--pink-600); border: 1.5px solid var(--pink-400); border-radius: 100px; padding: 0.35rem 0.7rem; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-  .qa-star-btn:hover { background: var(--pink-100); }
-  .qa-star-btn.starred { background: #fff7d9; border-color: #d8b100; color: #8a6000; }
-  .qa-card.starred { border-color: var(--pink-400); box-shadow: 0 8px 30px rgba(224,89,144,0.16); }
   .alert { background: var(--pink-100); border: 1.5px solid var(--pink-300); border-radius: 12px; padding: 1rem 1.3rem; margin-bottom: 1.5rem; font-size: 0.9rem; color: var(--mauve); }
   .alert strong { color: var(--rose); }
   .overview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
@@ -184,7 +168,7 @@
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: var(--pink-100); }
   ::-webkit-scrollbar-thumb { background: var(--pink-400); border-radius: 100px; }
-  @media (max-width: 760px) { .flashcards-layout, .practice-layout, .study-layout { grid-template-columns: 1fr; } .fc-sidebar { position: static; } .practice-sidebar { position: static; } .study-sidebar { position: static; } }
+  @media (max-width: 760px) { .flashcards-layout, .practice-layout { grid-template-columns: 1fr; } .fc-sidebar { position: static; } .practice-sidebar { position: static; } }
   @media (max-width: 600px) { nav button { padding: 0.8rem 0.8rem; font-size: 0.73rem; } .flashcard-wrap { height: 340px; } main { padding: 1.2rem 0.75rem 4rem; } .practice-header { flex-direction: column; } }
 </style>
 </head>
@@ -1233,130 +1217,6 @@ function showPage(name, btn) {
 }
 function toggleCard(el) { el.parentElement.classList.toggle('open'); }
 
-// STUDY SECTIONS
-const studyPages = ['basics', 'processes', 'threads', 'memory', 'sync', 'visuals', 'review'];
-const studyStoragePrefix = 'csci340-study-';
-function getStudyStars(page) {
-  const stars = readStorageJSON(studyStoragePrefix + page + '-stars', []);
-  return Array.isArray(stars) ? stars : [];
-}
-function saveStudyStars(page, stars) {
-  writeStorageJSON(studyStoragePrefix + page + '-stars', stars);
-}
-function getStudyNotes(page) {
-  return readStorageJSON(studyStoragePrefix + page + '-notes', '');
-}
-function saveStudyNotes(page, notes) {
-  writeStorageJSON(studyStoragePrefix + page + '-notes', notes);
-}
-function buildStudySidebar(page) {
-  const sidebar = document.createElement('aside');
-  sidebar.className = 'study-sidebar';
-  sidebar.innerHTML = `
-    <div class="study-side-title">Starred Terms</div>
-    <div class="study-side-sub">Mark the questions you need to work on again. They stay saved in your browser.</div>
-    <div class="study-starred-list" id="studyStarredList-${page}"></div>
-    <div class="study-notes">
-      <div class="study-side-title">Comments</div>
-      <div class="study-side-sub">Write reminders, mistakes, or anything else you want to review later.</div>
-      <textarea id="studyNotes-${page}" placeholder="Notes for this section..."></textarea>
-    </div>
-  `;
-  return sidebar;
-}
-function setStudyStarButtonState(button, starred) {
-  if (!button) return;
-  button.classList.toggle('starred', starred);
-  const icon = button.querySelector('.qa-star-icon');
-  const label = button.querySelector('.qa-star-text');
-  if (icon) icon.textContent = starred ? '★' : '☆';
-  if (label) label.textContent = starred ? 'Starred' : 'Star';
-}
-function focusStudyQuestion(page, key) {
-  const card = [...document.querySelectorAll(`#page-${page} .qa-card`)].find(el => el.dataset.studyKey === key);
-  if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-}
-function renderStudyPage(page) {
-  const pageEl = document.getElementById('page-' + page);
-  if (!pageEl || pageEl.dataset.studyEnhanced === '1') return;
-  const main = document.createElement('div');
-  main.className = 'study-main';
-  while (pageEl.firstChild) {
-    main.appendChild(pageEl.firstChild);
-  }
-  pageEl.classList.add('study-layout');
-  pageEl.appendChild(main);
-  pageEl.appendChild(buildStudySidebar(page));
-
-  const starred = getStudyStars(page);
-  main.querySelectorAll('.qa-card').forEach(card => {
-    const question = card.querySelector('.qa-question');
-    const text = card.querySelector('.qa-question-text');
-    const arrow = card.querySelector('.arrow');
-    if (!question || !text) return;
-    const key = normalizeKey(text.textContent);
-    card.dataset.studyKey = key;
-    if (!question.querySelector('.qa-question-actions')) {
-      const actions = document.createElement('div');
-      actions.className = 'qa-question-actions';
-      const starBtn = document.createElement('button');
-      starBtn.type = 'button';
-      starBtn.className = 'qa-star-btn';
-      starBtn.innerHTML = '<span class="qa-star-icon">☆</span><span class="qa-star-text">Star</span>';
-      starBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const currentStars = getStudyStars(page);
-        const idx = currentStars.indexOf(key);
-        if (idx >= 0) currentStars.splice(idx, 1);
-        else currentStars.push(key);
-        saveStudyStars(page, currentStars);
-        renderStudyPageSidebar(page);
-      });
-      actions.appendChild(starBtn);
-      question.insertBefore(actions, arrow || null);
-    }
-    card.classList.toggle('starred', starred.includes(key));
-    setStudyStarButtonState(question.querySelector('.qa-star-btn'), starred.includes(key));
-  });
-
-  const notes = pageEl.querySelector(`#studyNotes-${page}`);
-  if (notes) {
-    notes.value = getStudyNotes(page);
-    notes.addEventListener('input', () => saveStudyNotes(page, notes.value));
-  }
-  renderStudyPageSidebar(page);
-  pageEl.dataset.studyEnhanced = '1';
-}
-function renderStudyPageSidebar(page) {
-  const list = document.getElementById('studyStarredList-' + page);
-  if (!list) return;
-  const starred = getStudyStars(page);
-  const cards = [...document.querySelectorAll(`#page-${page} .qa-card`)];
-  const cardMap = new Map(cards.map(card => [card.dataset.studyKey, card]));
-  if (!starred.length) {
-    list.innerHTML = '<div class="study-empty">No starred questions yet.</div>';
-    return;
-  }
-  list.innerHTML = starred.map(key => {
-    const card = cardMap.get(key);
-    const text = card ? card.querySelector('.qa-question-text')?.textContent || key : key;
-    return `<div class="study-star-item"><div onclick='focusStudyQuestion(${JSON.stringify(page)}, ${JSON.stringify(key)})' style="cursor:pointer;">${text}</div><button class="btn btn-ghost" type="button" onclick='unstarStudyQuestion(${JSON.stringify(page)}, ${JSON.stringify(key)})'>Remove</button></div>`;
-  }).join('');
-}
-function unstarStudyQuestion(page, key) {
-  const currentStars = getStudyStars(page).filter(item => item !== key);
-  saveStudyStars(page, currentStars);
-  renderStudyPageSidebar(page);
-  const card = [...document.querySelectorAll(`#page-${page} .qa-card`)].find(el => el.dataset.studyKey === key);
-  if (card) {
-    card.classList.remove('starred');
-    setStudyStarButtonState(card.querySelector('.qa-star-btn'), false);
-  }
-}
-function initStudyPages() {
-  studyPages.forEach(renderStudyPage);
-}
-
 // PRACTICE
 const pAnswers = [
   { keys: ['portab','any machine','without compil','no compil','run on any','interpreter installed'], text: '<strong>Correct answer:</strong> The main advantage is <strong>portability</strong> -- the same code can run on any machine that has the interpreter installed. No separate compilation step needed. Python and JavaScript are examples. Do NOT say "fast" -- that is the advantage of COMPILED languages.' },
@@ -1753,7 +1613,6 @@ function updateScoreDisplay() {
 }
 updateCountdown();
 setInterval(updateCountdown, 1000);
-initStudyPages();
 initPracticeStars();
 syncFlashcardNotes();
 startFlashcards();
