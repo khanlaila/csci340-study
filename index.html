@@ -81,11 +81,18 @@
   .practice-header { background: #fff; border: 1.5px solid var(--border); border-radius: 14px; padding: 1.3rem 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
   .practice-header .ph-title { font-weight: 700; font-size: 1rem; color: var(--mauve); }
   .practice-header .ph-sub { font-size: 0.82rem; color: var(--text-soft); margin-top: 0.2rem; }
+  .practice-layout { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 1rem; align-items: start; }
+  .practice-main { min-width: 0; }
   .pq-card { background: #fff; border: 1.5px solid var(--border); border-radius: 14px; margin-bottom: 1.2rem; overflow: hidden; box-shadow: var(--shadow); }
-  .pq-header { padding: 1rem 1.3rem 0.6rem; background: var(--cream); border-bottom: 1.5px solid var(--border); display: flex; align-items: flex-start; gap: 0.6rem; }
+  .pq-header { padding: 1rem 1.3rem 0.6rem; background: var(--cream); border-bottom: 1.5px solid var(--border); display: flex; align-items: flex-start; gap: 0.6rem; flex-wrap: wrap; }
   .pq-num { background: var(--pink-500); color: #fff; border-radius: 50%; width: 26px; height: 26px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.78rem; font-weight: 700; margin-top: 1px; }
-  .pq-pts { font-size: 0.75rem; color: var(--text-soft); margin-left: auto; flex-shrink: 0; }
-  .pq-question-text { font-weight: 500; font-size: 0.95rem; line-height: 1.5; flex: 1; }
+  .pq-question-text { font-weight: 500; font-size: 0.95rem; line-height: 1.5; flex: 1; min-width: 0; }
+  .pq-actions { display: flex; align-items: center; gap: 0.45rem; margin-left: auto; flex-shrink: 0; }
+  .pq-pts { font-size: 0.75rem; color: var(--text-soft); flex-shrink: 0; }
+  .pq-star-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem; background: #fff; color: var(--pink-600); border: 1.5px solid var(--pink-400); border-radius: 100px; padding: 0.4rem 0.75rem; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .pq-star-btn:hover { background: var(--pink-100); }
+  .pq-star-btn.starred { background: #fff7d9; border-color: #d8b100; color: #8a6000; }
+  .pq-card.starred { border-color: var(--pink-400); box-shadow: 0 8px 30px rgba(224,89,144,0.16); }
   .pq-body { padding: 1rem 1.3rem; }
   .pq-textarea { width: 100%; min-height: 100px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; border: 1.5px solid var(--border); border-radius: 8px; padding: 0.75rem 1rem; resize: vertical; background: var(--blush); color: var(--text); line-height: 1.6; transition: border-color 0.2s; }
   .pq-textarea:focus { outline: none; border-color: var(--pink-400); background: #fff; }
@@ -122,6 +129,7 @@
   .fc-controls { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
   .fc-controls select { font-family: 'DM Sans', sans-serif; padding: 0.55rem 1rem; border: 1.5px solid var(--border); border-radius: 8px; background: #fff; color: var(--text); font-size: 0.9rem; cursor: pointer; }
   .fc-progress { font-size: 0.85rem; color: var(--text-soft); background: #fff; border: 1.5px solid var(--border); border-radius: 8px; padding: 0.4rem 1rem; }
+  .flashcards-layout { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 1rem; align-items: start; }
   .flashcard-wrap { perspective: 1200px; margin: 0 auto 1.5rem; max-width: 600px; height: 300px; cursor: pointer; }
   .flashcard { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
   .flashcard.flipped { transform: rotateY(180deg); }
@@ -135,6 +143,11 @@
   .fc-back .fc-a strong { color: var(--pink-700); }
   .fc-hint { font-size: 0.78rem; color: rgba(255,255,255,0.7); margin-top: 1rem; }
   .fc-nav { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1rem; }
+  .fc-star-row { display: flex; justify-content: center; margin-bottom: 0.85rem; }
+  .fc-star-btn { display: inline-flex; align-items: center; gap: 0.45rem; background: #fff; color: var(--pink-600); border: 1.5px solid var(--pink-400); border-radius: 100px; padding: 0.55rem 1rem; font-size: 0.84rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .fc-star-btn:hover { background: var(--pink-100); }
+  .fc-star-btn.starred { background: #fff7d9; border-color: #d8b100; color: #8a6000; }
+  .fc-star-icon { font-size: 1rem; line-height: 1; }
   .fc-rating { display: flex; gap: 0.5rem; justify-content: center; margin-top: 0.5rem; }
   .rating-btn { padding: 0.45rem 1.2rem; border-radius: 100px; border: none; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
   .rating-got { background: var(--correct-bg); color: var(--correct); border: 1.5px solid #9dd8b5; }
@@ -142,9 +155,20 @@
   .fc-score { display: flex; gap: 1.5rem; justify-content: center; font-size: 0.88rem; color: var(--text-soft); margin-top: 0.75rem; }
   .score-got { color: var(--correct); font-weight: 600; }
   .score-missed { color: var(--wrong); font-weight: 600; }
+  .fc-sidebar { background: #fff; border: 1.5px solid var(--border); border-radius: 16px; box-shadow: var(--shadow); padding: 1rem; position: sticky; top: 88px; }
+  .fc-side-title { font-weight: 700; color: var(--mauve); font-size: 0.95rem; margin-bottom: 0.25rem; }
+  .fc-side-sub { color: var(--text-soft); font-size: 0.8rem; line-height: 1.5; margin-bottom: 0.9rem; }
+  .fc-starred-list { display: flex; flex-direction: column; gap: 0.5rem; max-height: 220px; overflow-y: auto; padding-right: 0.2rem; margin-bottom: 1rem; }
+  .fc-star-item { background: var(--pink-100); border: 1px solid var(--pink-300); border-radius: 10px; padding: 0.55rem 0.7rem; font-size: 0.82rem; line-height: 1.5; }
+  .fc-star-item button { margin-top: 0.35rem; padding: 0.35rem 0.65rem; }
+  .fc-empty { color: var(--text-soft); font-size: 0.82rem; line-height: 1.5; background: #faf7f9; border: 1px dashed var(--border); border-radius: 10px; padding: 0.8rem; }
+  .fc-notes { margin-top: 0.9rem; }
+  .fc-notes textarea { width: 100%; min-height: 180px; border: 1.5px solid var(--border); border-radius: 10px; padding: 0.8rem; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; line-height: 1.6; resize: vertical; background: var(--blush); color: var(--text); }
+  .fc-notes textarea:focus { outline: none; border-color: var(--pink-400); background: #fff; }
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: var(--pink-100); }
   ::-webkit-scrollbar-thumb { background: var(--pink-400); border-radius: 100px; }
+  @media (max-width: 760px) { .flashcards-layout, .practice-layout { grid-template-columns: 1fr; } .fc-sidebar { position: static; } .practice-sidebar { position: static; } }
   @media (max-width: 600px) { nav button { padding: 0.8rem 0.8rem; font-size: 0.73rem; } .flashcard-wrap { height: 340px; } main { padding: 1.2rem 0.75rem 4rem; } .practice-header { flex-direction: column; } }
 </style>
 </head>
@@ -313,16 +337,18 @@ access.unlock();</pre></div></div>
 <div class="page" id="page-practice">
   <div class="section-title">Practice Exam</div>
   <div class="section-sub">Practice questions modeled on the scanned exams and final-review material. Type your answer then check it.</div>
-  <div class="grade-bar" id="gradeBar"><div class="grade-score" id="gradeScore">--</div><div class="grade-sub">Practice Score</div><div class="grade-msg" id="gradeMsg"></div></div>
-  <div class="practice-header">
-    <div><div class="ph-title">Spring 2026 Practice -- Cumulative Final Prep</div><div class="ph-sub">24 questions drawn from the study guide and exam scans. Type your answer, then click Check All.</div></div>
-    <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;">
-      <button class="btn btn-primary" onclick="checkAllAnswers()">Check All Answers</button>
-      <button class="btn btn-ghost" onclick="resetPractice()">Reset</button>
-    </div>
-  </div>
+  <div class="practice-layout">
+    <div class="practice-main">
+      <div class="grade-bar" id="gradeBar"><div class="grade-score" id="gradeScore">--</div><div class="grade-sub">Practice Score</div><div class="grade-msg" id="gradeMsg"></div></div>
+      <div class="practice-header">
+        <div><div class="ph-title">Spring 2026 Practice -- Cumulative Final Prep</div><div class="ph-sub">24 questions drawn from the study guide and exam scans. Type your answer, then click Check All.</div></div>
+        <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="checkAllAnswers()">Check All Answers</button>
+          <button class="btn btn-ghost" onclick="resetPractice()">Reset</button>
+        </div>
+      </div>
 
-  <div class="pq-card"><div class="pq-header"><div class="pq-num">1</div><div class="pq-question-text">(10 pts) What is the main advantage of interpreted programming languages? Give an example.</div><div class="pq-pts">10 pts</div></div><div class="pq-body"><textarea class="pq-textarea" id="ans1" placeholder="Write your answer here..."></textarea><div class="pq-result" id="res1"><div class="res-label"></div><div class="res-answer"></div></div></div></div>
+      <div class="pq-card"><div class="pq-header"><div class="pq-num">1</div><div class="pq-question-text">(10 pts) What is the main advantage of interpreted programming languages? Give an example.</div><div class="pq-pts">10 pts</div></div><div class="pq-body"><textarea class="pq-textarea" id="ans1" placeholder="Write your answer here..."></textarea><div class="pq-result" id="res1"><div class="res-label"></div><div class="res-answer"></div></div></div></div>
 
   <div class="pq-card"><div class="pq-header"><div class="pq-num">2</div><div class="pq-question-text">Why does your computer run more programs simultaneously than can fit in its RAM?</div><div class="pq-pts">15 pts</div></div><div class="pq-body"><textarea class="pq-textarea" id="ans2" placeholder="Write your answer here..."></textarea><div class="pq-result" id="res2"><div class="res-label"></div><div class="res-answer"></div></div></div></div>
 
@@ -368,9 +394,21 @@ access.unlock();</pre></div></div>
 
   <div class="pq-card"><div class="pq-header"><div class="pq-num">23</div><div class="pq-question-text">What is shared memory? Give one advantage and one disadvantage.</div><div class="pq-pts">15 pts</div></div><div class="pq-body"><textarea class="pq-textarea" id="ans23" placeholder="Write your answer here..."></textarea><div class="pq-result" id="res23"><div class="res-label"></div><div class="res-answer"></div></div></div></div>
 
-  <div class="pq-card"><div class="pq-header"><div class="pq-num">24</div><div class="pq-question-text">What is deadlock? What are the four conditions that must all be true for deadlock to happen?</div><div class="pq-pts">15 pts</div></div><div class="pq-body"><textarea class="pq-textarea" id="ans24" placeholder="Write your answer here..."></textarea><div class="pq-result" id="res24"><div class="res-label"></div><div class="res-answer"></div></div></div></div>
+      <div class="pq-card"><div class="pq-header"><div class="pq-num">24</div><div class="pq-question-text">What is deadlock? What are the four conditions that must all be true for deadlock to happen?</div><div class="pq-pts">15 pts</div></div><div class="pq-body"><textarea class="pq-textarea" id="ans24" placeholder="Write your answer here..."></textarea><div class="pq-result" id="res24"><div class="res-label"></div><div class="res-answer"></div></div></div></div>
 
-  <div style="text-align:center;margin-top:1.5rem;"><button class="btn btn-primary" onclick="checkAllAnswers()" style="padding:0.8rem 2.5rem;font-size:0.95rem;">Check All Answers</button></div>
+      <div style="text-align:center;margin-top:1.5rem;"><button class="btn btn-primary" onclick="checkAllAnswers()" style="padding:0.8rem 2.5rem;font-size:0.95rem;">Check All Answers</button></div>
+    </div>
+    <aside class="fc-sidebar practice-sidebar">
+      <div class="fc-side-title">Starred Questions</div>
+      <div class="fc-side-sub">Mark the practice questions you need to work on. They stay saved in your browser.</div>
+      <div class="fc-starred-list" id="practiceStarredList"></div>
+      <div class="fc-notes">
+        <div class="fc-side-title">Comments</div>
+        <div class="fc-side-sub">Write reminders, mistakes, or anything else you want to revisit later.</div>
+        <textarea id="practiceNotes" placeholder="Practice notes..."></textarea>
+      </div>
+    </aside>
+  </div>
 </div>
 
 <!-- FORK PRACTICE -->
@@ -1115,32 +1153,53 @@ Example: 0xFF = 1111 1111 = 255 in decimal.<br>Example: 0x1A = 0001 1010 = 26 in
     <button class="btn btn-ghost" onclick="resetScore()">Reset</button>
     <div class="fc-progress" id="fcProgress">Card 1 of 1</div>
   </div>
-  <div class="flashcard-wrap" onclick="flipCard()">
-    <div class="flashcard" id="flashcard">
-      <div class="fc-face fc-front">
-        <div class="fc-label">Question</div>
-        <div class="fc-q" id="fcQuestion">Loading...</div>
-        <div class="fc-hint">tap to reveal answer</div>
+  <div class="flashcards-layout">
+    <div>
+      <div class="fc-star-row">
+        <button class="fc-star-btn" id="fcStarBtn" type="button" onclick="toggleStarForCurrent()">
+          <span class="fc-star-icon" id="fcStarIcon">☆</span>
+          <span id="fcStarText">Star this term</span>
+        </button>
       </div>
-      <div class="fc-face fc-back">
-        <div class="fc-label">Answer -- Prof. Shostak</div>
-        <div class="fc-a" id="fcAnswer">Loading...</div>
+      <div class="flashcard-wrap" onclick="flipCard()">
+        <div class="flashcard" id="flashcard">
+          <div class="fc-face fc-front">
+            <div class="fc-label">Question</div>
+            <div class="fc-q" id="fcQuestion">Loading...</div>
+            <div class="fc-hint">tap to reveal answer</div>
+          </div>
+          <div class="fc-face fc-back">
+            <div class="fc-label">Answer -- Prof. Shostak</div>
+            <div class="fc-a" id="fcAnswer">Loading...</div>
+          </div>
+        </div>
+      </div>
+      <div class="fc-nav">
+        <button class="btn btn-ghost" onclick="prevCard()">Prev</button>
+        <button class="btn btn-primary" onclick="nextCard()">Next</button>
+      </div>
+      <div id="fcRatingArea" style="display:none;">
+        <div class="fc-rating">
+          <button class="rating-btn rating-got" onclick="rateCard(true)">Got it</button>
+          <button class="rating-btn rating-missed" onclick="rateCard(false)">Missed</button>
+        </div>
+      </div>
+      <div class="fc-score">
+        <span>Got it: <span class="score-got" id="scoreGot">0</span></span>
+        <span>Missed: <span class="score-missed" id="scoreMissed">0</span></span>
       </div>
     </div>
-  </div>
-  <div class="fc-nav">
-    <button class="btn btn-ghost" onclick="prevCard()">Prev</button>
-    <button class="btn btn-primary" onclick="nextCard()">Next</button>
-  </div>
-  <div id="fcRatingArea" style="display:none;">
-    <div class="fc-rating">
-      <button class="rating-btn rating-got" onclick="rateCard(true)">Got it</button>
-      <button class="rating-btn rating-missed" onclick="rateCard(false)">Missed</button>
-    </div>
-  </div>
-  <div class="fc-score">
-    <span>Got it: <span class="score-got" id="scoreGot">0</span></span>
-    <span>Missed: <span class="score-missed" id="scoreMissed">0</span></span>
+
+    <aside class="fc-sidebar">
+      <div class="fc-side-title">Starred Terms</div>
+      <div class="fc-side-sub">Use stars for terms you need to review again. They stay saved in your browser.</div>
+      <div class="fc-starred-list" id="fcStarredList"></div>
+      <div class="fc-notes">
+        <div class="fc-side-title">Comments</div>
+        <div class="fc-side-sub">Write reminders, mistakes, or anything you want next to the flashcards.</div>
+        <textarea id="fcNotes" placeholder="Notes for this flashcard set..."></textarea>
+      </div>
+    </aside>
   </div>
 </div>
 
@@ -1186,6 +1245,169 @@ const pAnswers = [
   { keys: ['deadlock','mutual exclusion','hold and wait','no preemption','circular wait'], text: '<strong>Correct answer:</strong> <strong>Deadlock</strong> = multiple threads/processes block each other and nobody progresses. Four conditions: <strong>mutual exclusion</strong>, <strong>hold and wait</strong>, <strong>no preemption</strong>, and <strong>circular wait</strong>.' },
 ];
 const pointVals = [10,15,15,10,10,15,15,15,15,15,10,15,15,15,15,15,15,15,15,15,15,15,15,15];
+
+const practiceStarKey = 'csci340-practice-stars';
+const practiceNotesKey = 'csci340-practice-notes';
+const flashcardStarKey = 'csci340-flashcard-stars';
+const flashcardNotesKey = 'csci340-flashcard-notes';
+
+function readStorageJSON(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch (err) {
+    return fallback;
+  }
+}
+function writeStorageJSON(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (err) {}
+}
+function normalizeKey(text) {
+  return (text || '').replace(/\s+/g, ' ').trim();
+}
+function setStarButtonState(button, starred) {
+  if (!button) return;
+  button.classList.toggle('starred', starred);
+  const icon = button.querySelector('.pq-star-icon, .fc-star-icon');
+  const label = button.querySelector('.pq-star-text, #fcStarText');
+  if (icon) icon.textContent = starred ? '★' : '☆';
+  if (label && label.id !== 'fcStarText') label.textContent = starred ? 'Starred' : 'Star this term';
+  if (button.id === 'fcStarBtn') {
+    const fcText = document.getElementById('fcStarText');
+    const fcIcon = document.getElementById('fcStarIcon');
+    if (fcText) fcText.textContent = starred ? 'Starred' : 'Star this term';
+    if (fcIcon) fcIcon.textContent = starred ? '★' : '☆';
+  }
+}
+function getPracticeStars() {
+  const stars = readStorageJSON(practiceStarKey, []);
+  return Array.isArray(stars) ? stars : [];
+}
+function savePracticeStars(stars) {
+  writeStorageJSON(practiceStarKey, stars);
+}
+function getFlashcardStars() {
+  const stars = readStorageJSON(flashcardStarKey, []);
+  return Array.isArray(stars) ? stars : [];
+}
+function saveFlashcardStars(stars) {
+  writeStorageJSON(flashcardStarKey, stars);
+}
+function renderPracticeStars() {
+  const starred = getPracticeStars();
+  const list = document.getElementById('practiceStarredList');
+  document.querySelectorAll('#page-practice .pq-card').forEach(card => {
+    const key = card.dataset.practiceKey || normalizeKey(card.querySelector('.pq-question-text')?.textContent);
+    card.dataset.practiceKey = key;
+    const button = card.querySelector('.pq-star-btn');
+    const isStarred = starred.includes(key);
+    card.classList.toggle('starred', isStarred);
+    setStarButtonState(button, isStarred);
+  });
+  if (!list) return;
+  if (!starred.length) {
+    list.innerHTML = '<div class="fc-empty">No practice questions starred yet.</div>';
+    return;
+  }
+  const cards = [...document.querySelectorAll('#page-practice .pq-card')];
+  const cardMap = new Map(cards.map(card => [card.dataset.practiceKey, card]));
+  list.innerHTML = starred.map(key => {
+    const card = cardMap.get(key);
+    const text = card ? card.querySelector('.pq-question-text')?.textContent || key : key;
+    return `<div class="fc-star-item"><div>${text}</div><button class="btn btn-ghost" type="button" onclick='unstarPracticeQuestion(${JSON.stringify(key)})'>Remove</button></div>`;
+  }).join('');
+}
+function togglePracticeStar(key) {
+  const cleanKey = normalizeKey(key);
+  const stars = getPracticeStars();
+  const idx = stars.indexOf(cleanKey);
+  if (idx >= 0) stars.splice(idx, 1);
+  else stars.push(cleanKey);
+  savePracticeStars(stars);
+  renderPracticeStars();
+}
+function unstarPracticeQuestion(key) {
+  const cleanKey = normalizeKey(key);
+  const stars = getPracticeStars().filter(item => item !== cleanKey);
+  savePracticeStars(stars);
+  renderPracticeStars();
+}
+function scrollToPracticeQuestion(key) {
+  const card = document.querySelector(`#page-practice .pq-card[data-practice-key="${CSS.escape(key)}"]`);
+  if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+function initPracticeStars() {
+  document.querySelectorAll('#page-practice .pq-card').forEach(card => {
+    const header = card.querySelector('.pq-header');
+    const pts = card.querySelector('.pq-pts');
+    const question = card.querySelector('.pq-question-text');
+    if (!header || !question) return;
+    const key = normalizeKey(question.textContent);
+    card.dataset.practiceKey = key;
+    if (!card.querySelector('.pq-actions')) {
+      const actions = document.createElement('div');
+      actions.className = 'pq-actions';
+      const starBtn = document.createElement('button');
+      starBtn.type = 'button';
+      starBtn.className = 'pq-star-btn';
+      starBtn.dataset.practiceKey = key;
+      starBtn.innerHTML = '<span class="pq-star-icon">☆</span><span class="pq-star-text">Star this term</span>';
+      starBtn.addEventListener('click', () => togglePracticeStar(key));
+      actions.appendChild(starBtn);
+      if (pts) actions.appendChild(pts);
+      header.appendChild(actions);
+    }
+  });
+  const notes = document.getElementById('practiceNotes');
+  if (notes) {
+    notes.value = readStorageJSON(practiceNotesKey, '');
+    notes.addEventListener('input', () => writeStorageJSON(practiceNotesKey, notes.value));
+  }
+  renderPracticeStars();
+}
+function renderFlashcardStars() {
+  const starred = getFlashcardStars();
+  const list = document.getElementById('fcStarredList');
+  const current = currentDeck[currentIndex];
+  const currentKey = current ? normalizeKey(current.q) : '';
+  const currentStarred = currentKey && starred.includes(currentKey);
+  setStarButtonState(document.getElementById('fcStarBtn'), currentStarred);
+  if (!list) return;
+  if (!starred.length) {
+    list.innerHTML = '<div class="fc-empty">No flashcards starred yet.</div>';
+    return;
+  }
+  const cardMap = new Map(allCards.map(card => [normalizeKey(card.q), card]));
+  list.innerHTML = starred.map(key => {
+    const card = cardMap.get(key);
+    const text = card ? card.q : key;
+    return `<div class="fc-star-item"><div>${text}</div><button class="btn btn-ghost" type="button" onclick='unstarFlashcard(${JSON.stringify(key)})'>Remove</button></div>`;
+  }).join('');
+}
+function toggleStarForCurrent() {
+  if (!currentDeck.length) return;
+  const key = normalizeKey(currentDeck[currentIndex].q);
+  const stars = getFlashcardStars();
+  const idx = stars.indexOf(key);
+  if (idx >= 0) stars.splice(idx, 1);
+  else stars.push(key);
+  saveFlashcardStars(stars);
+  renderFlashcardStars();
+}
+function unstarFlashcard(key) {
+  const cleanKey = normalizeKey(key);
+  const stars = getFlashcardStars().filter(item => item !== cleanKey);
+  saveFlashcardStars(stars);
+  renderFlashcardStars();
+}
+function syncFlashcardNotes() {
+  const notes = document.getElementById('fcNotes');
+  if (!notes) return;
+  notes.value = readStorageJSON(flashcardNotesKey, '');
+  notes.addEventListener('input', () => writeStorageJSON(flashcardNotesKey, notes.value));
+}
 
 function checkAllAnswers() {
   let total = 0, max = 0;
@@ -1370,6 +1592,7 @@ function showCurrentCard() {
   isFlipped=false;
   document.getElementById('fcRatingArea').style.display='none';
   ratedCurrent=false;
+  renderFlashcardStars();
 }
 function flipCard() {
   isFlipped=!isFlipped;
@@ -1390,6 +1613,8 @@ function updateScoreDisplay() {
 }
 updateCountdown();
 setInterval(updateCountdown, 1000);
+initPracticeStars();
+syncFlashcardNotes();
 startFlashcards();
 </script>
 </body>
