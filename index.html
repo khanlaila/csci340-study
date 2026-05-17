@@ -36,10 +36,6 @@
   header h1 { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 5vw, 3rem); color: #fff; position: relative; letter-spacing: -0.5px; text-shadow: 0 2px 12px rgba(0,0,0,0.15); }
   header p { color: rgba(255,255,255,0.88); margin-top: 0.5rem; font-size: 1rem; font-weight: 300; position: relative; }
   .header-badge { display: inline-block; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.35); border-radius: 100px; padding: 0.25rem 1rem; font-size: 0.8rem; color: #fff; margin-top: 0.75rem; position: relative; }
-  .countdown-badge { display: inline-block; background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.28); border-radius: 16px; padding: 0.6rem 1rem; margin-top: 0.8rem; color: #fff; position: relative; min-width: min(92vw, 420px); }
-  .countdown-label { font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.8; }
-  .countdown-value { font-family: 'DM Mono', monospace; font-size: clamp(0.95rem, 2.4vw, 1.2rem); font-weight: 700; margin-top: 0.3rem; }
-  .countdown-sub { font-size: 0.78rem; opacity: 0.84; margin-top: 0.15rem; }
   nav { display: flex; gap: 0; background: #fff; border-bottom: 2px solid var(--border); overflow-x: auto; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(160,60,100,0.08); justify-content: center; }
   nav button { flex-shrink: 0; padding: 1rem 1.1rem; border: none; background: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 500; color: var(--text-soft); border-bottom: 3px solid transparent; transition: all 0.2s; white-space: nowrap; }
   nav button:hover { color: var(--pink-600); background: var(--pink-100); }
@@ -172,20 +168,17 @@
   <h1>CSCI 340 Final Study Guide</h1>
   <p>Operating Systems -- Prof. Shostak -- Spring 2026</p>
   <span class="header-badge">Final: May 21, 2026 at 5:20 PM -- Cumulative -- 50% of grade</span>
-  <div class="countdown-badge" aria-live="polite">
-    <div class="countdown-label">Countdown to Final</div>
-    <div class="countdown-value" id="countdownValue">Loading...</div>
-    <div class="countdown-sub" id="countdownSub">May 21, 2026 at 5:20 PM</div>
-  </div>
 </header>
 
 <nav id="mainNav">
   <button class="active" onclick="showPage('overview',this)">Overview</button>
   <button onclick="showPage('basics',this)">OS Basics</button>
   <button onclick="showPage('processes',this)">Processes</button>
-  <button onclick="showPage('threads',this)">Threads + IPC</button>
+  <button onclick="showPage('threads',this)">Threads</button>
+  <button onclick="showPage('ipc',this)">IPC + Network</button>
   <button onclick="showPage('memory',this)">Memory</button>
   <button onclick="showPage('sync',this)">Synchronization</button>
+  <button onclick="showPage('scheduling',this)">Scheduling</button>
   <button onclick="showPage('practice',this)">Practice Exam</button>
   <button onclick="showPage('fork',this)">Fork Practice</button>
   <button onclick="showPage('visuals',this)">Visual Diagrams</button>
@@ -203,10 +196,12 @@
   <div class="alert"><strong>Important:</strong> Shostak grades on his exact definitions. Vague answers get 0 points. Always use the key terms he used in class. The passing threshold for the final is 55/100.</div>
   <div class="overview-grid">
     <div class="overview-card" onclick="showPage('basics',null)"><div class="oc-title">OS Basics</div><div class="oc-count">Programs, CPU, RAM, kernels, dual mode, interrupts</div></div>
-    <div class="overview-card" onclick="showPage('processes',null)"><div class="oc-title">Processes</div><div class="oc-count">States, PCB, fork/exec/exit/wait, IPC</div></div>
-    <div class="overview-card" onclick="showPage('threads',null)"><div class="oc-title">Threads + Networking</div><div class="oc-count">Threads, sockets, ports, DNS</div></div>
+    <div class="overview-card" onclick="showPage('processes',null)"><div class="oc-title">Processes</div><div class="oc-count">States, PCB, fork/exec/exit/wait, zombies, orphans</div></div>
+    <div class="overview-card" onclick="showPage('threads',null)"><div class="oc-title">Threads</div><div class="oc-count">Threading, shared state, std::thread</div></div>
+    <div class="overview-card" onclick="showPage('ipc',null)"><div class="oc-title">IPC + Network</div><div class="oc-count">Shared memory, message passing, sockets, DNS, RPC</div></div>
     <div class="overview-card" onclick="showPage('memory',null)"><div class="oc-title">Memory Management</div><div class="oc-count">Paging, frames, TLB, MMU, page fault</div></div>
     <div class="overview-card" onclick="showPage('sync',null)"><div class="oc-title">Synchronization</div><div class="oc-count">Race conditions, mutex, deadlock, semaphores</div></div>
+    <div class="overview-card" onclick="showPage('scheduling',null)"><div class="oc-title">CPU Scheduling</div><div class="oc-count">FCFS, RR, priority, real-time</div></div>
     <div class="overview-card" onclick="showPage('practice',null)"><div class="oc-title">Practice Exam</div><div class="oc-count">10 questions pulled from both midterms</div></div>
     <div class="overview-card" onclick="showPage('fork',null)"><div class="oc-title">Fork Practice</div><div class="oc-count">Process trees and output -- both midterms had this</div></div>
     <div class="overview-card" onclick="showPage('visuals',null)"><div class="oc-title">Visual Diagrams</div><div class="oc-count">Process states, memory layout, paging, deadlock and more</div></div>
@@ -238,24 +233,24 @@
 <!-- PROCESSES -->
 <div class="page" id="page-processes">
   <div class="section-title">Processes</div>
-  <div class="section-sub">PCB, process states, fork/exec/exit/wait, zombies, orphans, IPC</div>
-  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a process? How is it different from a program?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Process</strong> = a program in execution.<br><br>When apps are run, the OS looks at processes and what they need, this makes processes dynamic when the OS manages them. One program can have multiple processes (like how Chrome can have 5 different processes even when only 1 window is open).<br><br>The OS needs a record for every process.</div></div>
+  <div class="section-sub">PCB, process states, fork/exec/exit/wait, zombies, orphans</div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a process? How is it different from a program?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Process</strong> = a program in execution.<br><br><strong>Program</strong> = a list of directions for the computer to execute, and it is used to manipulate data.<br><br>When apps are run, the OS looks at processes and what they need, so processes are dynamic when the OS manages them. One program can have multiple processes.<br><br>The OS needs a record for every process.</div></div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is the PCB? Typical components?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Process Control Block (PCB)</strong> = a record for a single process maintained by the OS. What’s in it depends on what the OS decides, typically &lt;1 kilobyte in size.<br><br>Common things to have in the PCB:<br>PID = a numeric name of a process<br>PID of the parent = PID of a process that made another process<br>CPU scheduling information = OS decides which process uses which CPU part<br>Memory management info = addresses that were given to currently running program<br>List of opened files<br>List of requested I/O devices<br>Register file = copies of values in the registers<br>PC = program counter, showing where the execution of program code is happening right now</div></div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">List the five process states and describe each.</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><ul><li><strong>New</strong> = created but not ready to do anything.</li><li><strong>Ready</strong> = process joins the ready queue, ready and willing to use the CPU.</li><li><strong>Running</strong> = using the CPU right now.</li><li><strong>Waiting</strong> = waiting for something not requiring CPU right now.</li><li><strong>Terminated</strong> = doesn’t need anything anymore.</li></ul></div></div>
-  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Ready queue vs I/O queue. How many of each?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Ready queue</strong> = a collection of processes ready and willing to use the CPU.<br><br><strong>I/O queue</strong> = a collection of processes waiting to use an I/O device.<br><br>There is 1 I/O queue for each I/O device.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Ready queue vs I/O queue. How many of each?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Ready queue</strong> = a collection of processes ready and willing to use the CPU. Typically there is one ready queue per CPU in a system.<br><br><strong>I/O queue</strong> = a collection of processes waiting to use an I/O device.<br><br>There is 1 I/O queue for each I/O device.</div></div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What happens when a process requests I/O (blocking)? Where does it go after?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">Some processes will use I/O devices and or hard-disk, the process makes a request and stops using the CPU to join the I/O queue. The CPU switches to execute another process when this happens.<br><br>Sooner or later, the process gets permission to use the hard-disk, while the process uses the hard-disk, the process is in the Waiting State. After this, the process will want to use the CPU again, it will end up in the ready queue again.</div></div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a context switch? Why does it have overhead?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Context Switch</strong> = a sequence of steps that the CPU goes through to switch execution from one process to another.<br><br>P1 → P2<br>Pause process 1<br>Save all general purpose CPU registers and PC of P1 into RAM (saving context)<br>Load from RAM all general purpose CPU registers and PC of P2 (loading next context)<br>Resume process 2<br><br>To switch execution from P1 to P2, there are 2 RAM operations.<br>We store context of P1 to RAM.<br>Then read context of P2 from RAM.<br>This explains why context switching takes extra time, RAM is slow compared to CPU.</div></div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Layout of a process in memory. Describe each section.</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><ul><li><strong>Text Section</strong> = Program code (instructions).</li><li><strong>Data Section</strong> = Global variables and static variables.</li><li><strong>Heap</strong> = Dynamic memory (new operator). Fragmented, full of holes.</li><li><strong>Stack</strong> = Local variables, function parameters, return addresses. Clean LIFO order, no holes. Each thread has its own stack.</li></ul></div></div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is fork()? Return values?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>fork()</strong> = Creates an almost exact copy of the process. Original = Parent. Copy = Child.<br><br>Returns <strong>0 to child</strong>. Returns <strong>positive PID value to parent</strong>. After fork, both processes continue from the next instruction concurrently. Order is not guaranteed.</div></div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is exec()? exit()? wait()?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>exec("name")</strong> = Erases all process content and starts a new program from an executable file. Typically used in child after fork().<br><br><strong>exit()</strong> = Stops the process, reports exit status (0 = success), releases resources. Code after exit() does not run. PCB stays -- process becomes zombie until parent calls wait().<br><br><strong>wait()</strong> = Called by parent to pause until child terminates. Receives child's exit status. Parent then continues.</div></div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Zombie process? Orphan process? Why are orphans bad?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Zombie</strong> = Called exit() but parent has not called wait() yet. No resources, but PCB remains.<br><br><strong>Orphan</strong> = Parent exited without calling wait(). Bad because nobody can collect exit status. System either adopts orphans or uses cascading termination (kill all descendants when parent exits).</div></div>
-  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is IPC? Two general classes?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>IPC</strong> = Tools that allow processes to exchange data.<br><br><strong>Message Passing</strong> = Pass message to OS, OS delivers to other process. Slower (syscall), safer, works across different computers.<br><br><strong>Shared Memory</strong> = Processes share a memory region directly. Faster (OS help only once), harder to program correctly, same computer only.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What happens to processes when state changes? What is POSIX?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>State changes</strong> are not physical movement. The OS updates the internal data structures, like the PCB, to mark a process as Ready, Running, Waiting, or Terminated.<br><br><strong>POSIX</strong> = Portable Operating System Interface, a set of standards that define how Unix-like operating systems should behave to maintain compatibility between systems.</div></div>
 </div>
 
 <!-- THREADS -->
 <div class="page" id="page-threads">
-  <div class="section-title">Threads and Networking</div>
-  <div class="section-sub">Threads vs processes, DNS, ports, sockets, std::thread</div>
+  <div class="section-title">Threads</div>
+  <div class="section-sub">Threads vs processes, shared state, std::thread</div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a thread? What do threads share vs not share?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Threads</strong> = an independent execution of program code from a separate program counter.<br><br>Threads start with one main thread within a process, threads share:<br>Text Section<br>Data Section<br>Heaps<br><br>Threads do NOT share:<br>Stack<br>Each thread has its own stack, the stack is used to manage each thread's independent execution flow.<br><br>All function parameters, all local variables are private to each thread.</div></div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Why create threads instead of processes?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">Threads are memory efficient, fast to create, context switching is faster, and they have shared memory by default. Overall, there is less overhead from the OS compared to processes.</div></div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Why create processes instead of threads?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">Processes can run exec(). If one thread crashes, the whole process is stopped with all of its threads, meanwhile processes’ survivability are independent despite being more expensive, this makes them fault-independent.</div></div>
@@ -265,18 +260,33 @@ std::thread t2{Foo,56};
 
 t1.join();
 t2.join();</pre></div></div>
-  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is an IP address? Why is it not enough alone?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>IP Address</strong> = Each number is an unsigned byte integer (0 - 255), helps to identify the destination of a computer.<br><br>An IP address alone isn’t enough to send a message.</div></div>
-  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Networking port? Well-known ports?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Networking Port</strong> = a unique numeric identifier given to every process that wants to use the network. An IP address and a port is considered a full address.<br><br><strong>Well Known Networking Port</strong> = networking ports reserved for a specific purpose.<br><br>Browser knows that port:80 is reserved for HTTP requests, if there’s a web server listening for incoming web page requests, it will be listening on port 80.</div></div>
-  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a network socket? What is DNS?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Network Socket</strong> = a combination of IP address and networking port.<br><br><strong>DNS Server</strong> = DNS servers function as the internet’s phonebook, translating human-readable domain names (like example.com) into machine-readable IP addresses.</div></div>
+</div>
+
+<!-- IPC + NETWORK -->
+<div class="page" id="page-ipc">
+  <div class="section-title">IPC + Networking</div>
+  <div class="section-sub">Inter-process communication, shared memory, message passing, and basic networking terms.</div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is IPC? What are the two general classes of IPC?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>IPC</strong> = inter-process communications, a mechanism that allows cooperating processes to exchange data.<br><br>The two general classes are <strong>shared memory</strong> and <strong>message passing</strong>.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is the idea of shared memory? What are its advantages and disadvantages?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">OS creates a region that multiple processes can read and write. That region is called shared memory.<br><br><strong>Advantages</strong>: faster because the OS is only needed once to create the region.<br><strong>Disadvantages</strong>: error-prone, requires synchronization and planning, and cannot be used between two different computers on a network.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is the idea of message passing? What are the advantages and disadvantages?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">Process A passes data to the OS and the OS delivers it to process B.<br><br><strong>Advantages</strong>: easier and less error-prone, and works well across different computers.<br><strong>Disadvantages</strong>: slower than shared memory because every message goes through the OS.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Can shared memory be used by processes on two different computers?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">No. Shared memory requires direct access to the same memory, so it cannot be used over a network between two computers.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a network? What is an IP address? Why is an IP address not enough?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Network</strong> = a bunch of computers connected together to exchange data.<br><br><strong>IP address</strong> = numerical label assigned to each device connected to a network. A classic IPv4 address has 4 numbers separated by periods, each between 0 and 255.<br><br>An IP address alone is not enough because it identifies the device, not the program. You also need a port number.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a networking port? What are well-known ports?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Networking port</strong> = a unique numeric identifier assigned to every process in the system that wants to use the network.<br><br><strong>Well-known ports</strong> = ports with predefined purposes, usually the first 1024 ports.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a networking socket? What is a server? What is a client?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Socket</strong> = an endpoint for communication.<br><br><strong>Networking socket</strong> = IP address + networking port, for example <code>55.220.0.51:81</code>.<br><br><strong>Server</strong> = a computer on the network that receives requests and provides services to other computers.<br><strong>Client</strong> = a computer that obtains information from a server.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a communication protocol? What is URL? What is DNS? What is RPC?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Communication protocol</strong> = set of rules and standards that defines how data is formatted, transmitted, and received between devices on a network.<br><br><strong>URL</strong> = the human-readable address used to access resources on the internet.<br><br><strong>DNS</strong> = a separate computer that takes a URL or domain name and returns the IP address of the destination computer.<br><br><strong>RPC</strong> = Remote Procedure Call, an IPC tool that lets you start execution of a function on a faraway computer/server.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a network socket? What does it represent?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">A network socket is the combination of an IP address and a networking port. It identifies exactly where data should go on a machine.</div></div>
 </div>
 
 <!-- MEMORY -->
 <div class="page" id="page-memory">
   <div class="section-title">Memory Management</div>
   <div class="section-sub">Physical vs logical addresses, MMU, paging, TLB, page faults</div>
-  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Physical address vs logical address. How many of each exist?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Logical Memory Address</strong> can also be called a Virtual Memory Address.<br><br><strong>Physical Memory Address</strong> = the real address of the real RAM device.<br><br>There is only one physical address space in your system, because there is only one physical RAM device in your PC.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Physical address vs logical address. How many of each exist?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Logical address</strong> = the memory coordinates the process sees, and it is generated by the CPU. It can also be called a virtual address.<br><br><strong>Physical address</strong> = the coordinates of a specific byte in real physical RAM.<br><br>There is one physical address space in the system, and each process has its own logical address space.</div></div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What kind of address does the CPU use? What arrives at RAM?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">When CPU fetches address they access using <strong>logical address</strong> from the instruction.<br><br>Addresses used in instructions are logical addresses. The MMU converts them to physical addresses, and the <strong>physical address</strong> arrives at RAM.</div></div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is the MMU?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Memory Management Unit</strong> = a device that converts logical addresses to physical addresses.<br><br>This device is responsible for dealing with addresses, before running a program, the OS calls the MMU saying it’s about to run a program, and says this program believes it owns all the memory in the computer, the OS tells the MMU to catch addresses that running programs use and convert them from program specific addresses to physical memory addresses.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is physical address space? What is logical address space?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Physical address space</strong> = the collection of all physical addresses available in a system. There is only one physical address space because there is only one RAM.<br><br><strong>Logical (virtual) address space</strong> = the collection of all logical addresses available to a process. Each process lives in its own space illusion.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">How many page tables are there in a system? Is it necessary to have the whole program in memory to run it?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">There is <strong>one page table per process</strong>.<br><br>No, it is not necessary to have the whole program in memory to run it. The OS can load only the needed parts into RAM.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What are the three ways the MMU can deal with the page table? What are the disadvantages of the two we do not use?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>1. Store the whole page table in the MMU</strong> = not a good option because it makes context switches slow.<br><br><strong>2. Keep the whole page table in RAM</strong> = better, but still bad because it doubles the memory operations.<br><br><strong>3. Store only the currently used portion in the MMU</strong> = this is the idea behind the TLB.</div></div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is contiguous memory allocation? What fragmentation?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Contiguous Memory Allocation</strong> = A method for the OS to promise a range of available memory provided to a process in one piece.<br><br><strong>Base Value</strong> = where process starts in memory.<br><strong>Limit Value</strong> = size of process.<br><br><strong>Memory Hole</strong> = fragmented, unusable free gaps in physical memory or unallocated regions in virtual address space.<br><strong>Fragmentation</strong> = wasted memory because of inefficient memory usage.</div></div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">External fragmentation vs internal fragmentation?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>External Fragmentation</strong> = a kind of fragmentation where wasted memory is not allocated for any process, where holes are too small and scattered to be useful.<br><br><strong>Internal Fragmentation</strong> = wasted memory allocated to a process but not being used because the OS gave it more than it needed.<br><br>Doesn’t occur in CMA since the OS gives exactly how much it needs but it does happen in paging.</div></div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is paging? Page? Frame? What fragmentation does it cause?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Paging</strong> = a memory management technique that avoids the need for contiguous physical memory allocation. It divides both logical and physical memory into fixed, same sized chunks, then map them freely.<br><br><strong>Page</strong> = A portion of logical address space of fixed size.<br><strong>Frames</strong> = A portion of physical address space of fixed size.<br><br>Processes believe memory is stored in virtual memory but in reality is stored in physical memory (this is done after pages map stuff to frames).</div></div>
@@ -291,43 +301,72 @@ t2.join();</pre></div></div>
 <div class="page" id="page-sync">
   <div class="section-title">Synchronization</div>
   <div class="section-sub">Race conditions, critical sections, mutex, deadlock -- all his exact definitions.</div>
-  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What are synchronization problems? What hazards?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">What’s important is that you need to manage interactions between threads and processes the usage of resources correctly.<br><br>Two hazards: race condition and deadlock.</div></div>
-  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a race condition?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Race Condition</strong> = a scenario when a shared resource becomes corrupted because multiple threads/processes try to access this shared resource, and at least one of them tries to modify it.<br><br>Race conditions are logic errors and you may not be able to reproduce the bug, which makes them hard to debug.</div></div>
-  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">How does a race condition happen at the CPU level?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">For t1 in its own CPU core on the r1 register:<pre>LOAD glob,r1
-r1 = r1+1
-STORE r1,glob</pre>These 3 instructions are the critical section of t1.<br><br>For t2 in a separate CPU core, but notice how they share the same CPU register:<pre>LOAD glob,r1
-r1 = r1+1
-STORE r1,glob</pre>These 3 instructions are the critical section of t2.<br><br>t2 should never enter t1’s critical section, t2 will stop and wait until t1 finishes all of its instructions, only then can t2 run its own critical section.</div></div>
-  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Critical Section Problem. Three properties of a good solution?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Critical Section Problem</strong> = a problem of programming your threads/processes in such way that they do not use shared resources simultaneously.<br><br>The threads/processes are arranged to access the shared resource one at a time.<br><br><strong>Properties:</strong><ul><li><strong>Exclusivity</strong> = only 1 thread/process can access a shared resource at a time, the usage of a shared resource should be exclusive.</li><li><strong>Progress</strong> = shared resource does not stay idle if somebody needs it.</li><li><strong>Bounded Waiting</strong> = make sure that nobody waits forever.</li></ul></div></div>
-  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is an atomic function? (Both parts of the definition.)</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Atomic functions</strong> = hardware-implemented functions that allow us to avoid race conditions and use multi-threading and shared resources.<br><br>Two reasons:<br>Only one atomic function can run at a time.<br>All other atomic functions are paused.<br>They are uninterruptable.<br>Once it starts, it finishes it with nobody interrupting it.</div></div>
-  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is test_and_set? Simple critical section solution. What is suboptimal?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">Atomic function example:<pre>bool test_and_set(bool& lock) {
-  bool original = lock;
-  lock = true; // resource is in use, its locked
-  return original;
-}</pre>A simple solution for Critical Section problem without bounded waiting property but with exclusivity:<pre>while (test_and_set(globLock)) {};
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What are synchronization problems? What hazards?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">Synchronization problems are programming problems that arise when you create multithreaded code or a program that exchanges data with another program.<br><br>Two synchronization hazards: <strong>race condition</strong> and <strong>deadlock</strong>.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a shared resource?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">A shared resource is a section of data or a device that can be used by multiple processes or threads.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a race condition? Can it happen if one party modifies and others only read?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Race condition</strong> = an error when we corrupt a shared resource because multiple threads/processes use it simultaneously and at least one of them tries to modify the shared source.<br><br>Yes, race conditions can still happen if one party modifies data and others are only reading. If everybody is just reading, then it does not happen.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a data race?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Data race</strong> = a race condition on shared data. For shared data to become inconsistent, at least one thread or process has to try to modify it while others are accessing it.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">How does a race condition happen at the CPU level?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">The expression <code>x = x + 1</code> is not one instruction. It becomes:<pre>1. Load x into a register
+2. Increment the register
+3. Store result back to x</pre>If two threads do this at the same time, both can load the same old value, both increment it, and both store the same result. One increment is lost.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Critical Section Problem. Three properties of a good solution?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Critical Section Problem</strong> = the problem of writing code in such a way that the execution of different threads/processes does not overlap inside the critical section.<br><br><strong>Properties:</strong><ul><li><strong>Mutual exclusion</strong> = only one critical section is active at a time.</li><li><strong>Progress</strong> = shared resource is not idle if someone wants it.</li><li><strong>Bounded waiting</strong> = nobody waits forever.</li></ul></div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is an atomic function? What does it mean if it is hardware implemented?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Atomic function</strong> = a function with two properties: it is not interruptible once it starts, and only one copy can be executed at a time.<br><br><strong>Hardware implemented</strong> = there is no regular program code for it. It is implemented with hardware circuitry and called with a single special CPU instruction.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is test_and_set? What is suboptimal about the simple solution?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">Hardware function:<pre>bool test_and_set(bool &amp;lock){
+bool old = lock;
+lock = true;
+return old;
+}</pre>A simple solution is:<pre>while (test_and_set(globLock) == true) {};
 // CRITICAL SECTION
-globLock = false;</pre></div></div>
-  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Busy waiting? Spinlock? When is it good?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Busy Waiting</strong> = a method of waiting that requires constant CPU usage.<br><br>Inefficient because of the sole fact it uses the CPU constantly waiting.<br><br><strong>Spinlock</strong> = a synchronization tool that implements busy waiting under the hood.</div></div>
-  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a mutex? What if it is busy?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Mutex</strong> = (mutual exclusion lock).<br><br><pre>std::mutex m;
-m.lock(); // I WANT TO ACQUIRE THE LOCK, WAIT TILL ITS UNLOCKED, WAIT TILL THE RESOURCE IS IDLE, YOU DONT NEED ANY WHILE LOOPS TO IMPLEMENT THIS, ALL THE WAITING WILL BE IMPLEMENTED FOR YOU
+globLock = false;</pre>The problem is that it does not provide bounded waiting, so it is not starvation-free.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Solution of the critical section problem using test_and_set with bounded waiting?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><pre>#define N 16
+bool wait[N];
+bool lock = false;
+
+wait[i] = true;
+while (test_and_set(lock) &amp;&amp; wait[i]) {};
+wait[i] = false;
+
 // CRITICAL SECTION
-// then release the lock for everybody else
-m.unlock();</pre></div></div>
-  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Producer-Consumer (Bounded Buffer) problem and solution.</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Bounded buffer problem == Producer-Consumer problem</strong><br><br>When the buffer is full, the producer should pause its operations.<br>When the buffer is empty, the consumer should pause its operations.<br><br>Semaphore FULL = 0; // counts the number of items in the buffer<br>Semaphore EMPTY = N; // number of empty spaces<br><br>// For Producers<br>wait(EMPTY);<br>signal(FULL);<br><br>// For Consumers<br>wait(FULL);<br>signal(EMPTY);</div></div>
-  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Readers-Writers problem and solution.</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Another synchronization problem → Readers-Writers problem</strong><br><br>We know that we want to avoid race conditions here, there is no harm in readers reading shared data simultaneously.<br><br>Readers solution:<pre>read_guard.lock();
-num_readers++;
-if (num_readers == 1) access.lock();
-read_guard.unlock();
-// start reading
-// done reading
-read_guard.lock();
-num_readers--;
-if (num_readers == 0) access.unlock();
-read_guard.unlock();</pre>Writers solution:<pre>access.lock();
-// writing
-access.unlock();</pre></div></div>
-  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Dining Philosophers problem. Philosophers = ? Chopsticks = ? Three solutions?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Another synchronization problem → Dining Philosophers problem</strong><br><br>Chopsticks represent locks controlling the shared resources (mutex locks in reality).<br><br>Deadlock → a scenario when multiple threads/processes block each other and nobody progresses forward.<br><br>Methods to avoid Deadlock:<ul><li>Add extra chopstick</li><li>Pick chopsticks simultaneously</li><li>Asymmetric solution</li></ul></div></div>
-  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is deadlock?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Deadlock</strong> = a scenario when multiple threads/processes block each other and nobody progresses forward.</div></div>
+int j = (i+1) % N;
+while (wait[j] != true &amp;&amp; j != i)
+  j = (j+1) % N;
+
+if (i != j)
+  wait[j] = false;
+else
+  lock = false;</pre>This version adds bounded waiting so the solution is closer to starvation-free.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Busy waiting? Spinlock? When is it good?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Busy waiting</strong> = waiting in an empty loop using the CPU constantly to check for something like a lock.<br><br><strong>Spinlock</strong> = a lock that continuously uses the CPU while waiting to access the lock.<br><br>It is inefficient because it wastes CPU cycles. It is still good when the expected wait time is short and it is cheaper to wait while using the CPU than to perform a context switch to another process.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a mutex? What if it is busy?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Mutex</strong> = a lock that you can acquire and release.<br><br>If the mutex is busy, the process pauses somehow and waits for the mutex to become free again before proceeding further.<br><br><pre>#include &lt;mutex&gt;
+int glob = 0;
+std::mutex glob_mutex;
+
+glob_mutex.lock();
+glob++;
+glob_mutex.unlock();</pre></div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Producer-Consumer (Bounded Buffer) problem and solution.</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Producer-Consumer problem</strong> = a synchronization problem where one process produces items and another consumes them from a shared buffer.<br><br>The producer sleeps when the buffer is full and wakes when there is space. The consumer sleeps when the buffer is empty and wakes when an item appears.<br><br><strong>Solution idea:</strong> use two semaphores.<pre>Semaphore FULL = 0;   // counts items in the buffer
+Semaphore EMPTY = N;  // counts empty slots
+
+// Producers
+wait(EMPTY);
+signal(FULL);
+
+// Consumers
+wait(FULL);
+signal(EMPTY);</pre></div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Readers-Writers problem and solution.</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Readers-Writers problem</strong> = readers can read shared data while a writer modifies that shared data, so we need to avoid corruption.<br><br>The idea is to let readers read together, but make writers wait while readers are reading.<br><br>Writers can access the data when no reader is accessing it.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Dining Philosophers problem. Philosophers = ? Chopsticks = ? Three solutions?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Dining Philosophers problem</strong> = a synchronization problem where processes want to use a shared resource but can get stuck in deadlock.<br><br><strong>Philosophers</strong> represent processes.<br><strong>Chopsticks</strong> represent shared resources.<br><br>Three approaches:<ul><li>Add an extra chopstick.</li><li>Pick chopsticks together/simultaneously.</li><li>Use an asymmetric solution, where some philosophers grab left and some grab right.</li></ul></div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is deadlock?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Deadlock</strong> = a bad situation when a group of processes or threads wait for each other and no one goes forward.</div></div>
+</div>
+
+<!-- CPU SCHEDULING -->
+<div class="page" id="page-scheduling">
+  <div class="section-title">CPU Scheduling</div>
+  <div class="section-sub">How the OS picks the next process and how long it gets the CPU.</div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is CPU scheduling about? What does the choice of algorithm depend on?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">CPU scheduling is about the OS choosing which process is next to use the CPU and for how long.<br><br>The choice of algorithm depends on the OS goal and the type of workload. Different systems use different schedulers.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is CPU burst? What is I/O burst? Why schedule short CPU bursts first?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>CPU burst</strong> = period of time when a process wants to use the CPU only.<br><strong>I/O burst</strong> = period of time when a process wants to use an I/O device.<br><br>Scheduling short CPU bursts first can keep the ready queue short and reduce waiting time.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What does preemptive vs non-preemptive mean? What does starvation-free mean?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Preemptive</strong> = a process can be sent back to the ready queue before its CPU burst finishes.<br><strong>Non-preemptive</strong> = once a process gets the CPU, it runs until it is done or yields on its own.<br><br><strong>Starvation-free</strong> = no process in the ready queue waits forever.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">First-Come-First-Served vs Round-Robin</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>FCFS</strong> = treat the ready queue as a real line. It is non-preemptive, fast to choose the next process, and starvation-free, but it can cause long waiting times.<br><br><strong>Round-Robin</strong> = treat the ready queue as a real line but preempt after a time slice. It is fair, fast to choose the next process, and starvation-free, but it can still have long waiting times if the queue is long.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Priority scheduling. Aging. Priority inversion and donation.</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Priority scheduling</strong> = every process has a priority, and the highest priority process gets the CPU first.<br><br><strong>Aging</strong> = the priority increases over time so a waiting process does not starve.<br><br><strong>Priority inversion</strong> = a higher priority process waits for a lower priority process without a good reason.<br><strong>Priority donation</strong> = the lower priority process temporarily becomes as important as the high priority one while the high priority process is waiting.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is real-time scheduling? What is the difference between soft and hard real-time systems?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Real-time scheduling</strong> = the OS ensures that a real-time process meets its execution deadline.<br><br><strong>Soft real-time</strong> = the OS tries to meet the deadline, but if it misses, it is not acceptable but the system continues.<br><strong>Hard real-time</strong> = the whole system must meet the deadline, and missing it is not acceptable.</div></div>
 </div>
 
 <!-- PRACTICE EXAM -->
@@ -599,23 +638,23 @@ cout &lt;&lt; "3" &lt;&lt; endl;</pre></div>
         <!-- Nodes -->
         <ellipse cx="80" cy="160" rx="65" ry="32" fill="#fce8f0" stroke="#c93d76" stroke-width="2"/>
         <text x="80" y="155" text-anchor="middle" font-size="13" font-weight="700" fill="#7c3a5e">New</text>
-        <text x="80" y="172" text-anchor="middle" font-size="10" fill="#6b4a5a">PCB created</text>
+        <text x="80" y="172" text-anchor="middle" font-size="10" fill="#6b4a5a">process created, not ready to use the CPU</text>
 
         <ellipse cx="250" cy="80" rx="65" ry="32" fill="#fce8f0" stroke="#c93d76" stroke-width="2"/>
         <text x="250" y="75" text-anchor="middle" font-size="13" font-weight="700" fill="#7c3a5e">Ready</text>
-        <text x="250" y="92" text-anchor="middle" font-size="10" fill="#6b4a5a">In ready queue</text>
+        <text x="250" y="92" text-anchor="middle" font-size="10" fill="#6b4a5a">in the ready queue, ready to use the CPU</text>
 
         <ellipse cx="430" cy="80" rx="65" ry="32" fill="#e05990" stroke="#a52e5e" stroke-width="2"/>
         <text x="430" y="75" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">Running</text>
-        <text x="430" y="92" text-anchor="middle" font-size="10" fill="#fce8f0">Using CPU</text>
+        <text x="430" y="92" text-anchor="middle" font-size="10" fill="#fce8f0">CPU executing the process</text>
 
         <ellipse cx="430" cy="230" rx="65" ry="32" fill="#fce8f0" stroke="#c93d76" stroke-width="2"/>
         <text x="430" y="225" text-anchor="middle" font-size="13" font-weight="700" fill="#7c3a5e">Waiting</text>
-        <text x="430" y="242" text-anchor="middle" font-size="10" fill="#6b4a5a">I/O in progress</text>
+        <text x="430" y="242" text-anchor="middle" font-size="10" fill="#6b4a5a">waiting for possibly an I/O device</text>
 
         <ellipse cx="620" cy="160" rx="65" ry="32" fill="#fce8f0" stroke="#c93d76" stroke-width="2"/>
         <text x="620" y="155" text-anchor="middle" font-size="13" font-weight="700" fill="#7c3a5e">Terminated</text>
-        <text x="620" y="172" text-anchor="middle" font-size="10" fill="#6b4a5a">Resources freed</text>
+        <text x="620" y="172" text-anchor="middle" font-size="10" fill="#6b4a5a">process has finished</text>
 
         <!-- Arrows -->
         <line x1="145" y1="140" x2="185" y2="98" stroke="#c93d76" stroke-width="2" marker-end="url(#arr)"/>
@@ -625,7 +664,7 @@ cout &lt;&lt; "3" &lt;&lt; endl;</pre></div>
         <text x="328" y="73" font-size="10" fill="#c93d76">scheduled</text>
 
         <path d="M430,48 Q340,10 250,48" stroke="#c93d76" stroke-width="2" fill="none" marker-end="url(#arr)"/>
-        <text x="320" y="18" font-size="10" fill="#c93d76">preempted</text>
+        <text x="320" y="18" font-size="10" fill="#c93d76">sent back to the ready queue because the CPU is needed for something more important</text>
 
         <line x1="430" y1="112" x2="430" y2="198" stroke="#c93d76" stroke-width="2" marker-end="url(#arr)"/>
         <text x="436" y="160" font-size="10" fill="#c93d76">I/O request</text>
@@ -661,24 +700,24 @@ cout &lt;&lt; "3" &lt;&lt; endl;</pre></div>
         <text x="182" y="116" font-size="10" fill="#c93d76">never called wait()</text>
 
         <rect x="60" y="210" width="230" height="36" rx="6" fill="#fff8e6" stroke="#e6c200" stroke-width="1.5"/>
-        <text x="175" y="232" text-anchor="middle" font-size="10" fill="#8a6000">PCB stays. No resources. Parent must call wait() to clean up.</text>
+        <text x="175" y="232" text-anchor="middle" font-size="10" fill="#8a6000">zombie process -- PCB stays and takes up RAM memory</text>
 
         <!-- ORPHAN side -->
         <text x="525" y="25" text-anchor="middle" font-size="14" font-weight="700" fill="#7c3a5e">ORPHAN PROCESS</text>
         <rect x="470" y="40" width="110" height="44" rx="8" fill="#fce8f0" stroke="#c93d76" stroke-width="2" stroke-dasharray="5,3"/>
         <text x="525" y="58" text-anchor="middle" font-size="12" font-weight="700" fill="#7c3a5e">Parent</text>
-        <text x="525" y="74" text-anchor="middle" font-size="10" fill="#6b4a5a">called exit() -- GONE</text>
+        <text x="525" y="74" text-anchor="middle" font-size="10" fill="#6b4a5a">parent calls exit() without wait() first</text>
 
         <rect x="470" y="140" width="110" height="44" rx="8" fill="#e05990" stroke="#a52e5e" stroke-width="2"/>
         <text x="525" y="158" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">Child</text>
-        <text x="525" y="174" text-anchor="middle" font-size="10" fill="#fce8f0">still running -- ORPHAN</text>
+        <text x="525" y="174" text-anchor="middle" font-size="10" fill="#fce8f0">child has no parent to return exit status to</text>
 
         <line x1="525" y1="84" x2="525" y2="140" stroke="#c93d76" stroke-width="2" marker-end="url(#arr2)"/>
         <text x="532" y="116" font-size="10" fill="#c93d76">no wait() called</text>
 
         <rect x="410" y="210" width="230" height="36" rx="6" fill="#fff8e6" stroke="#e6c200" stroke-width="1.5"/>
-        <text x="525" y="228" text-anchor="middle" font-size="10" fill="#8a6000">OS adopts it or uses cascading termination</text>
-        <text x="525" y="240" text-anchor="middle" font-size="10" fill="#8a6000">to kill all descendants.</text>
+        <text x="525" y="228" text-anchor="middle" font-size="10" fill="#8a6000">this can cause resource leakage</text>
+        <text x="525" y="240" text-anchor="middle" font-size="10" fill="#8a6000">the OS may adopt it or use cascading termination</text>
       </svg>
     </div>
   </div>
@@ -693,8 +732,8 @@ cout &lt;&lt; "3" &lt;&lt; endl;</pre></div>
         <!-- Stack -->
         <rect x="140" y="35" width="220" height="65" rx="0" fill="#e05990" stroke="#a52e5e" stroke-width="2"/>
         <text x="250" y="60" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">Stack</text>
-        <text x="250" y="77" text-anchor="middle" font-size="10" fill="#fce8f0">Local vars, params, return addresses</text>
-        <text x="250" y="92" text-anchor="middle" font-size="10" fill="#fce8f0">LIFO, no holes. Each thread has its own.</text>
+        <text x="250" y="77" text-anchor="middle" font-size="10" fill="#fce8f0">local variables, function parameters, return addresses</text>
+        <text x="250" y="92" text-anchor="middle" font-size="10" fill="#fce8f0">clean LIFO order, no holes. Each thread has its own stack.</text>
         <text x="108" y="68" text-anchor="end" font-size="10" fill="#6b4a5a">High</text>
         <text x="108" y="98" text-anchor="end" font-size="10" fill="#6b4a5a">addr</text>
         <!-- Arrow down for stack growth -->
@@ -709,8 +748,8 @@ cout &lt;&lt; "3" &lt;&lt; endl;</pre></div>
         <!-- Heap -->
         <rect x="140" y="130" width="220" height="65" rx="0" fill="#f9cfe0" stroke="#c93d76" stroke-width="2"/>
         <text x="250" y="155" text-anchor="middle" font-size="13" font-weight="700" fill="#7c3a5e">Heap</text>
-        <text x="250" y="172" text-anchor="middle" font-size="10" fill="#6b4a5a">Dynamic memory (new operator)</text>
-        <text x="250" y="187" text-anchor="middle" font-size="10" fill="#6b4a5a">Fragmented, full of holes</text>
+        <text x="250" y="172" text-anchor="middle" font-size="10" fill="#6b4a5a">dynamic allocation</text>
+        <text x="250" y="187" text-anchor="middle" font-size="10" fill="#6b4a5a">fragmented, full of holes</text>
         <!-- Arrow up for heap growth -->
         <text x="390" y="165" font-size="20" fill="#c93d76">&#8593;</text>
         <text x="392" y="182" font-size="10" fill="#c93d76">grows</text>
@@ -719,12 +758,12 @@ cout &lt;&lt; "3" &lt;&lt; endl;</pre></div>
         <!-- Data -->
         <rect x="140" y="195" width="220" height="55" rx="0" fill="#fce8f0" stroke="#c93d76" stroke-width="2"/>
         <text x="250" y="218" text-anchor="middle" font-size="13" font-weight="700" fill="#7c3a5e">Data</text>
-        <text x="250" y="238" text-anchor="middle" font-size="10" fill="#6b4a5a">Global variables, static variables</text>
+        <text x="250" y="238" text-anchor="middle" font-size="10" fill="#6b4a5a">global/static variables</text>
 
         <!-- Text -->
         <rect x="140" y="250" width="220" height="55" rx="0" fill="#fce8f0" stroke="#c93d76" stroke-width="2"/>
         <text x="250" y="273" text-anchor="middle" font-size="13" font-weight="700" fill="#7c3a5e">Text (Code)</text>
-        <text x="250" y="293" text-anchor="middle" font-size="10" fill="#6b4a5a">Program instructions</text>
+        <text x="250" y="293" text-anchor="middle" font-size="10" fill="#6b4a5a">program code</text>
         <text x="108" y="300" text-anchor="end" font-size="10" fill="#6b4a5a">Low</text>
         <text x="108" y="312" text-anchor="end" font-size="10" fill="#6b4a5a">addr</text>
       </svg>
@@ -739,26 +778,26 @@ cout &lt;&lt; "3" &lt;&lt; endl;</pre></div>
         <defs>
           <marker id="arr3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#c93d76"/></marker>
         </defs>
-        <text x="100" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#7c3a5e">Logical Memory</text>
-        <text x="340" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#7c3a5e">Page Table</text>
-        <text x="570" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#7c3a5e">Physical Memory</text>
+        <text x="100" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#7c3a5e">Logical address space</text>
+        <text x="340" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#7c3a5e">Page table</text>
+        <text x="570" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#7c3a5e">Physical address space</text>
 
         <!-- Logical pages -->
         <rect x="40" y="35" width="120" height="45" rx="4" fill="#e05990" stroke="#a52e5e" stroke-width="2"/>
         <text x="100" y="55" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">Page 0</text>
-        <text x="100" y="72" text-anchor="middle" font-size="10" fill="#fce8f0">Process A</text>
+        <text x="100" y="72" text-anchor="middle" font-size="10" fill="#fce8f0">page</text>
 
         <rect x="40" y="85" width="120" height="45" rx="4" fill="#ed7fb0" stroke="#c93d76" stroke-width="2"/>
         <text x="100" y="105" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">Page 1</text>
-        <text x="100" y="122" text-anchor="middle" font-size="10" fill="#fce8f0">Process A</text>
+        <text x="100" y="122" text-anchor="middle" font-size="10" fill="#fce8f0">page</text>
 
         <rect x="40" y="135" width="120" height="45" rx="4" fill="#f4a8c7" stroke="#c93d76" stroke-width="2"/>
         <text x="100" y="155" text-anchor="middle" font-size="12" font-weight="700" fill="#7c3a5e">Page 2</text>
-        <text x="100" y="172" text-anchor="middle" font-size="10" fill="#6b4a5a">Process A</text>
+        <text x="100" y="172" text-anchor="middle" font-size="10" fill="#6b4a5a">page</text>
 
         <!-- Page table -->
         <rect x="280" y="35" width="120" height="35" rx="4" fill="#fff" stroke="#border" stroke-width="1.5"/>
-        <text x="340" y="50" text-anchor="middle" font-size="11" fill="#2d1a24">Page 0 &#8594; Frame 2</text>
+        <text x="340" y="50" text-anchor="middle" font-size="11" fill="#2d1a24">page to frame mapping</text>
         <text x="340" y="65" text-anchor="middle" font-size="10" fill="#6b4a5a">(one entry per page)</text>
 
         <rect x="280" y="80" width="120" height="35" rx="4" fill="#fff" stroke="#f0d0df" stroke-width="1.5"/>
@@ -770,7 +809,7 @@ cout &lt;&lt; "3" &lt;&lt; endl;</pre></div>
         <!-- Physical frames -->
         <rect x="510" y="35" width="120" height="45" rx="4" fill="#f9cfe0" stroke="#c93d76" stroke-width="2"/>
         <text x="570" y="55" text-anchor="middle" font-size="12" font-weight="700" fill="#7c3a5e">Frame 0</text>
-        <text x="570" y="72" text-anchor="middle" font-size="10" fill="#6b4a5a">Page 1 of A</text>
+        <text x="570" y="72" text-anchor="middle" font-size="10" fill="#6b4a5a">frame</text>
 
         <rect x="510" y="85" width="120" height="45" rx="4" fill="#fce8f0" stroke="#ed7fb0" stroke-width="2"/>
         <text x="570" y="105" text-anchor="middle" font-size="12" font-weight="700" fill="#7c3a5e">Frame 1</text>
@@ -778,11 +817,11 @@ cout &lt;&lt; "3" &lt;&lt; endl;</pre></div>
 
         <rect x="510" y="135" width="120" height="45" rx="4" fill="#e05990" stroke="#a52e5e" stroke-width="2"/>
         <text x="570" y="155" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">Frame 2</text>
-        <text x="570" y="172" text-anchor="middle" font-size="10" fill="#fce8f0">Page 0 of A</text>
+        <text x="570" y="172" text-anchor="middle" font-size="10" fill="#fce8f0">frame</text>
 
         <rect x="510" y="185" width="120" height="45" rx="4" fill="#f4a8c7" stroke="#c93d76" stroke-width="2"/>
         <text x="570" y="205" text-anchor="middle" font-size="12" font-weight="700" fill="#7c3a5e">Frame 3</text>
-        <text x="570" y="222" text-anchor="middle" font-size="10" fill="#6b4a5a">Page 2 of A</text>
+        <text x="570" y="222" text-anchor="middle" font-size="10" fill="#6b4a5a">frame</text>
 
         <!-- Arrows from page table to frames -->
         <line x1="400" y1="52" x2="510" y2="162" stroke="#c93d76" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arr3)"/>
@@ -790,8 +829,8 @@ cout &lt;&lt; "3" &lt;&lt; endl;</pre></div>
         <line x1="400" y1="142" x2="510" y2="207" stroke="#c93d76" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arr3)"/>
 
         <rect x="40" y="240" width="620" height="40" rx="6" fill="#fff8e6" stroke="#e6c200" stroke-width="1.5"/>
-        <text x="350" y="257" text-anchor="middle" font-size="11" fill="#8a6000">Key insight: Pages do NOT need to be contiguous in physical memory.</text>
-        <text x="350" y="273" text-anchor="middle" font-size="11" fill="#8a6000">Page 0 is in Frame 2, Page 1 is in Frame 0 -- they are scattered but that is fine.</text>
+        <text x="350" y="257" text-anchor="middle" font-size="11" fill="#8a6000">Pages do NOT need to be contiguous in physical memory.</text>
+        <text x="350" y="273" text-anchor="middle" font-size="11" fill="#8a6000">Pages are mapped to frames through the page table.</text>
       </svg>
     </div>
   </div>
@@ -810,7 +849,7 @@ cout &lt;&lt; "3" &lt;&lt; endl;</pre></div>
         <!-- CPU -->
         <rect x="20" y="110" width="90" height="50" rx="8" fill="#e05990" stroke="#a52e5e" stroke-width="2"/>
         <text x="65" y="132" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">CPU</text>
-        <text x="65" y="150" text-anchor="middle" font-size="10" fill="#fce8f0">logical addr</text>
+        <text x="65" y="150" text-anchor="middle" font-size="10" fill="#fce8f0">logical address</text>
 
         <!-- MMU box -->
         <rect x="150" y="70" width="200" height="150" rx="8" fill="#fce8f0" stroke="#c93d76" stroke-width="2"/>
@@ -818,37 +857,37 @@ cout &lt;&lt; "3" &lt;&lt; endl;</pre></div>
 
         <!-- TLB inside MMU -->
         <rect x="165" y="100" width="170" height="60" rx="6" fill="#e05990" stroke="#a52e5e" stroke-width="2"/>
-        <text x="250" y="122" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">TLB (cache)</text>
-        <text x="250" y="140" text-anchor="middle" font-size="10" fill="#fce8f0">Most recently used</text>
+        <text x="250" y="122" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">TLB</text>
+        <text x="250" y="140" text-anchor="middle" font-size="10" fill="#fce8f0">most currently useful</text>
         <text x="250" y="153" text-anchor="middle" font-size="10" fill="#fce8f0">page table entries</text>
 
         <!-- RAM / Page Table -->
         <rect x="420" y="90" width="120" height="60" rx="8" fill="#f9cfe0" stroke="#c93d76" stroke-width="2"/>
-        <text x="480" y="115" text-anchor="middle" font-size="11" font-weight="700" fill="#7c3a5e">Page Table</text>
-        <text x="480" y="135" text-anchor="middle" font-size="10" fill="#6b4a5a">in RAM (slow)</text>
+        <text x="480" y="115" text-anchor="middle" font-size="11" font-weight="700" fill="#7c3a5e">page table</text>
+        <text x="480" y="135" text-anchor="middle" font-size="10" fill="#6b4a5a">in RAM</text>
 
         <!-- Physical RAM -->
         <rect x="560" y="110" width="100" height="50" rx="8" fill="#fce8f0" stroke="#c93d76" stroke-width="2"/>
         <text x="610" y="132" text-anchor="middle" font-size="11" font-weight="700" fill="#7c3a5e">RAM</text>
-        <text x="610" y="150" text-anchor="middle" font-size="10" fill="#6b4a5a">physical addr</text>
+        <text x="610" y="150" text-anchor="middle" font-size="10" fill="#6b4a5a">physical address</text>
 
         <!-- CPU to MMU -->
         <line x1="110" y1="135" x2="150" y2="135" stroke="#c93d76" stroke-width="2" marker-end="url(#arr4)"/>
 
         <!-- TLB HIT path -->
         <path d="M350,120 Q390,80 420,110" stroke="#2d7a4f" stroke-width="2" fill="none" marker-end="url(#arr4g)" stroke-dasharray="5,2"/>
-        <text x="375" y="75" font-size="10" fill="#2d7a4f" font-weight="700">HIT: fast path</text>
+        <text x="375" y="75" font-size="10" fill="#2d7a4f" font-weight="700">TLB hit</text>
 
         <!-- TLB MISS path -->
         <path d="M350,145 L420,145" stroke="#b83232" stroke-width="2" fill="none" marker-end="url(#arr4r)"/>
-        <text x="358" y="160" font-size="10" fill="#b83232" font-weight="700">MISS: goes to RAM</text>
+        <text x="358" y="160" font-size="10" fill="#b83232" font-weight="700">TLB miss</text>
 
         <!-- RAM to physical -->
         <line x1="540" y1="135" x2="560" y2="135" stroke="#c93d76" stroke-width="2" marker-end="url(#arr4)"/>
 
         <!-- Legend -->
         <rect x="20" y="240" width="640" height="30" rx="6" fill="#e8f7ee" stroke="#9dd8b5" stroke-width="1.5"/>
-        <text x="340" y="260" text-anchor="middle" font-size="11" fill="#2d7a4f">TLB Hit = entry found in cache, no RAM lookup needed (fast). TLB Miss = must go to RAM page table (slow extra trip).</text>
+        <text x="340" y="260" text-anchor="middle" font-size="11" fill="#2d7a4f">TLB hit = entry found. TLB miss = entry not found.</text>
       </svg>
     </div>
   </div>
@@ -863,20 +902,20 @@ cout &lt;&lt; "3" &lt;&lt; endl;</pre></div>
         </defs>
         <!-- Ready Queue -->
         <rect x="20" y="80" width="180" height="50" rx="8" fill="#fce8f0" stroke="#c93d76" stroke-width="2"/>
-        <text x="110" y="101" text-anchor="middle" font-size="12" font-weight="700" fill="#7c3a5e">Ready Queue</text>
-        <text x="110" y="120" text-anchor="middle" font-size="10" fill="#6b4a5a">P1, P2, P3 waiting for CPU</text>
-        <text x="110" y="30" text-anchor="middle" font-size="10" fill="#c93d76">One per system</text>
+        <text x="110" y="101" text-anchor="middle" font-size="12" font-weight="700" fill="#7c3a5e">Ready queue</text>
+        <text x="110" y="120" text-anchor="middle" font-size="10" fill="#6b4a5a">ready and willing to use the CPU</text>
+        <text x="110" y="30" text-anchor="middle" font-size="10" fill="#c93d76">typically one ready queue per CPU</text>
 
         <!-- CPU -->
         <rect x="260" y="80" width="100" height="50" rx="8" fill="#e05990" stroke="#a52e5e" stroke-width="2"/>
         <text x="310" y="101" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">CPU</text>
-        <text x="310" y="120" text-anchor="middle" font-size="10" fill="#fce8f0">Running P1</text>
+        <text x="310" y="120" text-anchor="middle" font-size="10" fill="#fce8f0">the CPU executing the process</text>
 
         <!-- I/O Queue -->
         <rect x="430" y="80" width="180" height="50" rx="8" fill="#fce8f0" stroke="#c93d76" stroke-width="2"/>
-        <text x="520" y="101" text-anchor="middle" font-size="12" font-weight="700" fill="#7c3a5e">I/O Queue</text>
-        <text x="520" y="120" text-anchor="middle" font-size="10" fill="#6b4a5a">Waiting for I/O device</text>
-        <text x="520" y="30" text-anchor="middle" font-size="10" fill="#c93d76">One per I/O device</text>
+        <text x="520" y="101" text-anchor="middle" font-size="12" font-weight="700" fill="#7c3a5e">I/O queue</text>
+        <text x="520" y="120" text-anchor="middle" font-size="10" fill="#6b4a5a">waiting to use an I/O device</text>
+        <text x="520" y="30" text-anchor="middle" font-size="10" fill="#c93d76">one for every I/O device</text>
 
         <!-- Arrows -->
         <line x1="200" y1="105" x2="260" y2="105" stroke="#c93d76" stroke-width="2" marker-end="url(#arr5)"/>
@@ -891,7 +930,7 @@ cout &lt;&lt; "3" &lt;&lt; endl;</pre></div>
 
         <!-- Preempt arrow -->
         <path d="M310,80 Q310,40 110,40 Q110,70 110,80" stroke="#c93d76" stroke-width="2" fill="none" stroke-dasharray="4,2" marker-end="url(#arr5)"/>
-        <text x="210" y="35" text-anchor="middle" font-size="10" fill="#c93d76">preempted (timer)</text>
+        <text x="210" y="35" text-anchor="middle" font-size="10" fill="#c93d76">preempted by timer</text>
       </svg>
     </div>
   </div>
@@ -901,39 +940,39 @@ cout &lt;&lt; "3" &lt;&lt; endl;</pre></div>
     <div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Race Condition -- Why glob++ from two threads causes corruption</span><span class="arrow">&#9658;</span></div>
     <div class="qa-answer">
       <svg viewBox="0 0 680 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:680px;display:block;margin:0 auto;">
-        <text x="340" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#7c3a5e">Both threads do glob++ (glob starts at 5, expected result: 7)</text>
+        <text x="340" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#7c3a5e">x = x + 1 translates into load, increment, store</text>
 
         <!-- Thread 1 column -->
         <text x="140" y="48" text-anchor="middle" font-size="12" font-weight="700" fill="#e05990">Thread 1</text>
         <rect x="40" y="58" width="200" height="34" rx="6" fill="#fce8f0" stroke="#c93d76" stroke-width="1.5"/>
-        <text x="140" y="72" text-anchor="middle" font-size="11" fill="#2d1a24">LOAD glob,r1</text>
-        <text x="140" y="86" text-anchor="middle" font-size="10" fill="#6b4a5a">r1 = 5 (reads glob)</text>
+        <text x="140" y="72" text-anchor="middle" font-size="11" fill="#2d1a24">Load x into a register</text>
+        <text x="140" y="86" text-anchor="middle" font-size="10" fill="#6b4a5a">reads the old value</text>
 
         <rect x="40" y="100" width="200" height="34" rx="6" fill="#fce8f0" stroke="#c93d76" stroke-width="1.5"/>
-        <text x="140" y="114" text-anchor="middle" font-size="11" fill="#2d1a24">r1 = r1 + 1</text>
-        <text x="140" y="128" text-anchor="middle" font-size="10" fill="#6b4a5a">r1 = 6</text>
+        <text x="140" y="114" text-anchor="middle" font-size="11" fill="#2d1a24">Increment the register</text>
+        <text x="140" y="128" text-anchor="middle" font-size="10" fill="#6b4a5a">the value changes in the register</text>
 
         <!-- PAUSE banner -->
         <rect x="40" y="142" width="200" height="28" rx="6" fill="#b83232"/>
         <text x="140" y="161" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">-- PAUSED by OS --</text>
 
         <rect x="40" y="178" width="200" height="34" rx="6" fill="#fce8f0" stroke="#c93d76" stroke-width="1.5"/>
-        <text x="140" y="192" text-anchor="middle" font-size="11" fill="#2d1a24">STORE r1,glob</text>
-        <text x="140" y="206" text-anchor="middle" font-size="10" fill="#b83232">writes 6 -- but should be 7!</text>
+        <text x="140" y="192" text-anchor="middle" font-size="11" fill="#2d1a24">Store result back to x</text>
+        <text x="140" y="206" text-anchor="middle" font-size="10" fill="#b83232">one increment is lost</text>
 
         <!-- Thread 2 column -->
-        <text x="540" y="48" text-anchor="middle" font-size="12" font-weight="700" fill="#e05990">Thread 2 (runs while T1 paused)</text>
+        <text x="540" y="48" text-anchor="middle" font-size="12" font-weight="700" fill="#e05990">Thread 2</text>
         <rect x="440" y="100" width="200" height="34" rx="6" fill="#f9cfe0" stroke="#c93d76" stroke-width="1.5"/>
-        <text x="540" y="114" text-anchor="middle" font-size="11" fill="#2d1a24">LOAD glob,r1</text>
-        <text x="540" y="128" text-anchor="middle" font-size="10" fill="#6b4a5a">r1 = 5 (reads SAME glob)</text>
+        <text x="540" y="114" text-anchor="middle" font-size="11" fill="#2d1a24">Load x into a register</text>
+        <text x="540" y="128" text-anchor="middle" font-size="10" fill="#6b4a5a">reads the same old value</text>
 
         <rect x="440" y="142" width="200" height="34" rx="6" fill="#f9cfe0" stroke="#c93d76" stroke-width="1.5"/>
-        <text x="540" y="156" text-anchor="middle" font-size="11" fill="#2d1a24">r1 = r1 + 1</text>
-        <text x="540" y="170" text-anchor="middle" font-size="10" fill="#6b4a5a">r1 = 6</text>
+        <text x="540" y="156" text-anchor="middle" font-size="11" fill="#2d1a24">Increment the register</text>
+        <text x="540" y="170" text-anchor="middle" font-size="10" fill="#6b4a5a">same increment happens twice</text>
 
         <rect x="440" y="184" width="200" height="34" rx="6" fill="#f9cfe0" stroke="#c93d76" stroke-width="1.5"/>
-        <text x="540" y="198" text-anchor="middle" font-size="11" fill="#2d1a24">STORE r1,glob</text>
-        <text x="540" y="212" text-anchor="middle" font-size="10" fill="#6b4a5a">glob = 6 (correct so far)</text>
+        <text x="540" y="198" text-anchor="middle" font-size="11" fill="#2d1a24">Store result back to x</text>
+        <text x="540" y="212" text-anchor="middle" font-size="10" fill="#6b4a5a">one increment is lost</text>
 
         <!-- Result -->
         <rect x="120" y="228" width="440" height="26" rx="6" fill="#fdeaea" stroke="#f2aaaa" stroke-width="1.5"/>
@@ -947,7 +986,7 @@ cout &lt;&lt; "3" &lt;&lt; endl;</pre></div>
     <div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Dining Philosophers -- How deadlock occurs</span><span class="arrow">&#9658;</span></div>
     <div class="qa-answer">
       <svg viewBox="0 0 500 380" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:500px;display:block;margin:0 auto;">
-        <text x="250" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#7c3a5e">5 Philosophers, 5 Chopsticks -- All grab LEFT at once = Deadlock</text>
+        <text x="250" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#7c3a5e">Processes want to use a shared resource but cannot use it because of deadlock</text>
 
         <!-- Table -->
         <circle cx="250" cy="190" r="70" fill="#fdf0f5" stroke="#f4a8c7" stroke-width="2"/>
@@ -998,7 +1037,7 @@ cout &lt;&lt; "3" &lt;&lt; endl;</pre></div>
 
         <!-- Deadlock label -->
         <rect x="60" y="340" width="380" height="32" rx="6" fill="#fdeaea" stroke="#f2aaaa" stroke-width="1.5"/>
-        <text x="250" y="358" text-anchor="middle" font-size="11" font-weight="700" fill="#b83232">All grab LEFT chopstick -- nobody can grab RIGHT -- DEADLOCK</text>
+        <text x="250" y="358" text-anchor="middle" font-size="11" font-weight="700" fill="#b83232">Deadlock: nobody goes forward</text>
       </svg>
       <p style="font-size:0.85rem;color:#6b4a5a;margin-top:0.5rem;">Philosophers = threads/processes. Chopsticks = mutex locks. Deadlock = nobody progresses forward.</p>
     </div>
@@ -1060,23 +1099,23 @@ cout &lt;&lt; "3" &lt;&lt; endl;</pre></div>
   <div class="section-title">Review -- Fundamentals</div>
   <div class="section-sub">These are the "Review Old Items" from the study guide. Know these cold -- they are fair game on a cumulative final.</div>
 
-  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a program? What is data?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Program</strong> = A static list of CPU instructions stored in an executable file. It does not change.<br><br><strong>Data</strong> = Information stored and processed by a computer. Data and program instructions are both stored in RAM and on disk as bits and bytes.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a program? What is data?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Program</strong> = list of directions for the computer to execute, and it is used to manipulate data.<br><br><strong>Data</strong> = whatever it is in the computer but the numbers.</div></div>
 
-  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What does it mean to run a program? What component executes it? Where are running programs stored?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">Running a program means loading its instructions from disk into <strong>RAM</strong> and having the <strong>CPU</strong> fetch and execute those instructions one by one via the machine cycle.<br><br>Running programs are stored in <strong>RAM</strong>. RAM also stores the program's data -- variables, the stack, heap, etc. Programs are NEVER executed directly from disk.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What does it mean to run a program? What component executes it? Where are running programs stored?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">Running a program means taking the code of the program and executing it until the end of the program.<br><br>The <strong>CPU</strong> is the hardware responsible to execute the program.<br><br>The running program is stored in <strong>memory</strong>, specifically in <strong>RAM</strong>. The RAM also stores the data the program uses while it runs.</div></div>
 
-  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What do we know about RAM? What is a memory stall?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>RAM (Random Access Memory)</strong> = Fast, volatile (loses data when power off), temporary storage. Programs must be in RAM to execute. Much faster than hard disk but much slower than CPU registers.<br><br><strong>Memory stall</strong> = A delay in CPU execution that occurs when the CPU has to wait for data to be fetched from RAM. Because RAM is slow relative to the CPU, the CPU idles during this wait. This is why cache memory exists.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What do we know about RAM? What is a memory stall?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>RAM</strong> = random-access, slow, and volatile. It is meant to store data, and the CPU takes data from it. It takes roughly the same amount of time to access data no matter where the data is located.<br><br><strong>Memory stall</strong> = unlucky scenario when the CPU pauses to wait for the RAM to deliver necessary data.</div></div>
 
-  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is cache memory? What is its purpose?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Cache memory</strong> = A small, extremely fast memory built into or very close to the CPU. Its purpose is to reduce memory stalls by storing recently or frequently accessed data so the CPU does not have to wait for slow RAM as often.<br><br>Cache is much faster than RAM but much smaller. When the CPU needs data, it checks cache first (cache hit = fast) before going to RAM (cache miss = slow).</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is cache memory? What is its purpose?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Cache memory</strong> = memory device that makes interaction between the CPU and the RAM memory faster. The CPU checks cache first. If cache does not contain what the CPU needs, it goes to RAM.<br><br>Cache memory stores the most recent data and instructions used.</div></div>
 
-  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is ROM memory? What does it store?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>ROM (Read-Only Memory)</strong> = Non-volatile memory that retains data without power. It stores the firmware -- the very first code that runs when you turn on a computer (like the BIOS/UEFI). The CPU reads from ROM at startup to begin the boot process. Unlike RAM, you cannot write to ROM during normal operation.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is ROM memory? What does it store?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>ROM</strong> = read-only memory. It is a separate device/chip that stores programs necessary to start the computer. When the computer starts, the CPU begins fetching information from the ROM.</div></div>
 
-  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is an executable file?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Executable file</strong> = A file stored on disk that contains machine code (CPU instructions) for a program, along with any data the program needs to start. When you "run" a program, the OS reads this file and loads it into RAM to create a process.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is an executable file?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">An executable file contains machine code instructions for the CPU to execute.</div></div>
 
-  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">How do speeds of CPU, RAM and hard disk compare?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">From fastest to slowest:<br><br><strong>CPU registers</strong> = fastest (nanoseconds, part of the CPU itself)<br><strong>Cache</strong> = very fast (slightly slower than registers)<br><strong>RAM</strong> = fast but much slower than CPU (tens of nanoseconds -- causes memory stalls)<br><strong>Hard disk (HDD)</strong> = extremely slow compared to RAM (milliseconds -- orders of magnitude slower)<br><strong>SSD</strong> = between HDD and RAM but still much slower than RAM<br><br>This hierarchy is why programs must be in RAM to run efficiently -- disk access during execution would be catastrophically slow.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">How do speeds of CPU, RAM and hard disk compare?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>CPU &gt; RAM &gt; hard disks</strong>.<br><br>SSD is faster than HDD.</div></div>
 
-  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a machine cycle? What are its steps?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Machine cycle</strong> = The basic sequence the CPU repeats continuously to execute a program. Also called the fetch-decode-execute cycle.<br><br>Steps:<ul><li><strong>Fetch</strong> = CPU reads the next instruction from RAM at the address stored in the Program Counter (PC)</li><li><strong>Decode</strong> = CPU figures out what the instruction means</li><li><strong>Execute</strong> = CPU carries out the instruction</li><li><strong>PC increments</strong> to point to the next instruction, then repeat</li></ul></div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a machine cycle? What are its steps?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Machine cycle</strong> = a sequence of steps that the CPU goes through in order to execute a single instruction.<br><br>Basic steps:<ul><li><strong>Fetch</strong> = take the instruction</li><li><strong>Decode</strong> = prepare the CPU to execute</li><li><strong>Execute</strong> = do what the instruction says</li><li><strong>Write-back</strong> = put the result somewhere</li></ul></div></div>
 
-  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is CPU frequency? What does it measure? What is a CPU clock? What is a CPU core?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>CPU clock</strong> = An electronic signal that pulses at a fixed rate, synchronizing all operations inside the CPU.<br><br><strong>CPU frequency</strong> = The number of clock cycles per second. Measured in <strong>Hz</strong> (hertz). Modern CPUs run at gigahertz (GHz) -- billions of cycles per second. Higher frequency = more instructions executed per second (roughly).<br><br><strong>CPU core</strong> = An independent processing unit within the CPU that can execute instructions. A quad-core CPU has 4 cores (can run 4 streams of instructions simultaneously). An octa-core has 8 cores.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is CPU frequency? What does it measure? What is a CPU clock? What is a CPU core?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Frequency</strong> measures how many signal CPU clocks per second. The measurement unit is <strong>Hz</strong>.<br><br><strong>CPU clock</strong> = device in the CPU that generates synchronization pulses/signals.<br><strong>CPU frequency</strong> = how often that signal happens.<br><strong>CPU core</strong> = a small individual CPU inside of a CPU. Quad-core means 4 subCPUs. Octa-core means 8 subCPUs.</div></div>
 
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a byte? What is a bit? How many bits in a byte? How many bits in 1 KB?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Bit</strong> = The smallest unit of data. Either 0 or 1.<br><br><strong>Byte</strong> = 8 bits. The standard unit of memory addressing.<br><br><strong>1 KB</strong> = 1,024 bytes = 1,024 x 8 = <strong>8,192 bits</strong>.<br><br>Memory sizes: 1 KB = 1,024 bytes / 1 MB = 1,024 KB / 1 GB = 1,024 MB / 1 TB = 1,024 GB.</div></div>
 
@@ -1084,7 +1123,7 @@ cout &lt;&lt; "3" &lt;&lt; endl;</pre></div>
 
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is the length of a memory address? What does "32-bit address" mean? How much memory can you address?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Length of a memory address</strong> = The number of bits used to represent an address.<br><br><strong>32-bit address</strong> = Each address is 32 bits long. With 32 bits you can represent 2^32 unique addresses = 4,294,967,296 = about <strong>4 GB</strong> of addressable memory. This is why old 32-bit systems were limited to 4 GB of RAM.<br><br><strong>64-bit address</strong> = 2^64 unique addresses = an astronomically large amount of memory (16 exabytes -- far more than any current system has).<br><br>Formula: with N-bit addresses you can address <strong>2^N bytes</strong>.</div></div>
 
-  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is the relationship between a C++ variable, RAM and memory address? What is a C++ pointer?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">When you declare a variable in C++, the compiler allocates space for it in RAM (on the stack or heap). The variable has a <strong>memory address</strong> -- the location of its first byte in RAM.<br><br><strong>C++ pointer</strong> = A variable that stores a memory address (instead of a regular value like an int or char). It "points to" another variable's location in RAM. You get the address of a variable with <code>&amp;x</code> and you access the value at an address with <code>*ptr</code>.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is the relationship between a C++ variable, RAM and memory address? What is a C++ pointer?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">When you declare a variable in C++, the compiler works with the OS and allocates space in RAM for that variable, and it assigns a memory address to that variable to find it in RAM. Once the program compiles, the variable turns into the corresponding memory address.<br><br><strong>C++ pointer</strong> = a variable that stores the address of another variable. Pointers are normally 4 bytes but expect something like 8 bytes at least.</div></div>
 
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Common sizes of C++ data types. Does signed/unsigned affect size?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">
     <ul>
@@ -1109,7 +1148,7 @@ Example: 0xFF = 1111 1111 = 255 in decimal.<br>Example: 0x1A = 0001 1010 = 26 in
 
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a word? What is the PC (Program Counter)?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Word</strong> = The natural data size the CPU processes in one operation. On a 32-bit system a word is 4 bytes; on a 64-bit system a word is 8 bytes.<br><br><strong>Program Counter (PC)</strong> = A special CPU register that holds the memory address of the next instruction to be fetched and executed. After each instruction, the PC automatically increments to point to the next one. It is saved and restored during context switches.</div></div>
 
-  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What language does the CPU understand? How do we run higher-level programs?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">The CPU only understands <strong>machine code</strong> -- binary instructions specific to that CPU architecture (like x86-64).<br><br>Higher-level programs (C++, Python, Java) are run by:<ul><li><strong>Compilation</strong> (C, C++) -- a compiler translates source code entirely into machine code before running. Fast at runtime.</li><li><strong>Interpretation</strong> (Python) -- an interpreter reads and executes source code line by line at runtime. Portable but slower.</li><li><strong>Both</strong> (Java) -- compiled to bytecode first, then interpreted/JIT-compiled by the JVM at runtime.</li></ul></div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What language does the CPU understand? How do we run higher-level programs?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">The CPU only knows <strong>machine language</strong>.<br><br>To run programs written in higher-level languages, we use a <strong>compiler</strong> to translate them into machine language.<br><br><strong>Compiler</strong> = translates programming languages to machine language. <strong>Advantage</strong> = fast.<br><strong>Interpreter</strong> = runs the source code/script directly. <strong>Advantage</strong> = portable.</div></div>
 
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Stack overflow -- what is it and what causes it?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">The stack has a <strong>fixed size limit</strong> set by the OS. If a program exceeds this limit (usually from infinite or very deep recursion, or allocating too many large local variables), the stack runs out of space.<br><br>This causes a <strong>stack overflow</strong>, which crashes the program. This is why you should not allocate very large arrays as local variables -- put them on the heap with new instead.</div></div>
 
@@ -1117,7 +1156,7 @@ Example: 0xFF = 1111 1111 = 255 in decimal.<br>Example: 0x1A = 0001 1010 = 26 in
 
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Copy-on-write optimization for fork() + exec()</span><span class="arrow">&#9658;</span></div><div class="qa-answer">When fork() is called, the OS creates a copy of the process -- but making a full copy of all memory is expensive.<br><br><strong>Copy-on-write (COW)</strong> = An optimization where the OS does NOT immediately copy the memory on fork(). Instead, both parent and child share the same memory pages, marked as read-only. A copy is only made when one of them tries to <strong>write</strong> to a page.<br><br>This is especially useful when fork() is immediately followed by exec(), because exec() replaces all memory anyway -- so no copy was ever needed. The OS detects this and skips copying entirely.</div></div>
 
-  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Ready queue -- one per core, not per system?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">The guide specifies: there is typically <strong>one ready queue per CPU core</strong>. Shostak's class notes say one ready queue per system.<br><br>For the exam, use <strong>Shostak's definition</strong>: one ready queue in the system. This note reflects how modern multi-core schedulers actually work, but Shostak tests on his definition.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Ready queue -- how many do we expect in the system?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">Typically, there is one ready queue per CPU in a system.</div></div>
 
 </div>
 
@@ -1129,9 +1168,11 @@ Example: 0xFF = 1111 1111 = 255 in decimal.<br>Example: 0x1A = 0001 1010 = 26 in
     <select id="trackerPageSelect" class="tracker-select" onchange="setTrackerPage(this.value)">
       <option value="basics">OS Basics</option>
       <option value="processes">Processes</option>
-      <option value="threads">Threads + IPC</option>
+      <option value="threads">Threads</option>
+      <option value="ipc">IPC + Networking</option>
       <option value="memory">Memory</option>
       <option value="sync">Synchronization</option>
+      <option value="scheduling">CPU Scheduling</option>
       <option value="visuals">Visual Diagrams</option>
       <option value="review">Review Basics</option>
     </select>
@@ -1148,9 +1189,11 @@ Example: 0xFF = 1111 1111 = 255 in decimal.<br>Example: 0x1A = 0001 1010 = 26 in
       <option value="all">All Topics</option>
       <option value="basics">OS Basics</option>
       <option value="processes">Processes</option>
-      <option value="threads">Threads and Networking</option>
+      <option value="threads">Threads</option>
+      <option value="ipc">IPC + Networking</option>
       <option value="memory">Memory Management</option>
       <option value="sync">Synchronization</option>
+      <option value="scheduling">CPU Scheduling</option>
       <option value="review">Review Basics</option>
     </select>
     <button class="btn btn-outline" onclick="shuffleCards()">Shuffle</button>
@@ -1206,7 +1249,7 @@ function showPage(name, btn) {
 function toggleCard(el) { el.parentElement.classList.toggle('open'); }
 
 // TOPIC TRACKER
-const topicPages = ['basics', 'processes', 'threads', 'memory', 'sync', 'visuals', 'review'];
+const topicPages = ['basics', 'processes', 'threads', 'ipc', 'memory', 'sync', 'scheduling', 'visuals', 'review'];
 const topicTrackerKey = 'csci340-topic-stars';
 const topicTrackerPageKey = 'csci340-topic-tracker-page';
 function getSavedTrackerPage() {
@@ -1224,9 +1267,11 @@ let currentTrackerPage = getSavedTrackerPage();
 const topicPageTitles = {
   basics: 'OS Basics',
   processes: 'Processes',
-  threads: 'Threads + IPC',
+  threads: 'Threads',
+  ipc: 'IPC + Networking',
   memory: 'Memory',
   sync: 'Synchronization',
+  scheduling: 'CPU Scheduling',
   visuals: 'Visual Diagrams',
   review: 'Review Basics',
 };
@@ -1484,27 +1529,6 @@ function resetPractice() {
   document.getElementById('gradeBar').style.display='none';
 }
 
-// COUNTDOWN
-const finalExamTime = new Date('2026-05-21T17:20:00-04:00');
-function updateCountdown() {
-  const target = document.getElementById('countdownValue');
-  const sub = document.getElementById('countdownSub');
-  const now = new Date();
-  let diff = finalExamTime.getTime() - now.getTime();
-  if (diff <= 0) {
-    target.textContent = 'The final exam time has passed.';
-    sub.textContent = 'May 21, 2026 at 5:20 PM';
-    return;
-  }
-  const totalSeconds = Math.floor(diff / 1000);
-  const days = Math.floor(totalSeconds / 86400);
-  const hours = Math.floor((totalSeconds % 86400) / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-  target.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-  sub.textContent = 'May 21, 2026 at 5:20 PM';
-}
-
 // FORK
 function showFeedback(id, correct, msg) {
   const el = document.getElementById(id);
@@ -1561,60 +1585,123 @@ function revealFork(id) {
 
 // FLASHCARDS
 const allCards = [
-  {cat:'basics',q:'What is an Operating System?',a:'<strong>OS Definition</strong> = A program that manages hardware and provides other programs with an environment to run in.'},
-  {cat:'basics',q:'What is multitasking? How is it arranged?',a:'<strong>Multitasking</strong> = A technique to <strong>fake</strong> simultaneous executions of multiple processes on a single CPU core. Only one program runs at a time. Arranged through <strong>context switching</strong>.'},
-  {cat:'basics',q:'User mode vs kernel mode. Why dual modes?',a:'<strong>User Mode</strong> = safe instructions only. <strong>Kernel Mode</strong> = all instructions allowed. CPU switches to kernel mode on system calls. Dual modes exist for safety and stability.'},
-  {cat:'basics',q:'What is a system call? Why slow?',a:'<strong>System Call</strong> = Request for service from user-level app to OS. Slow because it triggers 2 context switches, each requiring RAM operations. RAM is slow compared to CPU.'},
-  {cat:'basics',q:'What is virtual memory?',a:'<strong>Virtual Memory</strong> = A technique to fake larger RAM using the hard disk. Portions not needed are swapped to disk. Programs still run from RAM only. Expensive performance-wise.'},
-  {cat:'basics',q:'What is an interrupt? Sequence when one arrives?',a:'<strong>Interrupt</strong> = A signal about an important event requiring immediate attention. Sequence: generated, reaches CPU, CPU pauses, CPU runs <strong>interrupt handler</strong> (ISR), handler finishes, cleared, CPU resumes.'},
-  {cat:'basics',q:'What is a driver?',a:'<strong>Driver</strong> = A small program that handles communications between the OS and devices.'},
-  {cat:'basics',q:'File? File system? Logical disk?',a:'<strong>File</strong> = Related data on hard disk under one name. <strong>File System</strong> = Data about all files including physical coordinates on disk. <strong>Logical Disk</strong> = Portion of hard disk described in a separate file system.'},
-  {cat:'basics',q:'How many bits in 1 KB?',a:'1 byte = 8 bits. 1 KB = 1,024 bytes. 1 KB = <strong>8,192 bits</strong>.'},
-  {cat:'basics',q:'Interpreter -- what is it and what is its advantage?',a:'<strong>Interpreter</strong> = Executes code line by line at runtime. <strong>Advantage = portability</strong> -- same code runs on any machine with the interpreter. Examples: Python, JavaScript.'},
-  {cat:'basics',q:'Compiler -- what is it and what is its advantage?',a:'<strong>Compiler</strong> = Translates entire code into machine code before execution. <strong>Advantage = speed</strong>. Examples: C, C++.'},
-  {cat:'processes',q:'Process vs program?',a:'<strong>Process</strong> = A program in execution. <strong>Program</strong> = Static code on disk. Process is active (in RAM). One program can have multiple processes.'},
-  {cat:'processes',q:'PCB -- what is it? Typical components?',a:'<strong>PCB</strong> = A record for a single process maintained by the OS. Contains: PID, parent PID, process state, CPU scheduling info, memory info, open files, I/O devices, register file, program counter.'},
-  {cat:'processes',q:'Five process states?',a:'<strong>New</strong> -- loading from disk. <strong>Ready</strong> -- in ready queue. <strong>Running</strong> -- using CPU. <strong>Waiting</strong> -- waiting for I/O. <strong>Terminated</strong> -- done.'},
-  {cat:'processes',q:'Ready queue? I/O queue? How many of each?',a:'<strong>Ready Queue</strong> = Collection of processes ready to use CPU. <strong>One</strong> ready queue. <strong>I/O Queue</strong> = Collection waiting for an I/O device. <strong>One per I/O device</strong>.'},
-  {cat:'processes',q:'What is a context switch? Why overhead?',a:'<strong>Context Switch</strong> = Steps to switch execution from one process to another. Overhead: requires 2 RAM operations (save + load context). RAM is slow.'},
-  {cat:'processes',q:'Layout of process in memory?',a:'<strong>Text</strong> = code. <strong>Data</strong> = global/static variables. <strong>Heap</strong> = dynamic memory, fragmented. <strong>Stack</strong> = local vars, params, no holes, each thread has its own.'},
-  {cat:'processes',q:'fork() -- what does it do? Return values?',a:'<strong>fork()</strong> = Creates an almost exact copy of the process. Returns <strong>0 to child</strong>, <strong>positive PID to parent</strong>. Both continue from next instruction.'},
-  {cat:'processes',q:'exec()? exit()? wait()?',a:'<strong>exec()</strong> = Replaces process with new program. <strong>exit()</strong> = Stops process, releases resources, PCB stays (zombie). <strong>wait()</strong> = Parent pauses until child terminates, receives exit status.'},
-  {cat:'processes',q:'Zombie? Orphan?',a:'<strong>Zombie</strong> = Called exit() but parent has not called wait(). <strong>Orphan</strong> = Parent exited without wait(). System adopts orphans or uses cascading termination.'},
-  {cat:'processes',q:'IPC -- two general classes?',a:'<strong>Message Passing</strong> = Through OS, slower, safer, works across computers. <strong>Shared Memory</strong> = Direct shared region, faster after setup, same computer only.'},
-  {cat:'threads',q:'Thread -- what is it? Shares vs not shares?',a:'<strong>Thread</strong> = Independent execution from separate program counter. <strong>Shares</strong>: text, data, heap. <strong>Does NOT share</strong>: stack.'},
-  {cat:'threads',q:'Why threads instead of processes?',a:'Memory efficient, fast to create, faster context switch, shared memory by default, less OS overhead.'},
-  {cat:'threads',q:'Why processes instead of threads?',a:'Can run exec(). Fault-independent -- crash in one does not kill others. Thread crash kills whole process.'},
-  {cat:'threads',q:'Socket? DNS?',a:'<strong>Socket</strong> = IP address + port. <strong>DNS</strong> = Internet phonebook translating domain names to IP addresses.'},
-  {cat:'threads',q:'Why is IP address not enough alone?',a:'IP identifies the computer, not which program. A computer runs many programs. <strong>Port</strong> identifies which specific program gets the message.'},
-  {cat:'memory',q:'Physical vs logical address?',a:'<strong>Logical Memory Address</strong> can also be called a <strong>Virtual Memory Address</strong>.<br><br><strong>Physical Memory Address</strong> = the real address of the real RAM device.<br><br>There is only one physical address space in your system, because there is only one physical RAM device in your PC.'},
-  {cat:'memory',q:'What is the MMU?',a:'<strong>MMU</strong> = Memory Management Unit. Converts logical addresses to physical addresses. Sits between CPU and RAM.'},
-  {cat:'memory',q:'External vs internal fragmentation?',a:'<strong>External</strong> = Free memory not allocated to any process, holes too small. CMA problem. <strong>Internal</strong> = Allocated to process but not used -- OS gave more than needed. Paging problem.'},
-  {cat:'memory',q:'Paging? Page? Frame? What fragmentation?',a:'<strong>Paging</strong> = Fixed same-sized chunks of logical and physical memory mapped freely. <strong>Page</strong> = logical chunk. <strong>Frame</strong> = physical chunk. Same size. Causes <strong>internal fragmentation</strong>.'},
-  {cat:'memory',q:'TLB? TLB hit vs miss?',a:'<strong>TLB</strong> = Cache inside MMU for most useful page table entries. <strong>Hit</strong> = found, fast. <strong>Miss</strong> = not found, extra RAM trip.'},
-  {cat:'memory',q:'On-demand paging? Page fault?',a:'<strong>On-demand paging</strong> = Only load what is needed now; rest stays on disk. <strong>Page fault</strong> = Required code/data on disk, not in RAM. Program pauses while OS loads it.'},
-  {cat:'sync',q:'Synchronization problems? Hazards?',a:'Programming problems from multithreaded code or programs exchanging data. Two hazards: <strong>race condition</strong> and <strong>deadlock</strong>.'},
-  {cat:'sync',q:'What is a race condition?',a:'<strong>Race Condition</strong> = Shared resource corrupted because multiple threads/processes access it and at least one modifies it.'},
-  {cat:'sync',q:'Critical Section Problem -- three properties?',a:'<strong>Exclusivity</strong> = Only 1 at a time. <strong>Progress</strong> = Not idle if needed. <strong>Bounded Waiting</strong> = Nobody waits forever.'},
-  {cat:'sync',q:'Atomic function -- both parts of definition?',a:'1. Only one can run at a time -- all others pause. 2. Uninterruptible. Hardware-implemented -- no program code, hardware circuitry, single special CPU instruction.'},
-  {cat:'sync',q:'Busy waiting? Spinlock? When is it good?',a:'<strong>Busy waiting</strong> = Waiting using constant CPU. <strong>Spinlock</strong> = Uses busy waiting. Good when wait time is short and cheaper than a context switch.'},
-  {cat:'sync',q:'Mutex -- what if busy?',a:'<strong>Mutex</strong> = Mutual exclusion lock. If busy: process <strong>pauses and waits for mutex to be free before proceeding</strong>. OS puts it to sleep.'},
-  {cat:'sync',q:'Dining Philosophers -- philosophers = ? chopsticks = ?',a:'<strong>Philosophers</strong> = Threads/processes. <strong>Chopsticks</strong> = Mutex locks / shared resources. All grab left at once = deadlock.'},
-  {cat:'sync',q:'Deadlock?',a:'<strong>Deadlock</strong> = Multiple threads/processes block each other and <strong>nobody</strong> progresses forward.'},
-  {cat:'review',q:'What is a bit? What is a byte? How many bits in 1 KB?',a:'<strong>Bit</strong> = smallest unit, 0 or 1. <strong>Byte</strong> = 8 bits. <strong>1 KB</strong> = 1,024 bytes = 8,192 bits.'},
-  {cat:'review',q:'What is RAM? What is a memory stall?',a:'<strong>RAM</strong> = Fast volatile memory where running programs are stored. <strong>Memory stall</strong> = CPU delay while waiting for slow RAM data. Cache exists to reduce stalls.'},
-  {cat:'review',q:'What is cache memory?',a:'Small, extremely fast memory near the CPU. Stores recently used data to reduce memory stalls. Cache hit = fast. Cache miss = must go to RAM (slow).'},
-  {cat:'review',q:'What is ROM?',a:'<strong>ROM</strong> = Read-Only Memory. Non-volatile (keeps data without power). Stores firmware/BIOS -- the first code that runs when a computer starts.'},
-  {cat:'review',q:'What is the machine cycle? What are its steps?',a:'The basic fetch-decode-execute loop the CPU repeats continuously: <strong>Fetch</strong> instruction from RAM at PC address, <strong>Decode</strong> it, <strong>Execute</strong> it, then PC increments to next instruction.'},
-  {cat:'review',q:'What is CPU frequency? What is a CPU core?',a:'<strong>Frequency</strong> = Clock cycles per second, measured in Hz (GHz). Higher = faster. <strong>Core</strong> = independent processing unit. Quad-core = 4 simultaneous instruction streams.'},
-  {cat:'review',q:'32-bit address -- how much memory can it address?',a:'With N-bit addresses you can address 2^N bytes. <strong>32-bit</strong> = 2^32 = ~4 GB. <strong>64-bit</strong> = 2^64 = enormous (16 exabytes). Old 32-bit systems were limited to 4 GB RAM.'},
-  {cat:'review',q:'What is little-endian?',a:'<strong>Little-endian</strong> = Least significant byte stored at the lowest memory address. Most modern CPUs (x86/x64) use little-endian. Big-endian is the opposite (most significant byte first).'},
-  {cat:'review',q:'What is a C++ pointer?',a:'A variable that stores a <strong>memory address</strong> (instead of a regular value). Points to another variable\'s location in RAM. Get address with &amp;x, access value at address with *ptr.'},
-  {cat:'review',q:'Does signed/unsigned affect the size of C++ types?',a:'<strong>No.</strong> int, signed int, and unsigned int are all 4 bytes. Signed/unsigned only affects the range -- signed allows negatives, unsigned doubles positive range.'},
-  {cat:'review',q:'Hex to binary conversion -- how?',a:'Each hex digit = exactly 4 binary bits. 0=0000, 1=0001 ... 9=1001, A=1010, B=1011, C=1100, D=1101, E=1110, F=1111. Example: 0xFF = 11111111 = 255.'},
-  {cat:'review',q:'Stack overflow -- what causes it?',a:'The stack has a fixed OS-set size limit. Exceeded by infinite/deep recursion or very large local arrays. Causes program crash. Fix: put large data on heap with new.'},
-  {cat:'review',q:'Do processes physically move in RAM when state changes?',a:'<strong>No.</strong> The OS only updates the state field in the PCB. The process stays in the same RAM location. Visualizations showing physical movement are simplifications.'},
-  {cat:'review',q:'Copy-on-write optimization for fork() + exec()',a:'Fork() does NOT immediately copy all memory. Parent and child share pages until one writes (then a copy is made). If exec() follows fork() immediately, no copy ever needed -- OS detects this and skips the copy entirely.'},
+  {cat:'basics',q:'What is a program?',a:'<strong>Program</strong> = list of directions for the computer to execute, and it is used to manipulate data.'},
+  {cat:'basics',q:'What is data?',a:'<strong>Data</strong> = whatever it is in the computer but the numbers.'},
+  {cat:'basics',q:'What does it mean to run the program? What computer component executes programs?',a:'Take the code of our program and execute it until the end of the program. The <strong>CPU</strong> is the hardware responsible to execute the program.'},
+  {cat:'basics',q:'Where is the running program stored? What else is stored there?',a:'The running program is stored in <strong>memory</strong>, specifically in <strong>RAM</strong>. RAM stores the program code and the data it manipulates.'},
+  {cat:'basics',q:'What do we know about RAM memory? What is a memory stall?',a:'RAM is meant to store data. CPU takes data from it. It takes roughly the same amount of time to access data no matter where it is. RAM is random-access, slow, and volatile. A memory stall is when the CPU pauses to wait for the RAM to deliver necessary data.'},
+  {cat:'basics',q:'What long-term storage do we have?',a:'Hard disks: HDD, cheap and very slow. SSD: faster than HDD.'},
+  {cat:'basics',q:'What is an executable file?',a:'Contains machine code instructions for the CPU to execute.'},
+  {cat:'basics',q:'How does the speed of CPU, RAM, and hard disk compare?',a:'<strong>CPU &gt; RAM &gt; hard disks</strong>.'},
+  {cat:'basics',q:'What is cache memory? What is its purpose?',a:'Memory device that makes interaction between the CPU and the RAM memory faster. The CPU checks cache memory first. If it does not contain what the CPU needs, it goes to RAM. Cache memory stores the most recent data instructions used.'},
+  {cat:'basics',q:'What is ROM memory? What does it store?',a:'It is read-only memory and it is a separate device/chip that stores programs necessary to start the computer. When the computer starts, the CPU starts fetching information from the ROM.'},
+  {cat:'basics',q:'What is a machine cycle?',a:'It is a sequence of steps that the CPU goes through in order to execute a single instruction.'},
+  {cat:'basics',q:'What are the basic steps of a machine cycle?',a:'Fetching = take the instruction. Decode = prepare the CPU to execute. Execute = do what the instruction says. Write-back = the execution is placed somewhere.'},
+  {cat:'basics',q:'What does frequency measure? What is the measurement unit of frequency?',a:'Hertz: 1 time/second. Frequency measures how many signal CPU clocks per second.'},
+  {cat:'basics',q:'What is a CPU clock? What is CPU frequency?',a:'A CPU clock is the device in the CPU that generates synchronization pulses/signals. CPU frequency is how often the signal happens.'},
+  {cat:'basics',q:'What is a CPU core? What does quad-core or octa-core mean?',a:'CPU cores are little CPUs inside of a CPU, small individual CPUs/subCPUs inside of a CPU. Quad-core means 4 subCPUs. Octa-core means 8 subCPUs.'},
+  {cat:'basics',q:'What is a compiler? What are compiler advantages?',a:'A compiler is a program that translates programming languages to machine language. Advantage: fast.'},
+  {cat:'basics',q:'What is an interpreter? What are interpreter advantages?',a:'An interpreter runs the source code or script and does what it says. Advantage: portable.'},
+  {cat:'basics',q:'How many bits are in a byte?',a:'A byte is 8 bits.'},
+  {cat:'basics',q:'How many bits are in 1 KB?',a:'1 KB = 2^10 bytes = 2^13 bits.'},
+  {cat:'processes',q:'What is a process?',a:'Process is a program in execution.'},
+  {cat:'processes',q:'What is the difference between process and program?',a:'A program is a list of directions for the computer to execute. A process is when this list of directions is in execution.'},
+  {cat:'processes',q:'What is POSIX?',a:'Portable Operating System Interface, a set of standards that define how Unix-like operating systems should behave to maintain compatibility between operating systems.'},
+  {cat:'processes',q:'What is the PCB? Typical components?',a:'PCB (process control block) is a record that the OS keeps for every process in the computer. It contains PID, PC, register file, CPU scheduling info, RAM management info, list of opened files, and parent process ID.'},
+  {cat:'processes',q:'List the five process states.',a:'New = process created, not ready to use the CPU. Ready = in the ready queue, ready to use the CPU. Running = CPU executing the process. Waiting = waiting for possibly an I/O device, not ready to continue executing. Terminated = process has finished.'},
+  {cat:'processes',q:'Ready queue? I/O queue? How many of each?',a:'Ready queue = a collection of processes loaded into memory waiting and ready to use CPU. Typically there is one ready queue per CPU in a system. I/O queue = a collection of processes waiting to use an I/O device. You can expect one I/O queue for every I/O device.'},
+  {cat:'processes',q:'What happens when a process requests I/O in the classic blocking scenario?',a:'The process immediately yields CPU to someone else. It is paused and moved to a waiting state until the operation is completed.'},
+  {cat:'processes',q:'Where does the process go once the I/O request is complete?',a:'The process returns to the ready queue again until it is completely executed.'},
+  {cat:'processes',q:'What is a context switch? Why overhead?',a:'A context switch is a sequence of steps that the CPU needs to execute to switch from one process to another process. It is not free and takes time because it involves RAM operations.'},
+  {cat:'processes',q:'What is fork()? Return values?',a:'fork() does a copy with a different PID. The parent continues execution after being forked. The child also runs and starts executing after the fork() function. Parent receives a positive value and child receives zero.'},
+  {cat:'processes',q:'What is exec(fileName)?',a:'Erases the original process content and fills the process with the new instructions and data from fileName.'},
+  {cat:'processes',q:'What is exit()? What is wait()?',a:'exit() puts the process in a terminated state. wait() is used by the parent process and pauses the calling process until the child terminates.'},
+  {cat:'processes',q:'Why are orphan processes undesirable?',a:'An orphan process is when a parent calls exit() without using wait() first. The child has no parent to return its exit status to and this can cause resource leakage.'},
+  {cat:'processes',q:'What is a zombie process?',a:'A process in the terminated state whose parent has not called wait() yet or has not collected the waiting status yet. The process control log is still there and takes up RAM memory.'},
+  {cat:'processes',q:'What happens to processes when state changes?',a:'When process states change, the operating system updates internal data structures to reflect the new state. The process does not physically move.'},
+  {cat:'processes',q:'What is the relationship between C++ variable, RAM, and memory address?',a:'When you declare a variable in C++, your compiler works with the OS and allocates space in RAM for that variable, and it assigns a memory address to that variable to find it in RAM. Once the program compiles, the variable turns into the corresponding memory address.'},
+  {cat:'processes',q:'What is a C++ pointer?',a:'Pointer will store the address of the variable. They are normally 4 bytes but expect something like 8 bytes at least.'},
+  {cat:'threads',q:'What is a thread?',a:'Thread of execution, a.k.a. just thread, is independent execution of the same program code using a separate program counter.'},
+  {cat:'threads',q:'Why create threads instead of new processes?',a:'Threads are memory efficient, faster to create and delete, context switching is faster, better process utilization, and they share memory.'},
+  {cat:'threads',q:'Why create processes instead of threads?',a:'When we want to call exec(fileName). You can also use processes when you want fault independence.'},
+  {cat:'threads',q:'What do threads belonging to the same process share? What do they not share?',a:'Threads share program code, data section, and heap. Each thread has its own stack.'},
+  {cat:'threads',q:'What is a thread pool?',a:'A tool that creates a bunch of threads and puts them to sleep. When a user requests new worker threads, instead of creating new threads you use these already-made ones.'},
+  {cat:'ipc',q:'What is IPC?',a:'Inter-process communications, a mechanism that allows cooperating processes to exchange data.'},
+  {cat:'ipc',q:'What are two general classes of IPC?',a:'Shared memory category and message passing category.'},
+  {cat:'ipc',q:'What is the idea of shared memory? What are the advantages and disadvantages?',a:'OS can create a region that multiple processes can write and read. Advantages: faster because it only needs OS help once to create the region. Disadvantages: error-prone, requires a lot of thinking and planning, needs process synchronization, and cannot be used for two computers connected through a network.'},
+  {cat:'ipc',q:'What is the idea of message passing? What are the advantages and disadvantages?',a:'Process A passes data to OS to process B. All data exchanges happen through OS. Advantages: less error-prone and easier. Disadvantages: slower compared to shared memory because every message passing has to go through the OS.'},
+  {cat:'ipc',q:'Can shared memory be used for two processes on two different computers?',a:'No. Two computers do not have direct access to each other.'},
+  {cat:'ipc',q:'What is a network?',a:'A bunch of computers connected together to exchange data.'},
+  {cat:'ipc',q:'What is an IP address? How does IPv4 look?',a:'A numerical label assigned to each device connected to a network. IPv4 is 4 numbers separated by periods and each number is between 0 and 255.'},
+  {cat:'ipc',q:'Why is an IP address alone not enough?',a:'It only identifies the host, not which port on the device. Multiple programs can run on one device, so a port number is also needed.'},
+  {cat:'ipc',q:'What is a networking port?',a:'A unique numeric identifier assigned to every process in the system that wants to use the network.'},
+  {cat:'ipc',q:'What are well-known ports?',a:'Ports with predefined purposes. Starts with 0-1023.'},
+  {cat:'ipc',q:'What is a networking socket?',a:'An endpoint for communication. Networking socket = IP Address + networking port.'},
+  {cat:'ipc',q:'What is a server?',a:'A computer on the network that receives requests and provides services to other computers on the network.'},
+  {cat:'ipc',q:'What is a client?',a:'A computer that can obtain information from a server.'},
+  {cat:'ipc',q:'What is a communication protocol?',a:'A set of rules and standards that defines how data is formatted, transmitted, and received between devices on a network.'},
+  {cat:'ipc',q:'What is URL?',a:'The address to access resources on the internet, such as web pages, images, videos, or files. It is human understandable text used to access online web services.'},
+  {cat:'ipc',q:'What is DNS?',a:'A separate computer that takes input URL and provides IP Address of the destination computer.'},
+  {cat:'ipc',q:'What is RPC?',a:'Remote Procedure Call, an interprocess communication tool that allows you to easily start execution of a function of a faraway computer/server computer/computer on the internet from your computer.'},
+  {cat:'scheduling',q:'What is the CPU scheduling about?',a:'The OS chooses which process is the next one to use the CPU and for how long.'},
+  {cat:'scheduling',q:'What does the choice of a specific CPU scheduling algorithm depend on?',a:'Different OS use different CPU scheduling algorithms depending on the purpose.'},
+  {cat:'scheduling',q:'What is CPU burst? What is I/O burst?',a:'CPU burst = period of time when a process wants to use CPU only. I/O burst = period of time when a process wants to use an I/O device.'},
+  {cat:'scheduling',q:'Why schedule short CPU burst processes before long ones?',a:'It keeps the ready queue short and minimizes waiting time.'},
+  {cat:'scheduling',q:'What does preemptive or non-preemptive mean?',a:'Preemptive = when a process is in the middle of the CPU burst and is sent back to the ready queue because the CPU is needed for something more important. Non-preemptive = if a process gets to use the CPU, it runs until the end.'},
+  {cat:'scheduling',q:'What does starvation-free mean?',a:'No process in the ready queue will wait forever.'},
+  {cat:'scheduling',q:'First-Come-First-Served algorithm.',a:'Treat the ready queue as a real line. It is non-preemptive. Advantages: fast to choose the next one to use the CPU and starvation-free. Disadvantages: long waiting times.'},
+  {cat:'scheduling',q:'Round-Robin algorithm.',a:'Treat the ready queue as a real line but preemptive. There is a time slice, a max amount of time that a process can use the CPU in one take. Advantages: fast, starvation-free, and fair. Disadvantages: long waiting times.'},
+  {cat:'scheduling',q:'Priority scheduling.',a:'Every process has a priority, and it specifies how important a process is. Advantage: gives priority to the process with the highest priority. Disadvantage: not starvation-free.'},
+  {cat:'scheduling',q:'Aging.',a:'A method to fight starvation. Priority increases by one if it sits there for a certain amount of time.'},
+  {cat:'scheduling',q:'Priority inversion and priority donation?',a:'Priority inversion = a bad situation when a higher priority process waits for a lower priority process without a good reason. Priority donation = as long as high waits for low, low process becomes as important as high.'},
+  {cat:'scheduling',q:'Real-time scheduling. Soft and hard real-time systems?',a:'Real-time scheduling ensures that the real-time process meets the execution deadline. Soft real-time tries to meet the deadline but gives no guarantees. Hard real-time means the whole system has to meet the deadline and not meeting them is not acceptable.'},
+  {cat:'memory',q:'What is memory address? How much memory can you address with a given length?',a:'A memory address is a unique identifier used by a computer&apos;s CPU to access a specific location in the system&apos;s memory. With N-bit addresses you can address 2^N bytes.'},
+  {cat:'memory',q:'What is physical address?',a:'Coordinates of a specific byte in real physical RAM. Shows bytes in the physical memory.'},
+  {cat:'memory',q:'Why are physical addresses inconvenient for modern programs?',a:'Because you cannot expect your program to be located in the same location in RAM. It causes overlap/conflicts between processes, and it is hard to manage memory protection and isolation.'},
+  {cat:'memory',q:'What is logical address?',a:'Memory coordinates, the way that processes see them, and it is generated by the CPU.'},
+  {cat:'memory',q:'What is physical address space? How many physical address spaces are there?',a:'Collection of all physical addresses available in a system. There is one physical address space because there is only one RAM.'},
+  {cat:'memory',q:'What is logical address space? How many logical address spaces are there?',a:'Collection of all logical addresses available to a process. Each process lives in its own space illusion.'},
+  {cat:'memory',q:'What kind of address does the CPU fetch with instructions?',a:'Logical address.'},
+  {cat:'memory',q:'What kind of address does the CPU send to RAM with a load/store request?',a:'Logical.'},
+  {cat:'memory',q:'What kind of address arrives to RAM with the load/store request?',a:'Physical address.'},
+  {cat:'memory',q:'What is MMU? What is its purpose?',a:'Memory management unit: hardware responsible to convert logical addresses to physical address.'},
+  {cat:'memory',q:'What is contiguous memory management?',a:'Technique that allocates each/every process in one chunk of memory.'},
+  {cat:'memory',q:'What is fragmentation? External fragmentation? Internal fragmentation?',a:'Fragmentation is the phenomenon of wasting RAM memory because of inefficient usage. External fragmentation happens because of very small holes not allocated to any process and too small to hold any realistic large process. Internal fragmentation is when RAM is wasted because we give a process more RAM than what it needs.'},
+  {cat:'memory',q:'What kind of fragmentation does contiguous memory management suffer from?',a:'External fragmentation.'},
+  {cat:'memory',q:'What is paging?',a:'A technique that divides memory into fixed-size blocks (pages/frames). It avoids contiguous allocation issues and gives a lot of flexibility because you can place any page in a vacant frame.'},
+  {cat:'memory',q:'What is page? What is frame?',a:'Page = portions of logical address space. Frame = portions of physical address space.'},
+  {cat:'memory',q:'What kind of fragmentation does paging suffer from?',a:'Internal.'},
+  {cat:'memory',q:'How do sizes of pages and frames relate?',a:'Pages and frames are always of the same size.'},
+  {cat:'memory',q:'What is page offset?',a:'How far a specific memory address is from the start of a page in a paged memory system.'},
+  {cat:'memory',q:'What is page table?',a:'Data structure that stores page (virtual address) to frame (physical address) mapping.'},
+  {cat:'memory',q:'How many page tables are there in a system?',a:'One for each process.'},
+  {cat:'memory',q:'What is TLB? What is its purpose?',a:'TLB = device inside MMU that stores most currently useful entries from page table.'},
+  {cat:'memory',q:'What is TLB hit? What is TLB miss?',a:'TLB hit = situation when TLB has the required page table entry that MMU needs. TLB miss = TLB does not have the page table entry right now.'},
+  {cat:'memory',q:'Is it necessary to have the whole program in memory to run it?',a:'No, because we can load specific chunk of processes in RAM.'},
+  {cat:'memory',q:'What is page fault?',a:'Situation when we need a page that is not in RAM right now. The program pauses and OS loads it from disk.'},
+  {cat:'memory',q:'What are the three MMU page table strategies?',a:'1. Put the whole page table in MMU. 2. Keep the whole page table in RAM. 3. Store the currently used portion of page table in MMU.'},
+  {cat:'sync',q:'What is IPC-related synchronization? What problems can happen?',a:'Synchronization problems are programming problems that arise when you create multithreaded code or a program that exchanges data with other programs. Hazards: race condition and deadlock.'},
+  {cat:'sync',q:'What is shared resource?',a:'A section shared by multiple processes.'},
+  {cat:'sync',q:'What is race condition? Can it happen if only one party modifies data? Can it happen if everybody is just reading?',a:'Race condition = error when we corrupt a shared resource because multiple threads/processes use it simultaneously and at least one of them tries to modify it. Yes, it can happen if one party modifies the data and others are just reading. If everybody is just reading, then it does not happen.'},
+  {cat:'sync',q:'Explain how race condition can happen.',a:'x = x + 1 translates into load x into a register, increment the register, store result back to x. If two threads do this simultaneously, both read the same old value and one increment is lost.'},
+  {cat:'sync',q:'What is critical section problem?',a:'The problem of writing our code in such a way that the execution of different threads/processes does not overlap. Critical section is a fragment of code that should not overlap with other processes’ critical section.'},
+  {cat:'sync',q:'What are the three properties of a good solution of a critical section problem?',a:'Mutual exclusion: only one critical section is active at the time. Progress: shared resource is not idle if someone wants it. Bounded waiting: make sure no one waits forever.'},
+  {cat:'sync',q:'Explain the idea of locking shared resources.',a:'Acquire a lock before entering a critical section and release it after leaving. Other threads must wait.'},
+  {cat:'sync',q:'What does it mean atomic function?',a:'A function that is interruptible in the sense that once it starts, it finishes, and only one copy can be executed at a time.'},
+  {cat:'sync',q:'What does it mean if the function is hardware implemented?',a:'There is no program code for it. The function is implemented with hardware circuitry and called with a single special CPU instruction.'},
+  {cat:'sync',q:'What is test_and_set instruction and what does it do?',a:'Hardware function that tests the value of a lock and sets the lock to true no matter the original one, and returns the original value.'},
+  {cat:'sync',q:'What is suboptimal in the simple test_and_set solution?',a:'It does not have the bounded waiting property, in other words, it is not starvation-free.'},
+  {cat:'sync',q:'What is busy waiting? What is spinlock? Why is it inefficient? When is it still good?',a:'Busy waiting is waiting in an empty loop using the CPU constantly to check for something like a lock. Spinlock is a lock that continuously uses the CPU waiting to access the lock. It is inefficient because it wastes CPU. It is still good when expected wait times are short and it is cheaper than a context switch.'},
+  {cat:'sync',q:'What is mutex? What does process do if it needs a mutex that is busy?',a:'Mutex is a lock that you can acquire and release. If it needs a mutex that is busy, it pauses somehow and waits for mutex to be free again before proceeding further.'},
+  {cat:'sync',q:'Producer-Consumer problem?',a:'Producer produces items and puts them in the buffer. Consumer consumes items that are in the buffer. Producer sleeps once the buffer is full and wakes when it is empty. Consumers pause when the buffer is empty and wake as soon as the item appears.'},
+  {cat:'sync',q:'Readers-Writers problem?',a:'Readers read shared data while a writer modifies that shared data. The solution involves making the writers wait while the readers are reading, then the writers can access the data when no reader is accessing it.'},
+  {cat:'sync',q:'Dining Philosophers problem. Philosophers = ? Chopsticks = ?',a:'Processes want to use a shared resource but cannot use it because of deadlock. Philosophers represent processes and chopsticks represent shared resources.'},
+  {cat:'sync',q:'What is deadlock?',a:'A bad situation when a group of processes or threads wait for each other and no one goes forward.'},
+  {cat:'review',q:'What is a bit? What is a byte?',a:'A bit is the smallest unit of data that could be either 0 or 1. A byte is 8 bits.'},
+  {cat:'review',q:'How many bits are in 1 KB?',a:'1 KB = 2^10 bytes = 2^13 bits.'},
+  {cat:'review',q:'How do hex numbers convert?',a:'Hex to binary: convert each digit. Binary to hex: group in fours from right to left.'},
+  {cat:'review',q:'What is a word?',a:'Amount of data that your system/computer can handle in one action.'},
+  {cat:'review',q:'What is a PC?',a:'Program counter = register inside the CPU that stores the address of the next instruction to execute.'},
 ];
 
 let currentDeck=[], currentIndex=0, isFlipped=false, scoreGot=0, scoreMissed=0, ratedCurrent=false;
@@ -1656,8 +1743,6 @@ function updateScoreDisplay() {
   document.getElementById('scoreGot').textContent=scoreGot;
   document.getElementById('scoreMissed').textContent=scoreMissed;
 }
-updateCountdown();
-setInterval(updateCountdown, 1000);
 initTopicTracker();
 initPracticeStars();
 startFlashcards();
