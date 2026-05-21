@@ -179,6 +179,8 @@
   <button onclick="showPage('memory',this)">Memory</button>
   <button onclick="showPage('sync',this)">Synchronization</button>
   <button onclick="showPage('scheduling',this)">Scheduling</button>
+  <button onclick="showPage('gantt',this)">Gantt Charts</button>
+  <button onclick="showPage('examqs',this)">Exam Qs</button>
   <button onclick="showPage('practice',this)">Practice Exam</button>
   <button onclick="showPage('fork',this)">Fork Practice</button>
   <button onclick="showPage('visuals',this)">Visual Diagrams</button>
@@ -202,6 +204,8 @@
     <div class="overview-card" onclick="showPage('memory',null)"><div class="oc-title">Memory Management</div><div class="oc-count">Paging, frames, TLB, MMU, page fault</div></div>
     <div class="overview-card" onclick="showPage('sync',null)"><div class="oc-title">Synchronization</div><div class="oc-count">Race conditions, mutex, deadlock, semaphores</div></div>
     <div class="overview-card" onclick="showPage('scheduling',null)"><div class="oc-title">CPU Scheduling</div><div class="oc-count">FCFS, RR, priority, real-time</div></div>
+    <div class="overview-card" onclick="showPage('gantt',null)"><div class="oc-title">Gantt Charts</div><div class="oc-count">Pre/non-pre, starvation/non-starvation, visual examples</div></div>
+    <div class="overview-card" onclick="showPage('examqs',null)"><div class="oc-title">Exam Questions</div><div class="oc-count">All Brightspace study items exactly as prof posted</div></div>
     <div class="overview-card" onclick="showPage('practice',null)"><div class="oc-title">Practice Exam</div><div class="oc-count">10 questions pulled from both midterms</div></div>
     <div class="overview-card" onclick="showPage('fork',null)"><div class="oc-title">Fork Practice</div><div class="oc-count">Process trees and output -- both midterms had this</div></div>
     <div class="overview-card" onclick="showPage('visuals',null)"><div class="oc-title">Visual Diagrams</div><div class="oc-count">Process states, memory layout, paging, deadlock and more</div></div>
@@ -233,6 +237,7 @@
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What are interrupts? What is an ISR? What is the sequence of steps when an interrupt occurs?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">An <strong>interrupt</strong> is a signal sent to the CPU about an important event that needs immediate attention. Interrupts can be issued by hardware (e.g., keyboard, network card) or software.<br><br>The <strong>ISR (Interrupt Service Routine)</strong>, also called the interrupt handler, is the code that runs in response to an interrupt.<br><br><strong>Sequence:</strong><br>1. Interrupt is generated<br>2. Signal reaches CPU — CPU pauses current execution<br>3. CPU runs the ISR (interrupt handler)<br>4. Interrupt is cleared — CPU resumes previous execution</div></div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a driver?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">A driver is a small program that handles communication between the OS and a hardware device.</div></div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a file? What is a file system? What is a logical disk?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>File</strong> = a collection of related data stored under one name.<br><br><strong>File System</strong> = a collection of data about all files, including their coordinates (where they are stored on disk).<br><br><strong>Logical Disk</strong> = a portion of a hard disk that has its own separate file system.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What are networking protocols?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Networking protocols</strong> = sets of rules and standards that define how data is formatted, transmitted, and received over a network. They govern the structure of messages and the order of operations.<br><br>Examples: <strong>TCP</strong> (reliable data transmission), <strong>IP</strong> (routing/addressing), <strong>HTTP/HTTPS</strong> (web), <strong>FTP</strong> (file transfer), <strong>SMTP</strong> (email), <strong>DNS</strong> (domain name resolution).</div></div>
   </div>
 
 <!-- PROCESSES -->
@@ -265,6 +270,13 @@ std::thread t2{Foo,56};
 
 t1.join();
 t2.join();</pre></div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What does std::thread::join() do? Why do we need it?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>std::thread::join()</strong> = blocks the calling thread (pauses it) until the thread on which join() was called has finished execution.<br><br>We need join() because without it, the calling thread (usually main) may exit before the worker thread finishes. When main exits, the entire process terminates and kills all threads — causing incomplete work or undefined behavior.<br><br><pre>#include &lt;thread&gt;
+void Foo(int x) { /* do work */ }
+int main() {
+  std::thread t1{Foo, 5};
+  t1.join(); // main pauses here until t1 finishes
+  // only now does main continue
+}</pre></div></div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What are kernel threads? What are user threads? What are hardware threads?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Kernel threads</strong> = managed using OS help. The OS knows about them. Slower to create and manage.<br><br><strong>User threads</strong> = managed without OS help. Faster to manage. The OS does NOT know about them. Cannot use multiple cores. If one user thread blocks, all threads in that process block.<br><br><strong>Hardware threads</strong> = how many threads the CPU can run simultaneously without multitasking (no context switching).</div></div>
 </div>
 
@@ -277,7 +289,7 @@ t2.join();</pre></div></div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is the idea of message passing? What are the advantages and disadvantages?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">Process A passes data to the OS and the OS delivers it to process B.<br><br><strong>Advantages</strong>: easier and less error-prone, and works well across different computers.<br><strong>Disadvantages</strong>: slower than shared memory because every message goes through the OS.</div></div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Can shared memory be used by processes on two different computers?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">No. Shared memory requires direct access to the same memory, so it cannot be used over a network between two computers.</div></div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a network? What is an IP address? Why is an IP address not enough?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Network</strong> = a bunch of computers connected together to exchange data.<br><br><strong>IP address</strong> = numerical label assigned to each device connected to a network. A classic IPv4 address has 4 numbers separated by periods, each between 0 and 255.<br><br>An IP address alone is not enough because it identifies the device, not the program. You also need a port number.</div></div>
-  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a networking port? What are well-known ports?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Networking port</strong> = a unique numeric identifier assigned to every process in the system that wants to use the network.<br><br><strong>Well-known ports</strong> = ports with predefined purposes, usually the first 1024 ports.</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a networking port? What are well-known ports?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Networking port</strong> = a unique numeric identifier assigned to every process in the system that wants to use the network.<br><br><strong>Well-known ports</strong> = ports that have been officially assigned to specific standard protocols and services. They serve predefined purposes. Examples: <strong>80 = HTTP</strong>, <strong>443 = HTTPS</strong>, <strong>22 = SSH</strong>, <strong>21 = FTP</strong>, <strong>25 = SMTP (email)</strong>, <strong>53 = DNS</strong>. They fall in the range 0–1023.<br><br><strong>Warning:</strong> Saying "the first 1024 ports" alone is worth <strong>0 points</strong> on the exam. You must say they have predefined/standard purposes for specific services.</div></div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a networking socket? What is a server? What is a client?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Socket</strong> = an endpoint for communication.<br><br><strong>Networking socket</strong> = IP address + networking port, for example <code>55.220.0.51:81</code>.<br><br><strong>Server</strong> = a computer on the network that receives requests and provides services to other computers.<br><strong>Client</strong> = a computer that obtains information from a server.</div></div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a communication protocol? What is URL? What is DNS? What is RPC?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Communication protocol</strong> = set of rules and standards that defines how data is formatted, transmitted, and received between devices on a network.<br><br><strong>URL</strong> = the human-readable address used to access resources on the internet.<br><br><strong>DNS</strong> = a separate computer that takes a URL or domain name and returns the IP address of the destination computer.<br><br><strong>RPC</strong> = Remote Procedure Call, an IPC tool that lets you start execution of a function on a faraway computer/server.</div></div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is a network socket? What does it represent?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">A network socket is the combination of an IP address and a networking port. It identifies exactly where data should go on a machine.</div></div>
@@ -311,7 +323,7 @@ t2.join();</pre></div></div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">How many page tables are there in a system?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">1 for each process</div></div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is TLB? What is its purpose?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">TLB: device inside MMU that stores most currently useful entries from page table.</div></div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is TLB hit? What is TLB miss?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">TLB hit: situation when TLB has the required page table entry that MMU needs<br><br>TLB miss: situation when TLB doesn't have page table entry that MMU needs right now. In this case, TLB checks RAM. Expensive because it goes to RAM and get the entry back</div></div>
-  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Is it necessary to have the whole program in memory to run it?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">no, because we can load specific chunk of processes in ram</div></div>
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Is it necessary to have the whole program in memory to run it? What is on-demand paging?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">No. The whole program does not need to be in RAM to run it.<br><br><strong>On-demand paging (a.k.a. demand paging)</strong> = a memory management technique where pages are loaded into RAM <em>only when they are needed</em> (demanded by the CPU). Pages are not loaded at startup — only the page currently being accessed is brought into RAM. If a needed page is not in RAM, a <strong>page fault</strong> occurs and the OS fetches it from disk.</div></div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What is page fault?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">Situation when we need a page that is not in RAM right now. In this case, program pauses and OS load it from disk</div></div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What are the options for MMU to deal with the page table (we discussed three of them)? What are the disadvantagies of those options we don't use?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">1. store whole page table in MMU<br>2. keep whole page table in RAM<br>3. store only currently used portion in MMU<br><br>Disadvantages of the ones we don't use:<br>1. store whole page table in MMU = not good because it makes context switches slow.<br>2. keep whole page table in RAM = better, but still bad because it doubles the memory operations.</div></div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">What are the paging formulas for page number, offset, and physical address?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>Page number</strong> = logical address ÷ page size<br><br><strong>Offset</strong> = logical address % page size<br><br><strong>Physical address</strong> = (frame number × page size) + offset</div></div>
@@ -424,6 +436,304 @@ access.unlock();</pre></div></div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Priority inversion and priority donation.</span><span class="arrow">&#9658;</span></div><div class="qa-answer">Priority Inversion: is a bad situation when a higher priority process waits for a lower priority process without a good reason. There is no reason for high to wait for medium.<br><br>Priority donation: method to counter/fix priority inversions. As long as high waits for low, low process becomes as important as high.</div></div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Real-time scheduling.</span><span class="arrow">&#9658;</span></div><div class="qa-answer">real-time scheduling is an approach where the OS ensures that the real-time process meets the execution deadline. Real time process is a process that has cpu scheduling deadline. OS should know about real time programs</div></div>
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Soft and hard real-time systems.</span><span class="arrow">&#9658;</span></div><div class="qa-answer">soft real-time: means OS knows about the existence of real time processes, and that they require special attention. I will try to meet the CPU scheduling deadline of a process, if I don't meet it, then i will just leave it there. But it gives no guaranties.<br><br>hard real-time: the whole system has to meet the CPU scheduling deadline of processes and not meeting them is consider not acceptable.</div></div>
+</div>
+
+<!-- GANTT CHARTS -->
+<div class="page" id="page-gantt">
+  <div class="section-title">Gantt Charts & Scheduling Reference</div>
+  <div class="section-sub">All algorithms with preemptive/non-preemptive and starvation labels. Visual Gantt chart for each.</div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Algorithm Quick Reference — Preemptive? Starvation-free?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">
+    <table style="width:100%;border-collapse:collapse;font-size:0.88rem;">
+      <thead><tr style="background:var(--pink-100);">
+        <th style="padding:0.55rem;text-align:left;border-bottom:2px solid var(--border);color:var(--mauve);">Algorithm</th>
+        <th style="padding:0.55rem;text-align:center;border-bottom:2px solid var(--border);color:var(--mauve);">Preemptive?</th>
+        <th style="padding:0.55rem;text-align:center;border-bottom:2px solid var(--border);color:var(--mauve);">Starvation-free?</th>
+        <th style="padding:0.55rem;text-align:left;border-bottom:2px solid var(--border);color:var(--mauve);">Key trait</th>
+      </tr></thead>
+      <tbody>
+        <tr><td style="padding:0.5rem;border-bottom:1px solid var(--border);font-weight:600;">FCFS</td><td style="padding:0.5rem;border-bottom:1px solid var(--border);text-align:center;color:#b83232;font-weight:700;">No</td><td style="padding:0.5rem;border-bottom:1px solid var(--border);text-align:center;color:#2d7a4f;font-weight:700;">Yes ✓</td><td style="padding:0.5rem;border-bottom:1px solid var(--border);">Simple arrival order; can cause long waits (convoy effect)</td></tr>
+        <tr style="background:#fdf8fa;"><td style="padding:0.5rem;border-bottom:1px solid var(--border);font-weight:600;">SJF (non-preemptive)</td><td style="padding:0.5rem;border-bottom:1px solid var(--border);text-align:center;color:#b83232;font-weight:700;">No</td><td style="padding:0.5rem;border-bottom:1px solid var(--border);text-align:center;color:#b83232;font-weight:700;">No ✗</td><td style="padding:0.5rem;border-bottom:1px solid var(--border);">Minimizes avg wait; long jobs can starve</td></tr>
+        <tr><td style="padding:0.5rem;border-bottom:1px solid var(--border);font-weight:600;">SJF Preemptive (SRTF)</td><td style="padding:0.5rem;border-bottom:1px solid var(--border);text-align:center;color:#2d7a4f;font-weight:700;">Yes ✓</td><td style="padding:0.5rem;border-bottom:1px solid var(--border);text-align:center;color:#b83232;font-weight:700;">No ✗</td><td style="padding:0.5rem;border-bottom:1px solid var(--border);">Best average wait time; preempts on shorter arrival</td></tr>
+        <tr style="background:#fdf8fa;"><td style="padding:0.5rem;border-bottom:1px solid var(--border);font-weight:600;">Round-Robin</td><td style="padding:0.5rem;border-bottom:1px solid var(--border);text-align:center;color:#2d7a4f;font-weight:700;">Yes ✓</td><td style="padding:0.5rem;border-bottom:1px solid var(--border);text-align:center;color:#2d7a4f;font-weight:700;">Yes ✓</td><td style="padding:0.5rem;border-bottom:1px solid var(--border);">Fair; fixed time slice (quantum); everyone gets turns</td></tr>
+        <tr><td style="padding:0.5rem;border-bottom:1px solid var(--border);font-weight:600;">Priority (non-preemptive)</td><td style="padding:0.5rem;border-bottom:1px solid var(--border);text-align:center;color:#b83232;font-weight:700;">No</td><td style="padding:0.5rem;border-bottom:1px solid var(--border);text-align:center;color:#b83232;font-weight:700;">No ✗</td><td style="padding:0.5rem;border-bottom:1px solid var(--border);">Low-priority processes can starve; fix with aging</td></tr>
+        <tr style="background:#fdf8fa;"><td style="padding:0.5rem;font-weight:600;">Priority (preemptive)</td><td style="padding:0.5rem;text-align:center;color:#2d7a4f;font-weight:700;">Yes ✓</td><td style="padding:0.5rem;text-align:center;color:#b83232;font-weight:700;">No ✗</td><td style="padding:0.5rem;">New higher-priority process bumps out running one</td></tr>
+      </tbody>
+    </table>
+  </div></div>
+
+  <div class="alert"><strong>Example setup for all Gantt charts:</strong> 3 processes arrive at t=0: <strong>P1</strong> (burst=8, priority=2), <strong>P2</strong> (burst=4, priority=1 = highest), <strong>P3</strong> (burst=2, priority=3 = lowest). Lower priority number = higher priority. Scale: 1 time unit = 25 px.</div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">FCFS Gantt Chart — Non-preemptive, Starvation-free</span><span class="arrow">&#9658;</span></div><div class="qa-answer">
+    <strong>Arrival order: P1, P2, P3.</strong> Each process runs to completion before the next one starts.<br><br>
+    <svg viewBox="0 0 380 85" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:420px;display:block;margin:0.5rem auto;">
+      <rect x="10" y="10" width="200" height="40" fill="#e05990" rx="3"/><text x="110" y="35" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">P1</text>
+      <rect x="210" y="10" width="100" height="40" fill="#ed7fb0" rx="3"/><text x="260" y="35" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">P2</text>
+      <rect x="310" y="10" width="50" height="40" fill="#c93d76" rx="3"/><text x="335" y="35" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">P3</text>
+      <line x1="10" y1="53" x2="362" y2="53" stroke="#6b4a5a" stroke-width="1"/>
+      <line x1="10" y1="50" x2="10" y2="56" stroke="#6b4a5a" stroke-width="1.5"/><text x="10" y="70" text-anchor="middle" font-size="10" fill="#6b4a5a">0</text>
+      <line x1="210" y1="50" x2="210" y2="56" stroke="#6b4a5a" stroke-width="1.5"/><text x="210" y="70" text-anchor="middle" font-size="10" fill="#6b4a5a">8</text>
+      <line x1="310" y1="50" x2="310" y2="56" stroke="#6b4a5a" stroke-width="1.5"/><text x="310" y="70" text-anchor="middle" font-size="10" fill="#6b4a5a">12</text>
+      <line x1="360" y1="50" x2="360" y2="56" stroke="#6b4a5a" stroke-width="1.5"/><text x="360" y="70" text-anchor="middle" font-size="10" fill="#6b4a5a">14</text>
+    </svg>
+    <strong>Waiting times:</strong> P1=0, P2=8, P3=12 &nbsp;|&nbsp; <strong>Avg WT = (0+8+12)/3 = 6.67</strong><br>
+    Starvation-free because every process in the queue is guaranteed a turn eventually.
+  </div></div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">SJF Non-preemptive Gantt Chart — Non-preemptive, NOT starvation-free</span><span class="arrow">&#9658;</span></div><div class="qa-answer">
+    <strong>Shortest burst first: P3(2) → P2(4) → P1(8).</strong> Once a process starts, it runs to completion.<br><br>
+    <svg viewBox="0 0 380 85" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:420px;display:block;margin:0.5rem auto;">
+      <rect x="10" y="10" width="50" height="40" fill="#c93d76" rx="3"/><text x="35" y="35" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">P3</text>
+      <rect x="60" y="10" width="100" height="40" fill="#ed7fb0" rx="3"/><text x="110" y="35" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">P2</text>
+      <rect x="160" y="10" width="200" height="40" fill="#e05990" rx="3"/><text x="260" y="35" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">P1</text>
+      <line x1="10" y1="53" x2="362" y2="53" stroke="#6b4a5a" stroke-width="1"/>
+      <line x1="10" y1="50" x2="10" y2="56" stroke="#6b4a5a" stroke-width="1.5"/><text x="10" y="70" text-anchor="middle" font-size="10" fill="#6b4a5a">0</text>
+      <line x1="60" y1="50" x2="60" y2="56" stroke="#6b4a5a" stroke-width="1.5"/><text x="60" y="70" text-anchor="middle" font-size="10" fill="#6b4a5a">2</text>
+      <line x1="160" y1="50" x2="160" y2="56" stroke="#6b4a5a" stroke-width="1.5"/><text x="160" y="70" text-anchor="middle" font-size="10" fill="#6b4a5a">6</text>
+      <line x1="360" y1="50" x2="360" y2="56" stroke="#6b4a5a" stroke-width="1.5"/><text x="360" y="70" text-anchor="middle" font-size="10" fill="#6b4a5a">14</text>
+    </svg>
+    <strong>Waiting times:</strong> P3=0, P2=2, P1=6 &nbsp;|&nbsp; <strong>Avg WT = (0+2+6)/3 = 2.67</strong> (best of all these examples)<br>
+    <strong>Not starvation-free:</strong> if short jobs keep arriving continuously, P1 (long job) may never get the CPU.
+  </div></div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Round-Robin Gantt Chart (quantum=3) — Preemptive, Starvation-free</span><span class="arrow">&#9658;</span></div><div class="qa-answer">
+    <strong>Time slice = 3 units.</strong> Each process runs for up to 3 units, then goes to the back of the queue.<br>
+    P1(0→3, 5 left), P2(3→6, 1 left), P3(6→8, done), P1(8→11, 2 left), P2(11→12, done), P1(12→14, done)<br><br>
+    <svg viewBox="0 0 380 85" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:420px;display:block;margin:0.5rem auto;">
+      <rect x="10" y="10" width="75" height="40" fill="#e05990" rx="3"/><text x="47" y="35" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">P1</text>
+      <rect x="85" y="10" width="75" height="40" fill="#ed7fb0" rx="3"/><text x="122" y="35" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">P2</text>
+      <rect x="160" y="10" width="50" height="40" fill="#c93d76" rx="3"/><text x="185" y="35" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">P3</text>
+      <rect x="210" y="10" width="75" height="40" fill="#e05990" rx="3"/><text x="247" y="35" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">P1</text>
+      <rect x="285" y="10" width="25" height="40" fill="#ed7fb0" rx="3"/><text x="297" y="35" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">P2</text>
+      <rect x="310" y="10" width="50" height="40" fill="#e05990" rx="3"/><text x="335" y="35" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">P1</text>
+      <line x1="10" y1="53" x2="362" y2="53" stroke="#6b4a5a" stroke-width="1"/>
+      <line x1="10" y1="50" x2="10" y2="56" stroke="#6b4a5a" stroke-width="1.5"/><text x="10" y="70" text-anchor="middle" font-size="10" fill="#6b4a5a">0</text>
+      <line x1="85" y1="50" x2="85" y2="56" stroke="#6b4a5a" stroke-width="1.5"/><text x="85" y="70" text-anchor="middle" font-size="10" fill="#6b4a5a">3</text>
+      <line x1="160" y1="50" x2="160" y2="56" stroke="#6b4a5a" stroke-width="1.5"/><text x="160" y="70" text-anchor="middle" font-size="10" fill="#6b4a5a">6</text>
+      <line x1="210" y1="50" x2="210" y2="56" stroke="#6b4a5a" stroke-width="1.5"/><text x="210" y="70" text-anchor="middle" font-size="10" fill="#6b4a5a">8</text>
+      <line x1="285" y1="50" x2="285" y2="56" stroke="#6b4a5a" stroke-width="1.5"/><text x="285" y="70" text-anchor="middle" font-size="10" fill="#6b4a5a">11</text>
+      <line x1="310" y1="50" x2="310" y2="56" stroke="#6b4a5a" stroke-width="1.5"/><text x="310" y="70" text-anchor="middle" font-size="10" fill="#6b4a5a">12</text>
+      <line x1="360" y1="50" x2="360" y2="56" stroke="#6b4a5a" stroke-width="1.5"/><text x="360" y="70" text-anchor="middle" font-size="10" fill="#6b4a5a">14</text>
+    </svg>
+    <strong>Waiting times:</strong> P1=14−8=6, P2=12−4=8, P3=8−2=6 &nbsp;|&nbsp; <strong>Avg WT = (6+8+6)/3 = 6.67</strong><br>
+    <strong>Starvation-free:</strong> every process cycles through the queue — no one waits forever.
+  </div></div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Priority Scheduling Gantt Chart (non-preemptive) — Non-preemptive, NOT starvation-free</span><span class="arrow">&#9658;</span></div><div class="qa-answer">
+    <strong>Priority order: P2(1=highest) → P1(2) → P3(3=lowest).</strong> Highest-priority process runs first to completion.<br><br>
+    <svg viewBox="0 0 380 85" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:420px;display:block;margin:0.5rem auto;">
+      <rect x="10" y="10" width="100" height="40" fill="#ed7fb0" rx="3"/><text x="60" y="35" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">P2</text>
+      <rect x="110" y="10" width="200" height="40" fill="#e05990" rx="3"/><text x="210" y="35" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">P1</text>
+      <rect x="310" y="10" width="50" height="40" fill="#c93d76" rx="3"/><text x="335" y="35" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">P3</text>
+      <line x1="10" y1="53" x2="362" y2="53" stroke="#6b4a5a" stroke-width="1"/>
+      <line x1="10" y1="50" x2="10" y2="56" stroke="#6b4a5a" stroke-width="1.5"/><text x="10" y="70" text-anchor="middle" font-size="10" fill="#6b4a5a">0</text>
+      <line x1="110" y1="50" x2="110" y2="56" stroke="#6b4a5a" stroke-width="1.5"/><text x="110" y="70" text-anchor="middle" font-size="10" fill="#6b4a5a">4</text>
+      <line x1="310" y1="50" x2="310" y2="56" stroke="#6b4a5a" stroke-width="1.5"/><text x="310" y="70" text-anchor="middle" font-size="10" fill="#6b4a5a">12</text>
+      <line x1="360" y1="50" x2="360" y2="56" stroke="#6b4a5a" stroke-width="1.5"/><text x="360" y="70" text-anchor="middle" font-size="10" fill="#6b4a5a">14</text>
+    </svg>
+    <strong>Waiting times:</strong> P2=0, P1=4, P3=12 &nbsp;|&nbsp; <strong>Avg WT = (0+4+12)/3 = 5.33</strong><br>
+    <strong>Not starvation-free:</strong> P3 (priority 3) could wait indefinitely if high-priority processes keep arriving. Solution: <strong>aging</strong> (gradually increase priority of long-waiting processes).
+  </div></div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">How to calculate waiting time and turnaround time from a Gantt chart</span><span class="arrow">&#9658;</span></div><div class="qa-answer">
+    <strong>Turnaround time</strong> = completion time − arrival time<br>
+    <strong>Waiting time</strong> = turnaround time − CPU burst time = completion time − arrival time − burst<br><br>
+    If all processes arrive at t=0: &nbsp; <strong>waiting time = completion time − burst time</strong><br><br>
+    <strong>FCFS example:</strong><br>
+    P1: completes at 8, burst=8 → WT = 8−8 = <strong>0</strong><br>
+    P2: completes at 12, burst=4 → WT = 12−4 = <strong>8</strong><br>
+    P3: completes at 14, burst=2 → WT = 14−2 = <strong>12</strong><br>
+    Average WT = (0+8+12)/3 = <strong>6.67</strong><br><br>
+    <strong>For processes NOT arriving at t=0:</strong> waiting time = (start time − arrival time) + any later queue time.
+  </div></div>
+</div>
+
+<!-- EXAM QUESTIONS -->
+<div class="page" id="page-examqs">
+  <div class="section-title">Professor's Exam Questions (Brightspace)</div>
+  <div class="section-sub">All study items exactly as posted by Prof. Shostak on Brightspace. These are your exam questions.</div>
+
+  <div class="alert"><strong>Professor's explicit hints:</strong> (1) Well-known ports: "the answer 'first 1024 ports' is worth 0 points." (2) Synchronization hazards answer: "Race condition and deadlock." (3) Atomic function: "please remember both parts of the definition." (4) Hardware-implemented: "there is no program code for it, no general CPU instructions written in memory. The function is implemented with hardware circuitry and is called with a single special CPU instruction." (5) Spinlock: "still good when expected wait times are short and it is cheaper to wait while using the CPU than to perform context switch." (6) Mutex: "it pauses somehow and waits for mutex to be free again before proceeding further."</div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">CPU Scheduling Items (14 questions)</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><ol style="padding-left:1.4rem;line-height:2;">
+    <li>What is the CPU scheduling about?</li>
+    <li>What does the choice of a specific CPU scheduling algorithm depend on?</li>
+    <li>What is CPU burst? What is I/O burst?</li>
+    <li>Why can it be beneficial to schedule short CPU burst processes to the CPU before long CPU burst processes?</li>
+    <li>What does it mean a CPU scheduling algorithm is preemptive or non-preemptive?</li>
+    <li>What does it mean a CPU scheduling algorithm is starvation free?</li>
+    <li>First-Come-First-Served algorithm. Its idea, its advantages and disadvantages.</li>
+    <li>Shortest-Job-First algorithm. Its idea, its advantages and disadvantages.</li>
+    <li>Round-Robin algorithm. Its idea, its advantages, and disadvantages.</li>
+    <li>Priority scheduling. Its idea, its advantages, and disadvantages.</li>
+    <li>Aging.</li>
+    <li>Priority inversion and priority donation.</li>
+    <li>Real-time scheduling.</li>
+    <li>Soft and hard real-time systems.</li>
+  </ol></div></div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Synchronization Items (22 questions)</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><ol style="padding-left:1.4rem;line-height:2;">
+    <li>What are synchronization problems? <em>(Answer: programming problems that arise when you create multithreaded code or a program that exchanges data with other program)</em></li>
+    <li>What synchronization hazards do you know? <em>(Answer: Race condition and deadlock)</em></li>
+    <li>What is shared resource?</li>
+    <li>What is race condition (a.k.a. data race)?</li>
+    <li>Explain how race condition can happen? <em>(Check the assembler/CPU level explanation)</em></li>
+    <li>Can race condition happen if only one party modifies the data and others are just reading? Can race condition happen if everybody is just reading?</li>
+    <li>What is critical section problem?</li>
+    <li>What are the three properties of a good solution of a critical section problem?</li>
+    <li>Explain the idea of locking shared resources.</li>
+    <li>What does it mean atomic function? <em>(remember both parts of the definition)</em></li>
+    <li>What does it mean if the function is hardware implemented? <em>(Answer: there is no program code for it, no general CPU instructions written in memory. The function is implemented with hardware circuitry and is called with a single special CPU instruction)</em></li>
+    <li>What is test_and_set instruction and what does it do?</li>
+    <li>Simple solution of the critical section problem using test_and_set instruction. What is suboptimal in this solution? <em>(Answer: it doesn't have the "bounded waiting" property, in other words, it is not starvation-free)</em></li>
+    <li>Solution of the critical section problem using test_and_set instruction with the "bounded waiting" property.</li>
+    <li>What does busy waiting mean? What is spinlock? Why is it inefficient? When is it still good? <em>(Answer: it is still good when expected wait times are short and it is "cheaper" to wait while using the CPU than to perform context switch to another process)</em></li>
+    <li>What is mutex? What does process do if it needs a mutex that is busy? <em>(Answer: it pauses somehow and waits for mutex to be free again before proceeding further)</em></li>
+    <li>Be ready to use C++ std::mutex to protect critical sections of code.</li>
+    <li>Producer-Consumer problem (a.k.a. Bounded Buffer problem) and its solution.</li>
+    <li>Readers-Writers problem and its solution.</li>
+    <li>Describe Dining Philosophers problem. What do philosophers represent? What do chopsticks represent?</li>
+    <li>What is deadlock?</li>
+    <li>Name 3 approaches to solving dining philosophers problem.</li>
+  </ol></div></div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Memory Items (26 questions)</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><ol style="padding-left:1.4rem;line-height:2;">
+    <li>RAM memory purpose</li>
+    <li>What is memory address? How much memory you can address with addresses of a given size (for example, 64-bit addresses)?</li>
+    <li>What is physical address?</li>
+    <li>Why physical addresses are inconvenient for modern programs?</li>
+    <li>What is logical address?</li>
+    <li>What is physical address space? How many physical address spaces are there in the system?</li>
+    <li>What is logical (a.k.a. virtual) address space? How many logical address spaces are there in the system?</li>
+    <li>What kind of address does the CPU fetch with instructions?</li>
+    <li>What kind of address does the CPU send to RAM with a load/store request?</li>
+    <li>What kind of address arrives to RAM with the load/store request?</li>
+    <li>What is MMU? What is its purpose?</li>
+    <li>What is contiguous memory management?</li>
+    <li>What is fragmentation? What is external fragmentation? What is internal fragmentation?</li>
+    <li>What kind of fragmentation contiguous memory management suffers from?</li>
+    <li>What is paging?</li>
+    <li>What is page? What is frame?</li>
+    <li>What kind of fragmentation paging suffers from?</li>
+    <li>How do sizes of pages and frames relate?</li>
+    <li>What is page offset?</li>
+    <li>What is page table?</li>
+    <li>How many page tables are there in a system?</li>
+    <li>What are the options for MMU to deal with the page table (we discussed three of them)? What are the disadvantages of those options we don't use?</li>
+    <li>What is TLB? What is its purpose?</li>
+    <li>What is TLB hit? What is TLB miss?</li>
+    <li>Is it necessary to have the whole program in memory to run it? What is on-demand paging (a.k.a demand paging)?</li>
+    <li>What is page fault?</li>
+  </ol></div></div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Threads Items (8 questions)</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><ol style="padding-left:1.4rem;line-height:2;">
+    <li>What is thread of execution (a.k.a. just thread)?</li>
+    <li>Why we might want to create new threads of execution instead of new processes?</li>
+    <li>Why we might want to create new processes instead of new threads?</li>
+    <li>What do threads belonging to the same process share? What they don't share?</li>
+    <li>What is TLS (thread local storage)?</li>
+    <li>What is thread pool?</li>
+    <li>How to create a thread with std::thread?</li>
+    <li>What does std::thread::join() do? Why do we need it?</li>
+  </ol></div></div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">IPC + Networking Items (17 questions)</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><ol style="padding-left:1.4rem;line-height:2;">
+    <li>What is IPC?</li>
+    <li>What are two general classes of IPC (shared memory and message passing)?</li>
+    <li>What is the idea of shared memory? What are advantages and disadvantages of shared memory?</li>
+    <li>What is the idea of message passing? What are advantages and disadvantages of message passing?</li>
+    <li>Can shared memory kind of IPC communication be used for two processes running on two different computers? Why do you think so?</li>
+    <li>What is network (a bunch of computers connected together to exchange data)?</li>
+    <li>What is IP address? How does classic IP address (IPv4) look like?</li>
+    <li>Why IP address alone isn't enough for networking communications?</li>
+    <li>What is networking port?</li>
+    <li>What are well-known ports? <em>(the answer "first 1024 ports" is worth 0 points)</em></li>
+    <li>What is (networking) socket?</li>
+    <li>What is server (like in "web server" or "email server")?</li>
+    <li>What is client?</li>
+    <li>What is communication protocol?</li>
+    <li>What is URL?</li>
+    <li>What is DNS?</li>
+    <li>What is RPC?</li>
+  </ol></div></div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Process Items (20 questions)</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><ol style="padding-left:1.4rem;line-height:2;">
+    <li>What is process?</li>
+    <li>What is the difference between process and program?</li>
+    <li>List five process states (use the naming from our textbook and class please)</li>
+    <li>What is ready queue? How many ready queues do you expect in the system?</li>
+    <li>What is I/O queue? How many I/O queues do you expect in the system?</li>
+    <li>What happens to a process when it requests I/O operation (like file reading) in the classic "blocking" scenario?</li>
+    <li>Where does the process go once the I/O request is complete?</li>
+    <li>Understand what happens to processes in reality when process states change (don't be fooled by process "movements" in typical visualizations).</li>
+    <li>Process Control Block (PCB). What typical components can you see there?</li>
+    <li>Context switch. Why context switching has a small performance overhead associated with it? How does that performance overhead affect system calls?</li>
+    <li>What is POSIX?</li>
+    <li>fork()</li>
+    <li>exec()</li>
+    <li>exit()</li>
+    <li>wait()</li>
+    <li>Layout of a process in memory: text section, data section, heap, and stack.</li>
+    <li>What are the properties of heap (it is fragmented, full of holes)? How does it affect the typical dynamic memory allocation like using the operator new?</li>
+    <li>What are the properties of stack?</li>
+    <li>Orphan processes. Why are they bad?</li>
+    <li>Zombie process. For how long does it exist?</li>
+  </ol></div></div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">OS Definition & Functions Items (13 questions)</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><ol style="padding-left:1.4rem;line-height:2;">
+    <li>OS definition.</li>
+    <li>Examples of different operating systems.</li>
+    <li>What different types of computers exist (personal, mobile devices, servers, embedded). How different are operating systems for different computer types.</li>
+    <li>What is operating system kernel?</li>
+    <li>List of operating systems functions. For each item on this list, be ready to give a short description.</li>
+    <li>What is multitasking? How is it arranged?</li>
+    <li>What are user and kernel modes? What are user and kernel level programs/processes?</li>
+    <li>What is virtual memory?</li>
+    <li>What are interrupts? What are interrupt handlers? What issues interrupts? What is the sequence of things that happen when the interrupt arrives?</li>
+    <li>What are drivers?</li>
+    <li>What is file? What is file system? What is logical disk?</li>
+    <li>What are networking protocols?</li>
+    <li>What is operating systems API?</li>
+  </ol></div></div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Old Items (36 questions) — Still on the cumulative final</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><ol style="padding-left:1.4rem;line-height:2;">
+    <li>What is program?</li>
+    <li>What is data?</li>
+    <li>What does it mean to run the program? (executing program code instruction after instruction)</li>
+    <li>What computer component executes programs?</li>
+    <li>Where is the running program stored? What else (other than the program code) is stored there?</li>
+    <li>What do we know about RAM memory? (random-access, slow and volatile)</li>
+    <li>What is memory stall?</li>
+    <li>What long-term storage do we have?</li>
+    <li>What is executable file?</li>
+    <li>How speed of CPU, RAM and hard disk compare to each other?</li>
+    <li>What is cache memory? What is its purpose?</li>
+    <li>What is ROM memory? What does it store?</li>
+    <li>What is machine cycle?</li>
+    <li>What are the basic steps of machine cycle? (we mentioned 3 basic steps)</li>
+    <li>What Frequency measures? What is the measurement unit of frequency?</li>
+    <li>What is CPU clock? What is CPU frequency?</li>
+    <li>What is CPU core? What does it mean "quad-core CPU", "octa-core CPU"?</li>
+    <li>How does memory look like for programmers? (linear array of bytes)</li>
+    <li>What is byte? What is bit? How many bits are in a byte?</li>
+    <li>What is memory address?</li>
+    <li>What is the memory address of a larger chunk of memory?</li>
+    <li>What is the length of memory address? What does it mean "32-bit address"?</li>
+    <li>How much memory can we address/use with the given length of memory address?</li>
+    <li>How long should be memory addresses to address a given amount of memory?</li>
+    <li>Can memory contain nothing at all?</li>
+    <li>What is the relationship between C++ variable, RAM and memory address?</li>
+    <li>What is C++ pointer?</li>
+    <li>What is the most common size of the following C++ data types: char, short, int, long, long long, float, double? Does signed/unsigned affect those sizes?</li>
+    <li>Hexadecimal numbers. Why do we use them? How to convert from hexadecimal to binary and back quickly?</li>
+    <li>What is "word"?</li>
+    <li>What is PC?</li>
+    <li>What is the language that the CPU understands?</li>
+    <li>How can we execute program written in higher-level languages?</li>
+    <li>What is compiler? What are compiler advantages?</li>
+    <li>What is interpreter? What are interpreter advantages?</li>
+    <li>Stack overflow — what is it and what causes it?</li>
+  </ol></div></div>
 </div>
 
 <!-- PRACTICE EXAM -->
@@ -1215,6 +1525,12 @@ Example: 0xFF = 1111 1111 = 255 in decimal.<br>Example: 0x1A = 0001 1010 = 26 in
 
   <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Ready queue -- how many do we expect in the system?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">Typically, there is one ready queue per CPU in a system.</div></div>
 
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">How does memory look for programmers?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">Memory looks like a <strong>linear array of bytes</strong>. Each byte has a unique memory address, starting from address 0 and going up. To access any piece of data, you use its memory address.</div></div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">Can memory contain nothing at all?</span><span class="arrow">&#9658;</span></div><div class="qa-answer"><strong>No.</strong> Every bit in memory is always either <strong>0 or 1</strong> — it can never be "empty" or "nothing." Even uninitialized memory contains some bit pattern (often garbage values or zeros depending on the OS). Memory is always in some state; there is no "blank" state.</div></div>
+
+  <div class="qa-card"><div class="qa-question" onclick="toggleCard(this)"><span class="qa-question-text">How long should memory addresses be to address a given amount of memory?</span><span class="arrow">&#9658;</span></div><div class="qa-answer">To address <strong>N bytes</strong> of memory, you need addresses that are at least <strong>log₂(N) bits</strong> long.<br><br>In practice: addresses must be long enough that 2^(address length) ≥ N.<br><br><strong>Examples:</strong><ul><li>To address 4 GB (2³² bytes) → need <strong>32-bit</strong> addresses</li><li>To address 1 GB (2³⁰ bytes) → need <strong>30-bit</strong> addresses</li><li>To address 256 bytes (2⁸) → need <strong>8-bit</strong> addresses</li></ul></div></div>
+
 </div>
 
 <!-- TRACKER -->
@@ -1683,6 +1999,7 @@ const allCards = [
   {cat:'threads',q:'Why create processes instead of threads?',a:'When we want to call exec(fileName). You can also use processes when you want fault independence.'},
   {cat:'threads',q:'What do threads belonging to the same process share? What do they not share?',a:'Threads share program code, data section, and heap. Each thread has its own stack.'},
   {cat:'threads',q:'What is a thread pool?',a:'A tool that creates a bunch of threads and puts them to sleep. When a user requests new worker threads, instead of creating new threads you use these already-made ones.'},
+  {cat:'threads',q:'What does std::thread::join() do? Why do we need it?',a:'<strong>join()</strong> blocks the calling thread until the thread it was called on finishes execution. We need it to prevent the main thread from exiting before worker threads complete — if main exits, the whole process terminates and kills all threads prematurely.'},
   {cat:'ipc',q:'What is IPC?',a:'Inter-process communications, a mechanism that allows cooperating processes to exchange data.'},
   {cat:'ipc',q:'What are two general classes of IPC?',a:'Shared memory category and message passing category.'},
   {cat:'ipc',q:'What is the idea of shared memory? What are the advantages and disadvantages?',a:'OS can create a region that multiple processes can write and read. Advantages: faster because it only needs OS help once to create the region. Disadvantages: error-prone, requires a lot of thinking and planning, needs process synchronization, and cannot be used for two computers connected through a network.'},
@@ -1692,7 +2009,7 @@ const allCards = [
   {cat:'ipc',q:'What is an IP address? How does IPv4 look?',a:'A numerical label assigned to each device connected to a network. IPv4 is 4 numbers separated by periods and each number is between 0 and 255.'},
   {cat:'ipc',q:'Why is an IP address alone not enough?',a:'It only identifies the host, not which port on the device. Multiple programs can run on one device, so a port number is also needed.'},
   {cat:'ipc',q:'What is a networking port?',a:'A unique numeric identifier assigned to every process in the system that wants to use the network.'},
-  {cat:'ipc',q:'What are well-known ports?',a:'Ports with predefined purposes. Starts with 0-1023.'},
+  {cat:'ipc',q:'What are well-known ports?',a:'Ports officially assigned to specific standard protocols and services. They have predefined purposes. Examples: 80=HTTP, 443=HTTPS, 22=SSH, 21=FTP, 25=SMTP, 53=DNS. Range: 0–1023. <strong>Warning:</strong> saying only "the first 1024 ports" is worth 0 points — you must say they have predefined purposes for specific services.'},
   {cat:'ipc',q:'What is a networking socket?',a:'An endpoint for communication. Networking socket = IP Address + networking port.'},
   {cat:'ipc',q:'What is a server?',a:'A computer on the network that receives requests and provides services to other computers on the network.'},
   {cat:'ipc',q:'What is a client?',a:'A computer that can obtain information from a server.'},
@@ -1707,6 +2024,7 @@ const allCards = [
   {cat:'scheduling',q:'What does it mean a CPU scheduling algorithm is preemptive or non-preemptive?',a:'Preemptive: when a process is in the middle of the CPU burst and is sent back to the ready queue because the CPU is needed for something more important.<br><br>non-preemptive: means that if a process gets to use the CPU, it runs until the end/ as long as it needs.'},
   {cat:'scheduling',q:'What does it mean a CPU scheduling algorithm is starvation free?',a:"no process in the ready queue will wait forever, the OS uses such a method that every process in the ready queue will use the CPU, no one can wait for the CPU forever. We don't care about waiting, but about not waiting for too long. It is nice to have it, but if we don't have this property it is also ok."},
   {cat:'scheduling',q:'First-Come-First-Served algorithm. Its idea, its advantages and disadvantages.',a:'The idea is to treat the ready queue as a real line and it is non preemptive.<br><br>Advantages:<br>fast: to choose the next one to use the CPU<br>starvation- free<br><br>Disadvantages:<br>long waiting times: can keep ready queue long'},
+  {cat:'scheduling',q:'Shortest-Job-First (SJF) algorithm. Its idea, its advantages and disadvantages.',a:'The process with the shortest CPU burst goes first. Has two versions: non-preemptive (runs to completion) and preemptive (SRTF = Shortest Remaining Time First, preempts if a shorter job arrives).<br><br><strong>Advantages:</strong> minimizes average waiting time (especially preemptive version).<br><strong>Disadvantages:</strong> need to know CPU burst length in advance (hard to predict); not starvation-free (long jobs can starve if short jobs keep arriving).'},
   {cat:'scheduling',q:'Round-Robin algorithm. Its idea, its advantages, and disadvantages.',a:'The idea is to treat the ready queue as a real line but this one is preemptive.<br><br>There is a time slice- max amount of time that a process can use the CPU in one take. After it runs the time slice amount, it goes to the ready queue and waits and finishes the remaining.<br>Example: time slice = 100ms, CPU burst = 150ms. It runs 100ms, then go to the back of the ready queue, and wait. It finished the remaining 50ms.<br><br>Advantages:<br>fast: to choose the next one to use the CPU<br>starvation- free<br>it is fair<br><br>Disadvantages:<br>long waiting times: can keep the ready queue long.'},
   {cat:'scheduling',q:'Priority scheduling. Its idea, its advantages, and disadvantages.',a:'Every process has a priority, and it specifies how important a process is<br><br>advantages: .<br>Give priority to the process with the highest priority.<br>It allows us to give priority to processes that we consider important.<br><br>disadvantages:<br>not starvation- free'},
   {cat:'scheduling',q:'Aging.',a:'method to fight the starvation problem. priority increases by one if it sits there for a certain amount of seconds/time.'},
@@ -1744,7 +2062,7 @@ const allCards = [
   {cat:'sync',q:'What is shared resource?',a:'Any data that two or more threads/processes can simultaneously read or write to. Global variables or shared memory.'},
   {cat:'sync',q:'What is race condition (a.k.a. data race)?',a:'A scenario when a shared resource becomes corrupted because multiple threads/processes tries to access this shared resource, and at least one of them tries to modify it.'},
   {cat:'sync',q:'Explain how race condition can happen?',a:'Imagine a shared int variable that is initially 0 and 2 threads, both threads have the same exact function and that is to add one to this shared int variable. If both threads try to execute at the same time, thread 1 can increment 1 to glob and then thread 2 can also increment 1 to glob (but sees the old value of glob because thread 1 hasn’t saved the value yet), so then after that thread 1 saves the value of glob as 1 but then thread 2 also saves the value of glob as 1, overwriting the data. The result is glob = 1 instead of the expected glob = 2. Thread 2 loaded the old value before Thread 1 stored its result, so both increments resulted in the same final value.<br><br>This happens because threads share the same CPU core but each thread uses its own CPU registers, but they also share the same glob variable in RAM.<br><br>T2 entered T’s critical section rather than stopping to wait until T1 finishes all of its instructions, only then can T2 run in its own critical section.<br><br>To ensure critical sections don’t overlap, a mutex is a possible solution, where T1 would grab the lock to lock the shared resource, it would then proceed to finish all its instructions and when it’s done, it unlocks itself and hands the lock to T2 so T2 can do the same, now loading the updated value, T2 is responsible for both locking, doing its instructions, then unlocking, handing the lock to the next thread/process that needs to work.<br><br>Since race conditions are logic errors, reproducing the bug is difficult.'},
-  {cat:'sync',q:'Can race condition happen if only one party modifies the data and others are just reading? Can race condition happen if everybody is just reading?',a:'A race condition only happens if both parties tries to modify the data, if only one or both are reading then a race condition can’t happen'},
+  {cat:’sync’,q:’Can race condition happen if only one party modifies the data and others are just reading? Can race condition happen if everybody is just reading?’,a:’<strong>Yes</strong> — if only one party modifies and others read, a race condition CAN still happen. Readers may read a partially updated/inconsistent value mid-write. <strong>No</strong> — if everybody is ONLY reading and nobody is modifying, a race condition CANNOT happen.’},
   {cat:'sync',q:'What is critical section problem?',a:'A problem of programming your threads/processes in such way that they do not use shared resources simultaneously'},
   {cat:'sync',q:'What are the three properties of a good solution to a critical section problem?',a:'Exclusivity → only 1 party can access a shared resource at a time<br>Progress → shared resource does not stay idle if somebody needs it<br>Bounded waiting → make sure that nobody waits forever'},
   {cat:'sync',q:'Explain the idea of locking shared resources.',a:'Answered earlier, lock needs to be responsibly handled so that a party doesn’t keep a lock (lock==TRUE) forever especially in a multi-thread/multi-process system<br><br>Lock is also a shared variable<br><br>while (lock==TRUE) {} // keep checking if the shared resource is busy or not<br>lock = true;<br>// critical section<br>lock = false;'},
